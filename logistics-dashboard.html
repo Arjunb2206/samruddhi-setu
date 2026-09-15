@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logistics Dashboard | Samruddhi Setu</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+  <link rel="stylesheet" href="css/redesign.css?v=7">
+  <style>
+    .lg-dashboard-intro{margin-top:24px;padding:28px 30px;border:1px solid #E3EBE4;border-radius:18px;background:linear-gradient(135deg,#F5FBF5,#fff);display:flex;justify-content:space-between;gap:24px;align-items:center;box-shadow:0 10px 30px rgba(20,64,31,.06)}
+    .lg-dashboard-intro h1{margin:7px 0 8px;color:var(--primary-deep);font:700 clamp(1.6rem,3vw,2.35rem)/1.15 "Playfair Display",serif}
+    .lg-dashboard-intro p,.lg-section-head p{margin:0;color:var(--text-muted);font-size:.92rem}.lg-eyebrow{color:#2E7D46;font-size:.72rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.lg-intro-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:flex-end}.lg-live-status{color:#166534;font-weight:800;font-size:.8rem}.lg-live-status i{font-size:.55rem;color:#16A34A;margin-right:5px}.lg-available-card{margin-top:22px;padding:26px 30px;border:1px solid #E3EBE4;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(20,64,31,.05)}.lg-section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}.lg-section-head h2{margin:5px 0 7px;color:var(--primary-deep);font:700 1.35rem/1.2 "Playfair Display",serif}.lg-text-link{color:#24743F;font-weight:800;font-size:.84rem;white-space:nowrap}.lg-assignment-grid{margin-top:20px}.lg-assignment-empty{min-height:150px;border:1px dashed #C9DCCB;border-radius:14px;background:#FAFDF9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;color:var(--text-muted);padding:24px}.lg-assignment-empty i{font-size:1.7rem;color:#5A9B68}.lg-assignment-empty strong{color:var(--primary-deep)}.lg-assignment-empty span{font-size:.82rem;margin-bottom:6px}@media(max-width:760px){.lg-dashboard-intro{align-items:flex-start;flex-direction:column}.lg-intro-actions{justify-content:flex-start}.lg-section-head{flex-direction:column}}
+  </style>
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div id="lgApprovalGate"></div>
+
+
+      <div class="shell-card" style="background:linear-gradient(120deg, var(--primary-deep) 0%, var(--primary) 100%); color:#fff; border:none; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:18px;">
+          <img id="dashLogisticsAvatar" src="assets/default-avatar.jpg" alt="Driver" style="width:68px; height:68px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.4);" />
+          <div>
+            <h2 id="dashLogisticsName" style="font-family:'Playfair Display',serif; font-size:1.5rem;">Welcome back</h2>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; font-size:0.85rem;">
+              <span style="background:rgba(255,255,255,0.18); padding:5px 12px; border-radius:999px;"><i class="fa-solid fa-snowflake"></i> Reefer Certified</span>
+              <span id="dashLogisticsSub" style="background:rgba(255,255,255,0.18); padding:5px 12px; border-radius:999px;">Tata 407 (3.5 Tons)</span>
+              <span style="opacity:0.9;"><i class="fa-solid fa-circle" style="color:#00E676; font-size:0.6rem;"></i> Active Online</span>
+            </div>
+          </div>
+        </div>
+        <a href="logistics-orders.html" class="btn-luxury-gold" style="white-space:nowrap; position:relative;">
+          <i class="fa-solid fa-route"></i> View Assignments
+          <span id="pendingOrdersBadge" style="display:none; position:absolute; top:-8px; right:-8px; background:#C0392B; color:#fff; font-size:0.7rem; font-weight:800; padding:2px 7px; border-radius:999px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">0</span>
+        </a>
+      </div>
+
+      <section class="lg-dashboard-intro">
+        <div>
+          <div class="lg-eyebrow"><i class="fa-solid fa-signal"></i> Operations overview</div>
+          <h1>Keep every delivery moving</h1>
+          <p>Review your active route, earnings, and available assignments from one focused workspace.</p>
+        </div>
+        <div class="lg-intro-actions"><span class="lg-live-status"><i class="fa-solid fa-circle"></i> Fleet online</span><a href="logistics-orders.html" class="btn-luxury-outline">Open dispatch board <i class="fa-solid fa-arrow-right"></i></a></div>
+      </section>
+
+      <section class="lg-available-card">
+        <div class="lg-section-head"><div><span class="lg-eyebrow">Next up</span><h2>Available assignments</h2><p>Accept a route when you are ready to dispatch.</p></div><a href="logistics-orders.html" class="lg-text-link">View all <i class="fa-solid fa-arrow-right"></i></a></div>
+        <div class="lg-assignment-grid" id="rtDashboardAssignments"><div class="lg-assignment-empty"><i class="fa-solid fa-spinner fa-spin"></i><strong>Loading assignments from Firebase…</strong></div></div>
+      </section>
+
+      <div class="shell-grid cols-4" style="margin-top:24px;">
+        <div class="stat-tile"><div class="stat-icon" style="background:#D8F3DC; color:#2D6A4F;"><i class="fa-solid fa-truck-fast"></i></div><div class="stat-value" id="rtCompletedTrips">—</div><div class="stat-label">Completed Trips</div></div>
+        <div class="stat-tile"><div class="stat-icon" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-sack-dollar"></i></div><div class="stat-value" id="rtWeekEarnings">—</div><div class="stat-label">Total Payouts</div></div>
+        <div class="stat-tile"><div class="stat-icon" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-star"></i></div><div class="stat-value" id="rtRating">—</div><div class="stat-label">Rating</div></div>
+        <div class="stat-tile"><div class="stat-icon" style="background:#FCE7F3; color:#9D174D;"><i class="fa-solid fa-list-check"></i></div><div class="stat-value" id="rtActiveDispatches">—</div><div class="stat-label">Active Jobs</div></div>
+      </div>
+
+      <div class="shell-grid cols-2" style="margin-top:24px; align-items:start;">
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge"><i class="fa-solid fa-id-card"></i></div>
+            <div><h3>Profile & Vehicle Setup</h3><p>Register vehicle type, capacity & availability</p></div>
+          </div>
+          <div class="simple-list-row"><span>Vehicle Type</span><strong id="rtVehicleType">—</strong></div>
+          <div class="simple-list-row"><span>Capacity</span><strong id="rtVehicleCapacity">—</strong></div>
+          <div class="simple-list-row"><span>Availability</span><strong id="rtAvailability">—</strong></div>
+          <a href="profile.html" class="btn-luxury-outline" style="margin-top:8px; width:100%; text-align:center; display:block;">Edit Vehicle Details</a>
+        </div>
+
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-wallet"></i></div>
+            <div><h3>Earnings & Payments</h3><p>Daily / weekly / monthly income tracker</p></div>
+          </div>
+          <div class="simple-list-row"><span>Today</span><strong id="rtTodayEarnings">—</strong></div>
+          <div class="simple-list-row"><span>This Week</span><strong id="rtWeekEarningsDetail">—</strong></div>
+          <div class="simple-list-row"><span>Payout Status</span><span class="status-pill available">Cleared</span></div>
+        </div>
+
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-star"></i></div>
+            <div><h3>Ratings & Feedback</h3><p>Reliability score from farmers & buyers</p></div>
+          </div>
+          <div class="simple-list-row"><span>Farmer feedback</span><strong id="rtFarmerRating">—</strong></div>
+          <div class="simple-list-row"><span>Buyer feedback</span><strong id="rtBuyerRating">—</strong></div>
+        </div>
+
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge" style="background:#D8F3DC; color:#2D6A4F;"><i class="fa-solid fa-route"></i></div>
+            <div><h3>Route Optimization</h3><p>AI suggests the fastest or most fuel-efficient path</p></div>
+          </div>
+          <div id="routeOptimizationResult">
+            <div class="simple-list-row"><span>Suggested Route</span><strong id="routeOptSuggested">—</strong></div>
+            <div class="simple-list-row"><span>Estimated Time</span><strong id="routeOptTime">—</strong></div>
+            <div class="simple-list-row"><span>Estimated Fuel</span><strong id="routeOptFuel">—</strong></div>
+          </div>
+          <button class="btn-luxury-outline" style="margin-top:8px; width:100%;" onclick="recalculateRoute()"><i class="fa-solid fa-arrows-rotate"></i> Recalculate Route</button>
+        </div>
+
+        <a href="logistics-orders.html" class="quick-nav-card">
+          <div class="qn-icon" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-route"></i></div>
+          <div><div class="qn-title">Orders & Assignments</div><div class="qn-desc">Accept jobs, live map, delivery tracking</div></div>
+          <i class="fa-solid fa-chevron-right qn-arrow"></i>
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script><script src="js/logistics-realtime.js?v=1"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "logistics", active: "dashboard", searchPlaceholder: "Search assignments..." });
+
+    /**
+     * Approval gate — a logistics partner whose documents are still under
+     * review cannot claim dispatches, so the dashboard is locked until an
+     * administrator approves the application.
+     */
+    (async function enforceApprovalGate() {
+      const host = document.getElementById("lgApprovalGate");
+      let user = SamruddhiAuth.getStoredUser();
+      if (!user || user.role !== "logistics") return;
+
+      try {
+        if (user.uid && !String(user.uid).startsWith("guest-")) {
+          const snap = await window.AgriSetuDB.db.collection("users").get();
+          const mine = snap.docs.find(d => d.data().email === user.email && d.data().role === "logistics");
+          if (mine) { user = { uid: mine.id, ...mine.data() }; delete user.passwordHash; SamruddhiAuth.setStoredUser(user); }
+        }
+      } catch (e) {}
+
+      const status = user.approvalStatus;
+      if (!status || status === "approved") return;
+
+      const rejected = status === "rejected";
+      host.innerHTML = `
+        <div class="lg-notice ${rejected ? "amber" : "amber"}" style="margin-bottom:24px;">
+          <i class="fa-solid ${rejected ? "fa-circle-xmark" : "fa-clock"}"></i>
+          <div style="flex:1;">
+            <h4>${rejected ? "Application Needs Attention" : "Account Pending Administrative Approval"}</h4>
+            <p>
+              ${rejected
+                ? "One or more of your documents could not be verified. Please review the checklist and resubmit before accepting dispatches."
+                : "Your documents and vehicle specifications are being validated by our operations team. You cannot claim or accept delivery orders until approved."}
+            </p>
+            <a href="logistics-register.html" class="lg-btn lg-btn-primary" style="margin-top:14px; padding:11px 22px; font-size:0.9rem;">
+              ${rejected ? "Review & Resubmit Documents" : "View Approval Status"} <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>`;
+
+      // Disable dispatch actions while unapproved
+      document.querySelectorAll(".app-main button").forEach(b => {
+        if (b.closest("#lgApprovalGate")) return;
+        b.disabled = true;
+        b.style.opacity = "0.5";
+        b.style.cursor = "not-allowed";
+      });
+    })();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = SamruddhiAuth.getStoredUser();
+      if (user) {
+        document.getElementById("dashLogisticsName").innerText = "Welcome, " + user.name;
+        document.getElementById("dashLogisticsAvatar").src = user.avatar || "assets/default-avatar.jpg";
+        if (user.subType) document.getElementById("dashLogisticsSub").innerText = user.subType;
+      }
+      window.AgriSetuDB.db.collection("orders").onSnapshot((snap) => {
+        const orders = snap.docs.map(d => d.data());
+        const mine = orders.filter(o => o.status === "out_for_delivery" && (!user || o.logisticsId === user.uid));
+        const legacyJobs = document.getElementById("statActiveJobs"); if (legacyJobs) legacyJobs.innerText = mine.length;
+
+        // Real-time badge of orders newly placed & awaiting pickup, so a
+        // driver sees fresh jobs the instant they're placed — even from
+        // the main dashboard, before opening the Orders & Assignments page.
+        const pending = orders.filter(o => o.status === "pending_pickup" && !((o.declinedBy || []).includes(user && user.uid)));
+        const badge = document.getElementById("pendingOrdersBadge");
+        if (badge) {
+          badge.style.display = pending.length > 0 ? "block" : "none";
+          badge.innerText = pending.length;
+        }
+      });
+    });
+
+    // Route Optimization — AI suggests the fastest or most fuel-efficient path.
+    // Alternates between two simulated route strategies to illustrate the trade-off.
+    const routeOptions = [
+      { label: "Fastest Route", route: "Kolar → Hoskote → Bengaluru", time: "1 hr 42 min", fuel: "₹340 (4.1 L)" },
+      { label: "Most Fuel-Efficient", route: "Kolar → Malur → Hoskote → Bengaluru", time: "1 hr 58 min", fuel: "₹285 (3.4 L)" }
+    ];
+    let routeOptIndex = 0;
+    function recalculateRoute() {
+      routeOptIndex = (routeOptIndex + 1) % routeOptions.length;
+      const opt = routeOptions[routeOptIndex];
+      document.getElementById("routeOptSuggested").innerText = opt.route;
+      document.getElementById("routeOptTime").innerText = opt.time;
+      document.getElementById("routeOptFuel").innerText = opt.fuel;
+      if (typeof showToast === "function") showToast(`AI recalculated: ${opt.label} selected`);
+    }
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "feature_names": [
+    "avgR_norm",
+    "avgG_norm",
+    "avgB_norm",
+    "blemishRatio",
+    "brightness_norm",
+    "skinToneRatio",
+    "avgSaturation"
+  ],
+  "class_names": [
+    "Grade A+ (Export Premium)",
+    "Grade A (Fresh Retail Domestic)",
+    "Grade B (Processing & Juicing)",
+    "Invalid Input (Not Produce Detected)"
+  ],
+  "invalid_class_index": 3,
+  "input_name": "features",
+  "output_name": "quality_logits",
+  "validation_accuracy": 0.9363
+}

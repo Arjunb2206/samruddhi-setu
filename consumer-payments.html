@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payments & Savings | Samruddhi Setu</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div><h1>Payments & Savings</h1><p>Manage payment methods, view transaction history, and track discounts.</p></div>
+      </div>
+
+      <div class="shell-grid cols-2" style="align-items:start;">
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge"><i class="fa-solid fa-credit-card"></i></div>
+            <div><h3>Payment Methods</h3><p>UPI, card, cash on delivery</p></div>
+          </div>
+          <div class="simple-list-row"><span><i class="fa-solid fa-mobile-screen"></i> &nbsp;UPI — consumer@upi</span><span class="role-badge-pill">Default</span></div>
+          <div class="simple-list-row"><span><i class="fa-solid fa-credit-card"></i> &nbsp;Card — **** 4021</span><span></span></div>
+          <div class="simple-list-row"><span><i class="fa-solid fa-hand-holding-dollar"></i> &nbsp;Cash on Delivery</span><span></span></div>
+          <button class="btn-luxury-outline" style="margin-top:8px; width:100%;">+ Add Payment Method</button>
+        </div>
+
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-tags"></i></div>
+            <div><h3>Cashback & Discounts</h3><p>Platform offers & seasonal deals</p></div>
+          </div>
+          <div class="simple-list-row"><span>🎉 Flat 10% off first bulk contract</span></div>
+          <div class="simple-list-row"><span>💸 ₹50 cashback on UPI orders above ₹500</span></div>
+          <div class="simple-list-row"><span>🥭 Festival mango combo — 15% off</span></div>
+        </div>
+      </div>
+
+      <div class="shell-card" style="margin-top:24px;">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-receipt"></i></div>
+          <div><h3>Transaction History</h3><p>Invoices & receipts for your orders</p></div>
+        </div>
+        <div id="paymentsTxnList"></div>
+      </div>
+
+      <div class="shell-card" style="margin-top:24px;">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#DCFCE7; color:#15803D;"><i class="fa-solid fa-calendar-check"></i></div>
+          <div><h3>Subscription Options</h3><p>Weekly baskets & monthly supply packs — tap a plan to subscribe or cancel</p></div>
+        </div>
+        <div class="shell-grid cols-3" id="subscriptionPlansGrid"></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="invoiceReceiptModal">
+    <div class="modal-box"><button class="modal-close-btn" id="closeInvoiceModalBtn"><i class="fa-solid fa-xmark"></i></button><div id="invoiceContentContainer"></div></div>
+  </div>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "consumer", active: "payments", searchPlaceholder: "Search transactions..." });
+    window._orderMap = window._orderMap || {};
+    window.viewInvoiceForOrder = function (id) { const ord = window._orderMap[id]; if (ord) showInvoiceModal(ord); };
+
+    // ---- Subscription Options (weekly baskets / monthly supply packs) ----
+    const SUBSCRIPTION_PLANS = [
+      { id: "weekly-veggie", name: "Weekly Veggie Basket", priceDisplay: "₹499 / week", cycle: "weekly", icon: "fa-basket-shopping", iconStyle: "" },
+      { id: "monthly-dairy", name: "Monthly Dairy Pack", priceDisplay: "₹1,299 / month", cycle: "monthly", icon: "fa-jar", iconStyle: "background:#DBEAFE; color:#1E40AF;" },
+      { id: "fruit-lover", name: "Fruit Lover Pack", priceDisplay: "₹899 / month", cycle: "monthly", icon: "fa-apple-whole", iconStyle: "background:#FEF3C7; color:#92400E;" }
+    ];
+
+    function renderSubscriptionCards() {
+      const grid = document.getElementById("subscriptionPlansGrid");
+      if (!grid) return;
+      const user = SamruddhiAuth.getStoredUser();
+      const mySubs = (user && Array.isArray(user.subscriptions)) ? user.subscriptions : [];
+      grid.innerHTML = SUBSCRIPTION_PLANS.map(p => {
+        const active = mySubs.some(s => s.id === p.id);
+        return `
+        <div class="quick-nav-card" style="cursor:pointer; ${active ? 'border:2px solid #15803D;' : ''}" onclick="toggleSubscription('${p.id}')">
+          <div class="qn-icon" style="${p.iconStyle}"><i class="fa-solid ${p.icon}"></i></div>
+          <div>
+            <div class="qn-title">${p.name}</div>
+            <div class="qn-desc">${active ? '<i class="fa-solid fa-circle-check" style="color:#15803D;"></i> Subscribed — tap to cancel' : p.priceDisplay}</div>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    window.toggleSubscription = async function (planId) {
+      const user = SamruddhiAuth.getStoredUser();
+      if (!user) { showToast("Please log in to subscribe."); return; }
+      const plan = SUBSCRIPTION_PLANS.find(p => p.id === planId);
+      if (!plan) return;
+
+      const mySubs = Array.isArray(user.subscriptions) ? [...user.subscriptions] : [];
+      const existingIdx = mySubs.findIndex(s => s.id === planId);
+      if (existingIdx === -1) {
+        mySubs.push({ id: plan.id, name: plan.name, priceDisplay: plan.priceDisplay, cycle: plan.cycle, subscribedAt: new Date().toISOString() });
+        showToast(`✅ Subscribed to ${plan.name}!`);
+      } else {
+        mySubs.splice(existingIdx, 1);
+        showToast(`Unsubscribed from ${plan.name}.`);
+      }
+
+      user.subscriptions = mySubs;
+      SamruddhiAuth.setStoredUser(user);
+      try {
+        await window.AgriSetuDB.db.collection("users").doc(user.uid).set({ subscriptions: mySubs }, { merge: true });
+      } catch (err) {
+        console.warn("Could not sync subscription to the server:", err);
+      }
+      renderSubscriptionCards();
+    };
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      renderSubscriptionCards();
+      const user = SamruddhiAuth.getStoredUser();
+      const buyerId = user?.uid || null;
+      const snap = await window.AgriSetuDB.db.collection("orders").get();
+      const orders = snap.docs.map(d => d.data()).filter(o => o.buyerId === buyerId).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const list = document.getElementById("paymentsTxnList");
+      if (!orders.length) {
+        list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>No transactions yet.</p></div>`;
+        return;
+      }
+      list.innerHTML = orders.slice(0, 8).map(ord => {
+        window._orderMap[ord.id] = ord;
+        const isOnline = ord.paymentMethod === "ONLINE";
+        return `
+        <div class="simple-list-row">
+          <div>
+            <strong style="color:var(--primary-deep);">${ord.id}</strong>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">${new Date(ord.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} • ${isOnline ? "Paid Online" : "Cash on Delivery"}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="font-weight:800; color:var(--primary);">₹${(ord.totalAmount || 0).toLocaleString()}</span>
+            <button class="btn-luxury-outline" style="padding:5px 12px; font-size:0.78rem;" onclick="viewInvoiceForOrder('${ord.id}')">Receipt</button>
+          </div>
+        </div>`;
+      }).join("");
+    });
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

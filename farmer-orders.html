@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders & Logistics | Samruddhi Setu</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div><h1>Orders & Logistics</h1><p>Track bookings and coordinate pickup, storage & delivery.</p></div>
+      </div>
+
+      <div class="tab-pill-group">
+        <button class="tab-pill active" data-status="all" onclick="filterOrders('all', this)">All</button>
+        <button class="tab-pill" data-status="active" onclick="filterOrders('active', this)">Active</button>
+        <button class="tab-pill" data-status="pending" onclick="filterOrders('pending', this)">Pending Confirmation</button>
+        <button class="tab-pill" data-status="completed" onclick="filterOrders('completed', this)">Completed</button>
+        <button class="tab-pill" data-status="bulk" onclick="filterOrders('bulk', this)">Bulk Contracts</button>
+      </div>
+
+      <div class="shell-card">
+        <div id="farmerOrdersList"></div>
+      </div>
+
+      <div class="shell-grid cols-4" style="margin-top:28px;">
+        <div class="quick-nav-card" style="cursor:pointer;" onclick="showToast('Pickup request sent to nearest logistics partner!')">
+          <div class="qn-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
+          <div><div class="qn-title">Book Pickup</div><div class="qn-desc">Bike or truck transport</div></div>
+        </div>
+        <div class="quick-nav-card" style="cursor:pointer;" onclick="showToast('Cold storage slot requested nearby!')">
+          <div class="qn-icon" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-snowflake"></i></div>
+          <div><div class="qn-title">Cold Storage</div><div class="qn-desc">Request nearby facility</div></div>
+        </div>
+        <a href="track-delivery.html" class="quick-nav-card">
+          <div class="qn-icon" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-route"></i></div>
+          <div><div class="qn-title">Delivery Tracking</div><div class="qn-desc">Live map of produce in transit</div></div>
+        </a>
+        <div class="quick-nav-card" style="cursor:pointer;" onclick="showToast('Average partner rating: 4.7 / 5')">
+          <div class="qn-icon" style="background:#FCE7F3; color:#9D174D;"><i class="fa-solid fa-star"></i></div>
+          <div><div class="qn-title">Partner Ratings</div><div class="qn-desc">Feedback on logistics providers</div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "farmer", active: "orders", searchPlaceholder: "Search orders..." });
+    let allOrders = [];
+
+    document.addEventListener("DOMContentLoaded", renderOrders);
+
+    async function renderOrders() {
+      const user = SamruddhiAuth.getStoredUser();
+      const farmerId = user?.uid || null;
+      const snap = await window.AgriSetuDB.db.collection("orders").get();
+      allOrders = snap.docs.map(d => d.data()).filter(o => o.farmerId === farmerId);
+      paintOrders(allOrders);
+    }
+
+    function filterOrders(status, btn) {
+      document.querySelectorAll(".tab-pill").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      if (status === "all") return paintOrders(allOrders);
+      if (status === "bulk") return paintOrders(allOrders.filter(o => (o.deliveryType || "") === "truck_bulk"));
+      paintOrders(allOrders.filter(o => (o.status || "").toLowerCase().includes(status)));
+    }
+
+    function paintOrders(orders) {
+      const list = document.getElementById("farmerOrdersList");
+      if (!orders.length) {
+        list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-clipboard-list"></i><p>No orders in this category yet.</p></div>`;
+        return;
+      }
+      list.innerHTML = orders.map(ord => `
+        <div class="simple-list-row" style="align-items:flex-start;">
+          <div>
+            <strong style="color:var(--primary-deep);">${ord.id}</strong>
+            <span class="role-badge-pill" style="font-size:0.68rem; margin-left:8px;">${window.SamruddhiOrders ? window.SamruddhiOrders.statusLabel(ord.status) : (ord.status || "placed")}</span>
+            <div style="font-size:0.82rem; color:var(--text-muted); margin:6px 0;">
+              Buyer: <strong>${ord.buyerName || "—"}</strong> • ${ord.deliveryType === "instant_bike" ? "🏍️ Instant Bike" : "🚚 Reefer Cold-Truck"}
+            </div>
+            <div style="font-size:0.86rem; font-weight:600;">${(ord.items || []).map(i => `${i.title} (${i.quantity} ${i.unit})`).join(", ")}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:1.05rem; font-weight:800; color:var(--primary-deep); margin-bottom:8px;">₹${ord.totalAmount || 0}</div>
+            <a href="track-delivery.html?order=${ord.id}" class="btn-luxury-outline" style="padding:5px 12px; font-size:0.78rem;">Track</a>
+          </div>
+        </div>
+      `).join("");
+    }
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

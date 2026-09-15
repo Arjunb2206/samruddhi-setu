@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community & Support | Samruddhi Setu</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div><h1>Community & Support</h1><p>Farmer forums, help center and training resources.</p></div>
+      </div>
+
+      <!-- ===================== My Cooperative Community ===================== -->
+      <div class="shell-card" id="myCommunityCard">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#EDE9FE; color:#5B21B6;"><i class="fa-solid fa-people-roof"></i></div>
+          <div><h3>My Community</h3><p>Your cooperative society membership</p></div>
+        </div>
+        <div id="myCommunityBody">
+          <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading your community status…</p></div>
+        </div>
+      </div>
+
+      <!-- ===================== Nearby Communities to Join ===================== -->
+      <div class="shell-card" id="nearbyCommunityCard">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#DCFCE7; color:#15803D;"><i class="fa-solid fa-location-crosshairs"></i></div>
+          <div><h3>Nearby Communities</h3><p>Join a cooperative society to pool & sell produce &gt; 50 kg</p></div>
+        </div>
+        <div id="nearbyCommunityList" class="shell-grid cols-2" style="margin-top:4px;">
+          <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Finding cooperatives near you…</p></div>
+        </div>
+      </div>
+
+      <div class="shell-grid cols-2" style="align-items:start;">
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge"><i class="fa-solid fa-comments"></i></div>
+            <div><h3>Farmer Forums</h3><p>Share experiences, ask questions</p></div>
+          </div>
+          <div id="farmerForumList"></div>
+        </div>
+
+        <div>
+          <div class="shell-card">
+            <div class="shell-card-head">
+              <div class="icon-badge" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-circle-question"></i></div>
+              <div><h3>Help Center</h3><p>FAQs & chatbot for order/logistics queries</p></div>
+            </div>
+            <div class="simple-list-row"><span>How do I list produce above 50kg?</span></div>
+            <div class="simple-list-row"><span>How are AI quality grades calculated?</span></div>
+            <div class="simple-list-row"><span>When will my payout be settled?</span></div>
+            <button class="btn-luxury-outline" data-community-action="support-chat" style="margin-top:8px; width:100%;"><i class="fa-solid fa-message"></i> Chat with Support</button>
+          </div>
+
+          <div class="shell-card">
+            <div class="shell-card-head">
+              <div class="icon-badge" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-graduation-cap"></i></div>
+              <div><h3>Training Resources</h3><p>Videos & guides on modern farming</p></div>
+            </div>
+            <div class="simple-list-row"><span><i class="fa-solid fa-circle-play"></i> &nbsp;Drip Irrigation Basics</span></div>
+            <div class="simple-list-row"><span><i class="fa-solid fa-circle-play"></i> &nbsp;Organic Pest Control</span></div>
+            <div class="simple-list-row"><span><i class="fa-solid fa-circle-play"></i> &nbsp;Post-Harvest Storage Guide</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/gemini-service.js?v=9"></script>
+  <script src="js/community-support.js?v=1"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "farmer", active: "community", searchPlaceholder: "Search forums, guides..." });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderForums();
+      renderCommunitySection();
+    });
+
+    // ===================== Cooperative Community: Join / Withdraw =====================
+
+    async function renderCommunitySection() {
+      const user = SamruddhiAuth.getStoredUser() || { uid: `guest-${Date.now()}`, name: "Guest Farmer", role: "farmer" };
+
+      const [coopSnap, usersSnap] = await Promise.all([
+        window.AgriSetuDB.db.collection("cooperatives").get(),
+        window.AgriSetuDB.db.collection("users").get()
+      ]);
+
+      const cooperatives = coopSnap.docs.map(d => d.data());
+      const allFarmers = usersSnap.docs.map(d => d.data()).filter(u => u.role === "farmer");
+
+      // Live member counts per cooperative, based on farmers actually linked via the app
+      const memberCounts = {};
+      cooperatives.forEach(c => {
+        memberCounts[c.id] = allFarmers.filter(f => f.societyId === c.id).length;
+      });
+
+      // Refresh the logged-in user's own record (societyId may have changed on another device/tab)
+      let myRecord = user;
+      try {
+        if (user.uid && !String(user.uid).startsWith("guest-")) {
+          const myDoc = await window.AgriSetuDB.db.collection("users").doc(user.uid).get();
+          if (myDoc.exists) {
+            myRecord = myDoc.data();
+            SamruddhiAuth.setStoredUser(myRecord);
+          }
+        }
+      } catch (e) { /* fall back to stored user */ }
+
+      renderMyCommunity(myRecord, cooperatives, memberCounts);
+      renderNearbyCommunities(myRecord, cooperatives, memberCounts);
+    }
+
+    function renderMyCommunity(user, cooperatives, memberCounts) {
+      const body = document.getElementById("myCommunityBody");
+      const myCoop = user.societyId ? cooperatives.find(c => c.id === user.societyId) : null;
+
+      if (!myCoop) {
+        body.innerHTML = `
+          <div class="empty-state" style="padding:24px 20px;">
+            <i class="fa-solid fa-house-circle-xmark"></i>
+            <p>You haven't joined a cooperative community yet.<br>Join one below to pool and sell produce over <strong>50&nbsp;kg</strong> with cold-chain & bulk-buyer support.</p>
+          </div>`;
+        return;
+      }
+
+      const filled = memberCounts[myCoop.id] || 0;
+      const capacity = myCoop.memberCapacity || filled || 1;
+      const vacancy = Math.max(capacity - filled, 0);
+
+      body.innerHTML = `
+        <div class="simple-list-row" style="flex-direction:column; align-items:flex-start; gap:10px;">
+          <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
+            <div>
+              <strong style="color:var(--primary-deep); font-size:1.05rem;">${myCoop.name}</strong>
+              <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                <i class="fa-solid fa-location-dot"></i> ${myCoop.district}, ${myCoop.state} • ${myCoop.nearbyZone}
+              </div>
+            </div>
+            <span class="status-pill available"><i class="fa-solid fa-circle-check"></i> Active Member</span>
+          </div>
+
+          <div style="display:flex; gap:22px; flex-wrap:wrap; font-size:0.82rem; color:var(--text-main); margin-top:2px;">
+            <span><i class="fa-solid fa-users"></i> ${filled}/${capacity} seats filled</span>
+            <span><i class="fa-solid fa-percent"></i> ${myCoop.commissionRate}</span>
+            <span><i class="fa-solid fa-weight-hanging"></i> &gt; ${myCoop.minWeightKgThreshold || 50} kg pooling</span>
+          </div>
+
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">
+            You can now list produce over ${myCoop.minWeightKgThreshold || 50} kg through <strong>${myCoop.shortName || myCoop.name}</strong> from the
+            <a href="farmer-produce.html" style="color:var(--primary); font-weight:700;">Produce &amp; Listings</a> page — cold storage, reefer transport and bulk-buyer contracts are handled by the society.
+          </p>
+
+          <button class="btn-luxury-outline" style="margin-top:6px;" onclick="withdrawFromCommunity('${myCoop.id}')">
+            <i class="fa-solid fa-right-from-bracket"></i> Withdraw from Community
+          </button>
+        </div>`;
+    }
+
+    function renderNearbyCommunities(user, cooperatives, memberCounts) {
+      const list = document.getElementById("nearbyCommunityList");
+
+      if (!cooperatives.length) {
+        list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-people-group"></i><p>No cooperative communities found nearby yet.</p></div>`;
+        return;
+      }
+
+      list.innerHTML = cooperatives.map(c => {
+        const filled = memberCounts[c.id] || 0;
+        const capacity = c.memberCapacity || filled || 1;
+        const vacancy = Math.max(capacity - filled, 0);
+        const isMine = user.societyId === c.id;
+        const isFull = vacancy <= 0 && !isMine;
+
+        let actionHtml;
+        if (isMine) {
+          actionHtml = `<span class="status-pill available" style="width:100%; text-align:center;"><i class="fa-solid fa-circle-check"></i> Your Community</span>`;
+        } else if (isFull) {
+          actionHtml = `<span class="status-pill sold" style="width:100%; text-align:center;"><i class="fa-solid fa-ban"></i> No Vacancy — Full</span>`;
+        } else {
+          actionHtml = `<button class="btn-luxury-gold" style="width:100%;" onclick="requestJoinCommunity('${c.id}')"><i class="fa-solid fa-user-plus"></i> Request to Join</button>`;
+        }
+
+        return `
+        <div class="simple-list-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
+          <div style="display:flex; justify-content:space-between; width:100%;">
+            <strong style="color:var(--primary-deep); font-size:0.95rem;">${c.name}</strong>
+            ${c.verified ? `<span class="verified-pill" style="font-size:0.68rem; padding:2px 8px;"><i class="fa-solid fa-circle-check"></i> Verified</span>` : ""}
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">
+            <i class="fa-solid fa-location-dot"></i> ${c.district}, ${c.state} • ${c.nearbyZone}
+          </div>
+          <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.78rem; color:var(--text-main);">
+            <span><i class="fa-solid fa-users"></i> ${filled}/${capacity} seats</span>
+            <span style="color:${vacancy > 0 ? '#15803D' : '#DC2626'}; font-weight:700;">${vacancy > 0 ? vacancy + " vacancy left" : "No vacancy"}</span>
+            <span><i class="fa-solid fa-percent"></i> ${c.commissionRate}</span>
+          </div>
+          <div style="width:100%; margin-top:2px;">${actionHtml}</div>
+        </div>`;
+      }).join("");
+    }
+
+    window.requestJoinCommunity = async function (coopId) {
+      const user = SamruddhiAuth.getStoredUser();
+      if (!user || !user.uid || String(user.uid).startsWith("guest-")) {
+        showToast("⚠️ Please log in as a farmer to request community membership.");
+        return;
+      }
+      if (user.societyId) {
+        showToast("⚠️ Withdraw from your current community before joining another.");
+        return;
+      }
+
+      const coopSnap = await window.AgriSetuDB.db.collection("cooperatives").doc(coopId).get();
+      if (!coopSnap.exists) { showToast("❌ Community not found."); return; }
+      const coop = coopSnap.data();
+
+      const usersSnap = await window.AgriSetuDB.db.collection("users").get();
+      const filled = usersSnap.docs.map(d => d.data()).filter(u => u.role === "farmer" && u.societyId === coopId).length;
+      const capacity = coop.memberCapacity || filled;
+      const vacancy = capacity - filled;
+
+      // The community accepts or declines the request purely based on available vacancy
+      const requestLog = {
+        farmerId: user.uid, farmerName: user.name, farmerLocation: user.location || "",
+        coopId, coopName: coop.name, requestedAt: new Date().toISOString()
+      };
+
+      if (vacancy <= 0) {
+        await window.AgriSetuDB.db.collection("communityRequests").add({ ...requestLog, status: "declined", reason: "No vacancy" });
+        showToast(`❌ ${coop.shortName || coop.name} declined — no vacancy left (${filled}/${capacity} seats filled).`);
+        return;
+      }
+
+      await window.AgriSetuDB.db.collection("communityRequests").add({ ...requestLog, status: "accepted" });
+      await window.AgriSetuDB.db.collection("users").doc(user.uid).set({ societyId: coopId, societyName: coop.name }, { merge: true });
+
+      const updatedUser = { ...user, societyId: coopId, societyName: coop.name };
+      SamruddhiAuth.setStoredUser(updatedUser);
+
+      showToast(`✅ ${coop.shortName || coop.name} accepted your request! (${vacancy - 1} seats now left)`);
+      renderCommunitySection();
+    };
+
+    window.withdrawFromCommunity = async function (coopId) {
+      const user = SamruddhiAuth.getStoredUser();
+      if (!user || !user.uid) return;
+      if (!confirm("Withdraw from this community? You'll lose access to pooled cold storage and bulk-buyer contracts through it until you rejoin.")) return;
+
+      const coopSnap = await window.AgriSetuDB.db.collection("cooperatives").doc(coopId).get();
+      const coopName = coopSnap.exists ? coopSnap.data().name : (user.societyName || "your community");
+
+      await window.AgriSetuDB.db.collection("communityRequests").add({
+        farmerId: user.uid, farmerName: user.name, farmerLocation: user.location || "",
+        coopId, coopName, status: "withdrawn", requestedAt: new Date().toISOString()
+      });
+
+      await window.AgriSetuDB.db.collection("users").doc(user.uid).set({ societyId: null, societyName: null }, { merge: true });
+
+      const updatedUser = { ...user, societyId: null, societyName: null };
+      SamruddhiAuth.setStoredUser(updatedUser);
+
+      showToast(`👋 You've withdrawn from ${coopName}.`);
+      renderCommunitySection();
+    };
+
+    window.renderForums = renderForums;
+    async function renderForums() {
+      const snap = await window.AgriSetuDB.db.collection("forums").get();
+      const posts = snap.docs.map(d => d.data());
+      const list = document.getElementById("farmerForumList");
+      if (!posts.length) {
+        list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-comments"></i><p>No posts yet — start the conversation!</p></div>`;
+        return;
+      }
+      list.innerHTML = posts.map(f => `
+        <div class="simple-list-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+          <div style="display:flex; justify-content:space-between; width:100%;">
+            <strong style="color:var(--primary-deep); font-size:0.95rem;">${f.title}</strong>
+            <span style="font-size:0.72rem; color:var(--text-muted);">${f.timestamp}</span>
+          </div>
+          <p style="font-size:0.84rem;">${f.content}</p>
+          <div style="display:flex; justify-content:space-between; width:100%; font-size:0.78rem; color:var(--text-muted);">
+            <span>By <strong>${f.authorName}</strong></span>
+            <span><i class="fa-solid fa-heart" style="color:#EF4444;"></i> ${f.likes} • ${f.replies} replies</span>
+          </div>
+        </div>
+      `).join("");
+    }
+  </script>
+<script src="js/global-chatbot.js?v=1"></script></body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Be a Part of Our Family | Samruddhi Setu</title>
+  <meta name="description" content="Select your role on Samruddhi Setu: Farmer, Consumer, or Logistics Partner.">
+
+  <!-- Favicon / Logo -->
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6.5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/redesign.css?v=7">
+</head>
+<body>
+
+  <!-- ================= Top Utility Bar ================= -->
+  <div class="top-utility-bar">
+    <div class="top-helpline-info">
+      <i class="fa-solid fa-seedling" style="color:var(--accent-mint);"></i>
+      <span>100% Direct Farmer & Fisher Payouts | 24x7 Support: <strong>1800-180-1551</strong></span>
+    </div>
+    <div class="top-right-tools">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <i class="fa-solid fa-language" style="color:var(--gold-light);"></i>
+        <select class="lang-selector-select" onchange="window.i18n.setLanguage(this.value)">
+          <option value="en">English (Global)</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="ta">தமிழ் (Tamil)</option>
+          <option value="te">తెలుగు (Telugu)</option>
+          <option value="kn">ಕನ್ನಡ (Kannada)</option>
+          <option value="mr">मराठी (Marathi)</option>
+          <option value="bn">বাংলা (Bengali)</option>
+        </select>
+      </div>
+      <button class="api-config-btn" onclick="document.getElementById('apiConfigModal').classList.add('open')">
+        <i class="fa-solid fa-sliders"></i> Settings
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= Navigation Bar ================= -->
+  <nav class="main-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo-wrap">
+        <img src="assets/logo.jpg" alt="Samruddhi Setu Logo" class="brand-logo-img" />
+        <div class="brand-text-block">
+          <h2 data-i18n="brandName">SAMRUDDHI SETU</h2>
+          <p data-i18n="brandSubtitle">Direct Agricultural & Coastal Platform</p>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <a href="login.html" class="btn-luxury-outline" data-i18n="login">Login</a>
+        <a href="index.html" class="btn-luxury-gold"><i class="fa-solid fa-arrow-left"></i> Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================= ONBOARDING ROLE INDEX (Blueprint Page 2 Exact) ================= -->
+  <section class="onboarding-screen-wrapper">
+    <div class="onboarding-container">
+      <img src="assets/logo.jpg" alt="Samruddhi Setu Logo Emblem" class="onboarding-emblem-img" />
+      <h1 class="onboarding-main-heading" data-i18n="selectRoleTitle">BE A PART OF OUR FAMILY</h1>
+      <p class="onboarding-subquote" data-i18n="selectRoleSubtitle">
+        “Welcome aboard! Whether you grow, buy, or deliver, this is your first step into a community that keeps food fresh, fair, and connected.”
+      </p>
+
+      <!-- 3 Hero Visual Cards Grid with Videos (Blueprint Page 2) -->
+      <div class="role-hero-cards-grid">
+        <!-- Card 1: Farmer -->
+        <a href="register.html?role=farmer" class="role-hero-card" style="display:block; text-decoration:none;">
+          <div class="role-img-frame">
+            <img src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=600&auto=format&fit=crop&q=80" alt="Farmer harvesting fresh produce" loading="lazy" style="width:100%; height:100%; object-fit:cover;" />
+          </div>
+          <div class="role-number-badge">1</div>
+          <h3 data-i18n="farmerShort">FARMER</h3>
+          <p data-i18n="farmer">Growers & Producers</p>
+          <div style="margin-top:14px;">
+            <span class="btn-luxury-gold" style="display:inline-block; padding:6px 16px; font-size:0.8rem;">Join as Farmer →</span>
+          </div>
+        </a>
+
+        <!-- Card 2: Consumer -->
+        <a href="register.html?role=consumer" class="role-hero-card" style="display:block; text-decoration:none;">
+          <div class="role-img-frame">
+            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80" alt="Consumer with fresh farm produce basket" loading="lazy" style="width:100%; height:100%; object-fit:cover;" />
+          </div>
+          <div class="role-number-badge">2</div>
+          <h3 data-i18n="consumerShort">CONSUMER</h3>
+          <p data-i18n="consumer">Consumers & Bulk Buyers</p>
+          <div style="margin-top:14px;">
+            <span class="btn-luxury-gold" style="display:inline-block; padding:6px 16px; font-size:0.8rem;">Join as Consumer →</span>
+          </div>
+        </a>
+
+        <!-- Card 3: Logistics -->
+        <a href="logistics-register.html" class="role-hero-card" style="display:block; text-decoration:none;">
+          <div class="role-img-frame">
+            <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=600&auto=format&fit=crop&q=80" alt="Cold-chain logistics truck for farm delivery" loading="lazy" style="width:100%; height:100%; object-fit:cover;" />
+          </div>
+          <div class="role-number-badge">3</div>
+          <h3 data-i18n="logisticsShort">LOGISTICS</h3>
+          <p data-i18n="logistics">Logistics & Transport Partners</p>
+          <div style="margin-top:14px;">
+            <span class="btn-luxury-gold" style="display:inline-block; padding:6px 16px; font-size:0.8rem;">Join Fleet →</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Interactive Ecosystem Video Showcase -->
+      <div class="role-video-showcase-box">
+        <h4 style="color:var(--gold-light); font-family:'Cinzel', serif; margin-bottom:12px;">
+          <i class="fa-solid fa-images"></i> Experience the 3 Pillars of Samruddhi Setu
+        </h4>
+        <div class="role-video-tabs">
+          <button class="role-video-tab-btn active" onclick="switchRoleVideo('farmer')"><i class="fa-solid fa-tractor"></i> 1. Farmer Life</button>
+          <button class="role-video-tab-btn" onclick="switchRoleVideo('consumer')"><i class="fa-solid fa-basket-shopping"></i> 2. Direct Consumer</button>
+          <button class="role-video-tab-btn" onclick="switchRoleVideo('logistics')"><i class="fa-solid fa-truck-fast"></i> 3. Cold-Chain Fleet</button>
+        </div>
+        <div class="showcase-video-player-wrap">
+          <video id="ecosystemReelVideo" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=1000&auto=format&fit=crop&q=80">
+            <source src="assets/fresh-produce-journey.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Floating AgriMitra AI Assistant ================= -->
+<!-- Scripts -->
+  <script src="js/i18n.js?v=5"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/gemini-service.js?v=5"></script>
+  <script src="js/app.js?v=8"></script>
+
+  <script>
+    function switchRoleVideo(role) {
+      const video = document.getElementById("ecosystemReelVideo");
+      const videoMap = {
+        farmer: "assets/fresh-produce-journey.mp4",
+        consumer: "assets/abc123.mp4",
+        logistics: "assets/fresh-produce-journey.mp4"
+      };
+
+      document.querySelectorAll(".role-video-tab-btn").forEach(btn => btn.classList.remove("active"));
+      event?.target?.closest(".role-video-tab-btn")?.classList.add("active");
+
+      if (video && videoMap[role]) {
+        const source = video.querySelector("source");
+        if (source.getAttribute("src") !== videoMap[role]) {
+          source.src = videoMap[role];
+          video.load();
+          video.play().catch(() => {});
+        }
+      }
+    }
+  </script>
+<script src="js/global-chatbot.js?v=1"></script></body>
+</html>

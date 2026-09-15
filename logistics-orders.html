@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders & Deliveries | Samruddhi Setu Logistics</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div><h1>Orders & Assignments</h1><p>Accept jobs, manage instant & bulk deliveries, and track routes live.</p></div>
+      </div>
+
+      <div class="tab-pill-group">
+        <button class="tab-pill active" data-f="all" onclick="setJobFilter('all', this)">All</button>
+        <button class="tab-pill" data-f="instant" onclick="setJobFilter('instant', this)"><i class="fa-solid fa-motorcycle"></i> Instant (Bike)</button>
+        <button class="tab-pill" data-f="large" onclick="setJobFilter('large', this)"><i class="fa-solid fa-truck"></i> Large (Truck/Van)</button>
+      </div>
+
+      <div class="logistics-dispatch-grid">
+        <div class="dash-panel-card">
+          <div class="panel-header-row"><h3><i class="fa-solid fa-satellite-dish"></i> Live Job Dispatch</h3></div>
+          <div class="job-section-heading">New Orders Awaiting Pickup</div>
+          <div id="logisticsNewOrdersList"></div>
+          <div class="job-section-heading" style="margin-top:20px;">My Active Deliveries</div>
+          <div id="logisticsActiveDeliveriesList"></div>
+        </div>
+
+        <div class="dash-panel-card" id="mapSection">
+          <div class="panel-header-row">
+            <h3><i class="fa-solid fa-route"></i> AI Route & Real-Time Tracking</h3>
+            <span class="role-badge-pill">Temp: 4.2°C Active</span>
+          </div>
+          <div class="map-card-container"><div id="leafletLiveMap"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+<script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/gemini-service.js?v=6"></script>
+  <script src="js/app.js?v=8"></script><script src="js/logistics-realtime.js?v=1"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "logistics", active: "orders", searchPlaceholder: "Search jobs..." });
+
+    let activeMap = null;
+    let activeJobId = null;
+    let logisticsUser = null;
+    let allOrdersForLogistics = [];
+    let jobFilter = "all";
+
+    let seenPendingOrderIds = null; // null until the first snapshot arrives, so we don't toast on initial load
+
+    document.addEventListener("DOMContentLoaded", () => {
+      logisticsUser = SamruddhiAuth.getStoredUser();
+      window.AgriSetuDB.db.collection("orders").onSnapshot((snap) => {
+        allOrdersForLogistics = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+
+        // Real-time "new order placed" alert: fires the instant a fresh
+        // pending_pickup order shows up, without needing a page refresh.
+        const currentPendingIds = new Set(allOrdersForLogistics.filter(o => o.status === "pending_pickup").map(o => o.id));
+        if (seenPendingOrderIds) {
+          currentPendingIds.forEach(id => {
+            if (!seenPendingOrderIds.has(id)) {
+              const o = allOrdersForLogistics.find(x => x.id === id);
+              showToast(`🔔 New order placed: ${o && o.farmerName ? o.farmerName : "Order"} → ready for pickup`);
+            }
+          });
+        }
+        seenPendingOrderIds = currentPendingIds;
+
+        renderJobs();
+      });
+      initMap();
+    });
+
+    function setJobFilter(f, btn) {
+      jobFilter = f;
+      document.querySelectorAll(".tab-pill").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderJobs();
+    }
+
+    function matchesFilter(o) {
+      if (jobFilter === "all") return true;
+      if (jobFilter === "instant") return o.deliveryType !== "large_truck";
+      if (jobFilter === "large") return o.deliveryType === "large_truck";
+      return true;
+    }
+
+    function renderJobs() {
+      const myUid = logisticsUser && logisticsUser.uid;
+      const newOrders = allOrdersForLogistics
+        .filter(o => o.status === "pending_pickup" && matchesFilter(o) && !((o.declinedBy || []).includes(myUid)))
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      const myActiveDeliveries = allOrdersForLogistics.filter(o => o.status === "out_for_delivery" && (!logisticsUser || o.logisticsId === logisticsUser.uid) && matchesFilter(o)).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+      const newOrdersEl = document.getElementById("logisticsNewOrdersList");
+      const activeEl = document.getElementById("logisticsActiveDeliveriesList");
+
+      newOrdersEl.innerHTML = newOrders.length === 0 ? `<div class="job-dispatch-empty"><i class="fa-solid fa-inbox"></i> No new orders waiting for pickup right now.</div>` : newOrders.map(o => `
+        <div class="job-dispatch-item ${activeJobId === o.id ? 'active' : ''}">
+          <div class="job-header-row">
+            <span class="job-type-pill">${o.deliveryType === 'large_truck' ? '🚚 Truck/Van' : '🏍️ Instant Bike'}</span>
+            <span class="job-payout">₹${(o.totalAmount || 0).toLocaleString()} Order</span>
+          </div>
+          <div style="font-weight:700; color:var(--primary-deep); font-size:0.95rem; margin-bottom:4px;">${o.farmerName || "Farm Pickup"} → ${o.buyerName || "Customer"}</div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Order <strong>${o.id}</strong> • Deliver to: ${o.deliveryAddress || "Address on file"}</div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-luxury-gold" style="flex:1; padding:6px 12px; font-size:0.82rem;" onclick="acceptOrder('${o.id}')"><i class="fa-solid fa-truck-fast"></i> Accept</button>
+            <button class="btn-luxury-danger" style="padding:6px 12px; font-size:0.82rem;" onclick="declineOrder('${o.id}')"><i class="fa-solid fa-xmark"></i> Decline</button>
+            <button class="btn-luxury-outline" style="padding:6px 12px; font-size:0.82rem;" onclick="focusJobRoute('${o.id}')">Route</button>
+          </div>
+        </div>`).join("");
+
+      activeEl.innerHTML = myActiveDeliveries.length === 0 ? `<div class="job-dispatch-empty"><i class="fa-solid fa-truck"></i> No active deliveries assigned to you right now.</div>` : myActiveDeliveries.map(o => `
+        <div class="job-dispatch-item ${activeJobId === o.id ? 'active' : ''}">
+          <div class="job-header-row">
+            <span class="job-type-pill">${o.deliveryType === 'large_truck' ? '🚚 Truck/Van' : '🏍️ Instant Bike'}</span>
+            <span class="job-payout">₹${(o.totalAmount || 0).toLocaleString()} Order</span>
+          </div>
+          <div style="font-weight:700; color:var(--primary-deep); font-size:0.95rem; margin-bottom:4px;">${o.farmerName || "Farm Pickup"} → ${o.buyerName || "Customer"}</div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Order <strong>${o.id}</strong> • Deliver to: ${o.deliveryAddress || "Address on file"}</div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-luxury-gold" style="flex:1; padding:6px 12px; font-size:0.82rem;" onclick="markOrderDelivered('${o.id}')"><i class="fa-solid fa-box-open"></i> Mark Delivered</button>
+            <button class="btn-luxury-outline" style="padding:6px 12px; font-size:0.82rem;" onclick="focusJobRoute('${o.id}')">View Route</button>
+          </div>
+        </div>`).join("");
+    }
+
+    function initMap() {
+      if (activeMap) return;
+      activeMap = L.map('leafletLiveMap').setView([13.02, 77.85], 10);
+      const primaryTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles © Esri — Source: Esri, HERE, Garmin, FAO, NOAA, USGS | Samruddhi Setu Logistics', maxZoom: 19
+      }).addTo(activeMap);
+      let fellBack = false;
+      primaryTiles.on('tileerror', () => {
+        if (fellBack) return; fellBack = true;
+        activeMap.removeLayer(primaryTiles);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles © Esri — Source: Esri, HERE, Garmin, USGS, FAO | Samruddhi Setu Logistics', maxZoom: 19
+        }).addTo(activeMap);
+      });
+      const waypoints = [[13.1358, 78.1298], [13.0707, 77.7963], [12.9698, 77.7500], [12.9352, 77.6245]];
+      L.polyline(waypoints, { color: '#2D6A4F', weight: 5, dashArray: '8, 8' }).addTo(activeMap);
+      L.marker([13.1358, 78.1298]).addTo(activeMap).bindPopup("<b>Pickup: Patil Organic Farm (Kolar)</b><br>Load: 350kg Vine Tomatoes + Grapes").openPopup();
+      L.marker([12.9352, 77.6245]).addTo(activeMap).bindPopup("<b>Drop: Bengaluru Koramangala Hub</b><br>Consumer Delivery Ready");
+      const truckMarker = L.circleMarker([13.0707, 77.7963], { radius: 10, fillColor: "#00E676", color: "#081C15", weight: 3, opacity: 1, fillOpacity: 0.9 }).addTo(activeMap);
+      truckMarker.bindPopup("<b>🚚 Reefer Truck #KA01-8891</b><br>Speed: 52 km/h • Cargo Temp: 4.2°C");
+    }
+
+    async function acceptOrder(id) {
+      if (!logisticsUser) { showToast("Please log in as a logistics partner to accept orders."); return; }
+      const order = allOrdersForLogistics.find(o => o.id === id);
+      try {
+        await window.AgriSetuDB.db.collection("orders").doc(id).update({
+          status: "out_for_delivery", logisticsId: logisticsUser.uid, driverName: logisticsUser.name, acceptedAt: new Date().toISOString(),
+          statusHistory: [...((order && order.statusHistory) || []), { status: "out_for_delivery", label: `Picked up by ${logisticsUser.name}`, at: new Date().toISOString() }]
+        });
+        activeJobId = id;
+        showToast(`Order ${id} accepted! Head to the farm gate for pickup.`);
+      } catch (err) { console.warn(err); showToast("Could not accept this order right now."); }
+    }
+
+    async function declineOrder(id) {
+      if (!logisticsUser) { showToast("Please log in as a logistics partner to decline orders."); return; }
+      const order = allOrdersForLogistics.find(o => o.id === id);
+      try {
+        await window.AgriSetuDB.db.collection("orders").doc(id).update({
+          declinedBy: [...((order && order.declinedBy) || []), logisticsUser.uid]
+        });
+        showToast(`Order ${id} declined. It'll stay open for other nearby partners.`);
+      } catch (err) { console.warn(err); showToast("Could not decline this order right now."); }
+    }
+
+    async function markOrderDelivered(id) {
+      const order = allOrdersForLogistics.find(o => o.id === id);
+      try {
+        await window.AgriSetuDB.db.collection("orders").doc(id).update({
+          status: "delivered", deliveredAt: new Date().toISOString(),
+          statusHistory: [...((order && order.statusHistory) || []), { status: "delivered", label: "Delivered to customer", at: new Date().toISOString() }]
+        });
+        showToast(`Order ${id} marked as delivered. Great work!`);
+      } catch (err) { console.warn(err); showToast("Could not update delivery status right now."); }
+    }
+
+    function focusJobRoute(id) {
+      if (activeMap) activeMap.invalidateSize();
+      showToast(`Viewing route for order ${id}`);
+    }
+  </script>
+<script src="js/global-chatbot.js?v=1"></script></body>
+</html>

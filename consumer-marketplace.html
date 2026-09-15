@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketplace | Samruddhi Setu</title>
+  <meta name="description" content="Browse fresh produce, dairy, poultry and seafood direct from farmers, with AI recommendations.">
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+  <link rel="stylesheet" href="css/redesign.css?v=7">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <!-- ===== Hero: info panel + small looping video beside it ===== -->
+      <div class="mk-hero">
+        <div class="mk-hero-info">
+          <span class="mk-hero-tag"><i class="fa-solid fa-seedling"></i> <span data-i18n="farmDirectMarketplace">Farm Direct Marketplace</span></span>
+          <h1 class="mk-hero-title" data-i18n="freshFromFarms">Fresh from Farms, Direct to You</h1>
+          <p class="mk-hero-sub">Discover fresh produce and farm products directly from verified Indian farmers.</p>
+          <div class="mk-hero-actions">
+            <button class="mk-btn mk-btn-solid" onclick="scrollToProducts()">Shop Fresh Products <i class="fa-solid fa-arrow-right"></i></button>
+            <button class="mk-btn mk-btn-outline" onclick="filterCategory('fruits')">Explore Fruits</button>
+          </div>
+        </div>
+
+        <div class="mk-hero-video">
+          <span class="mk-hero-video-badge"><span class="live-dot"></span> Live from the farm</span>
+          <video autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1000">
+            <source src="assets/abc123.mp4" type="video/mp4">
+          </video>
+          <div class="mk-hero-video-scrim"></div>
+          <div class="mk-hero-video-cap">
+            <h4 data-i18n="brandName">Samruddhi Setu</h4>
+            <p>"<span data-i18n="motto">Empowering Farmers, Delivering Freshness at Fair Prices</span>"</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Dual buying mode ===== -->
+      <div class="buying-mode-selector-wrap">
+        <button class="buying-mode-btn active" id="modeNormalBtn" onclick="switchBuyingMode('normal')">
+          <div class="buying-mode-btn-content">
+            <h4><i class="fa-solid fa-basket-shopping" style="color:var(--accent-mint);"></i> Normal Buying</h4>
+            <p>Farm Fresh Direct-to-Doorstep (Household & Daily Kitchen, Retail Units: kg, bunch, pack, dozen, liter)</p>
+          </div>
+          <span class="buying-mode-badge"><i class="fa-solid fa-check"></i> Retail Fresh</span>
+        </button>
+
+        <button class="buying-mode-btn" id="modeBulkBtn" onclick="switchBuyingMode('bulk')">
+          <div class="buying-mode-btn-content">
+            <h4><i class="fa-solid fa-boxes-stacked" style="color:var(--gold-light);"></i> Bulk Products & Production</h4>
+            <p>Commercial Wholesale & Farm Contracts (FPO Lots, Quintals, Metric Tonnes, Cold Reefer Fleet)</p>
+          </div>
+          <span class="buying-mode-badge">B2B Wholesale</span>
+        </button>
+      </div>
+
+      <!-- ===== Shop by category ===== -->
+      <div id="mkCategorySection">
+        <div class="mk-sec-head">
+          <div>
+            <span class="mk-sec-eyebrow" data-i18n="exploreLbl">Explore</span>
+            <h2 data-i18n="shopByCategory">Shop by Category</h2>
+            <p>Farm-fresh categories, all in one place.</p>
+          </div>
+          <a href="#" class="mk-sec-link" onclick="filterCategory('all'); return false;">View all <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="mk-cat-scroller" id="mkCatScroller"></div>
+      </div>
+
+      <!-- Normal browsing -->
+      <div id="normalMarketContainer">
+        <div class="mk-toolbar" id="mkProductsAnchor">
+          <div class="mk-toolbar-title">
+            <h2 id="mkGridTitle" data-i18n="allProducts">All Products</h2>
+            <span class="mk-count-pill" id="mkGridCount">0 products</span>
+          </div>
+          <div class="mk-toolbar-right">
+            <button class="mk-icon-btn" title="Refresh inventory" onclick="renderProducts()"><i class="fa-solid fa-rotate"></i></button>
+            <select class="mk-select" id="mkSort" onchange="renderProducts()">
+              <option value="recommended">Sort: Recommended</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="savings">Biggest Saving</option>
+              <option value="name">Name: A–Z</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom:22px;">
+          <div class="mk-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="marketplaceSearchInput" placeholder="Search for fresh fruits, vegetables, dairy..." oninput="handleSearch(this.value)" />
+          </div>
+        </div>
+
+        <p style="font-size:0.85rem; color:var(--f2f-muted); margin:-10px 0 18px 0;">
+          Real marketplace inventory from <strong style="color:var(--f2f-green);">Samruddhi Setu</strong>.
+        </p>
+
+        <div class="mk-grid" id="marketProductsGrid"></div>
+      </div>
+
+      <!-- Bulk browsing -->
+      <div id="bulkMarketContainer" style="display:none;">
+        <div class="shell-card" style="margin-bottom:20px; background:linear-gradient(120deg, var(--primary-deep), var(--primary)); color:#fff; border:none;">
+          <h3 style="font-family:'Playfair Display',serif; margin-bottom:6px;"><i class="fa-solid fa-industry"></i> Commercial & Bulk Farm Production</h3>
+          <p style="font-size:0.88rem; opacity:0.9;">Certified FPO lots, cold-chain reefer logistics, institutional contracts — request large volumes directly from farmers.</p>
+        </div>
+        <div class="marketplace-filters-bar">
+          <div class="search-input-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="bulkSearchInput" placeholder="Search bulk harvest lots (e.g. 5 MT Tomatoes, A2 Milk Tankers)..." oninput="handleBulkSearch(this.value)" />
+          </div>
+          <div class="category-chips-row">
+            <button class="category-chip active" onclick="filterBulkCategory('all', this)">All Bulk Lots</button>
+            <button class="category-chip" onclick="filterBulkCategory('vegetables', this)">🥦 Field Harvest</button>
+            <button class="category-chip" onclick="filterBulkCategory('dairy', this)">🥛 Bulk Dairy</button>
+            <button class="category-chip" onclick="filterBulkCategory('seafood', this)">🐟 Marine Catch</button>
+            <button class="category-chip" onclick="filterBulkCategory('fruits', this)">🥭 Orchard Pallets</button>
+            <button class="category-chip" onclick="filterBulkCategory('grains', this)">🛢️ Oils & Ghee</button>
+          </div>
+        </div>
+        <div class="products-market-grid" id="bulkProductsGrid"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===== Floating cart bar (replaces the slide-out drawer) ===== -->
+  <div class="mk-cart-panel" id="mkCartPanel">
+    <h4>
+      <span><i class="fa-solid fa-basket-shopping"></i> <span data-i18n="farmFreshBasket">Farm Fresh Basket</span></span>
+      <button onclick="toggleCartPanel(false)" style="background:transparent; border:none; color:var(--f2f-muted); cursor:pointer; font-size:1.05rem;"><i class="fa-solid fa-xmark"></i></button>
+    </h4>
+    <div id="mkCartLines"></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:14px; border-top:1px solid var(--f2f-line);">
+      <div style="font-size:0.84rem; color:#15803D; font-weight:700;">
+        Middleman markup saved: <span id="mkCartSavings">₹0</span>
+      </div>
+      <button class="mk-btn mk-btn-solid" id="proceedToCheckoutBtn"><span data-i18n="directFarmCheckout">Direct Farm Checkout</span> <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <div class="mk-cart-bar" id="mkCartBar">
+    <div class="mk-cart-left" onclick="toggleCartPanel()" style="cursor:pointer;">
+      <div class="mk-cart-icon">
+        <i class="fa-solid fa-basket-shopping"></i>
+        <span class="n cart-badge" id="mkCartCount">0</span>
+      </div>
+      <div class="mk-cart-text">
+        <div class="lbl" id="mkCartLabel">0 items selected</div>
+        <div class="amt" id="mkCartTotal">₹0</div>
+      </div>
+    </div>
+    <div class="mk-cart-actions">
+      <button class="mk-cart-clear" title="Empty basket" onclick="SamruddhiCart.clearCart()"><i class="fa-solid fa-trash"></i></button>
+      <button class="mk-cart-view" onclick="toggleCartPanel()"><span data-i18n="viewCart">View Cart</span> <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- Legacy drawer hooks kept hidden so shared app.js helpers stay happy -->
+  <div class="cart-drawer" id="cartFlyoutDrawer" style="display:none;">
+    <div class="cart-items-list" id="cartItemsContainer"></div>
+    <span id="cartTotalPrice"></span><span id="cartTotalSavings"></span>
+  </div>
+
+  <div class="modal-overlay" id="invoiceReceiptModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" id="closeInvoiceModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      <div id="invoiceContentContainer"></div>
+    </div>
+  </div>
+
+  <!-- Bulk contract RFQ modal -->
+  <div class="modal-overlay" id="bulkContractModal">
+    <div class="modal-box" style="max-width: 620px;">
+      <button class="modal-close-btn" onclick="closeBulkRfqModal()"><i class="fa-solid fa-xmark"></i></button>
+      <div style="border-bottom: 2px solid #E2E8F0; padding-bottom: 12px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-file-contract" style="color: var(--primary); font-size: 1.4rem;"></i>
+          <div>
+            <h3 style="color: var(--primary-deep); font-family:'Playfair Display',serif; font-size: 1.25rem;">Institutional Supply Contract RFQ</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Direct Farm Producer Agreement with Cold-Chain Telemetry</p>
+          </div>
+        </div>
+      </div>
+      <form id="bulkContractForm" onsubmit="handleBulkContractSubmit(event)">
+        <input type="hidden" id="rfqProductId" />
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px; margin-bottom: 16px;">
+          <div style="font-weight: 700; color: var(--primary-deep); font-size: 0.95rem;" id="rfqProductTitle">Selected Lot</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; margin-top: 4px;">
+            <span id="rfqLotId">Lot ID</span>
+            <span id="rfqFpoName" style="color: var(--primary); font-weight: 600;">FPO Name</span>
+          </div>
+        </div>
+        <div class="rfq-form-grid">
+          <div class="form-group">
+            <label style="font-size: 0.82rem; font-weight: 700;">Required Quantity (<span id="rfqUnitLabel">Units</span>) *</label>
+            <input type="number" id="rfqQuantity" class="form-control" min="1" oninput="updateRfqCalculation()" required />
+            <small style="font-size: 0.72rem; color: #DC2626;" id="rfqMoqWarning">Minimum Order Quantity applies</small>
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.82rem; font-weight: 700;">Supply Contract Frequency *</label>
+            <select id="rfqFrequency" class="form-control" onchange="updateRfqCalculation()">
+              <option value="spot">One-Time Spot Dispatch</option>
+              <option value="weekly">Weekly Recurring (3-Month)</option>
+              <option value="monthly">Monthly Standing (6-Month)</option>
+            </select>
+          </div>
+        </div>
+        <div class="rfq-form-grid">
+          <div class="form-group">
+            <label style="font-size: 0.82rem; font-weight: 700;">Cold-Chain Requirement</label>
+            <select id="rfqColdChain" class="form-control">
+              <option value="reefer_chilled">2°C - 8°C Chilled Reefer</option>
+              <option value="reefer_frozen">-18°C Deep Freeze</option>
+              <option value="ventilated">Dry Ventilated Freight</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.82rem; font-weight: 700;">GSTIN / Business Tax ID *</label>
+            <input type="text" id="rfqGst" class="form-control" placeholder="27AABCT8891C1Z4" required />
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 12px;">
+          <label style="font-size: 0.82rem; font-weight: 700;">Delivery Warehouse Address *</label>
+          <input type="text" id="rfqAddress" class="form-control" placeholder="Warehouse / Delivery Address, City - PIN Code" required />
+        </div>
+        <div style="background: #F0FDF4; border: 1.5px solid #86EFAC; border-radius: 12px; padding: 14px; margin-top: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 0.85rem; font-weight: 600;">Estimated Contract Value:</span>
+            <strong style="font-size: 1.25rem; color: var(--primary-deep);" id="rfqTotalDirectPrice">₹0</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #15803D;">
+            <span>Middleman Cut Saved:</span>
+            <strong id="rfqTotalSavings">₹0</strong>
+          </div>
+        </div>
+        <button type="submit" class="btn-luxury-gold" style="width: 100%; margin-top: 18px; padding: 12px; font-size: 1rem;">
+          <i class="fa-solid fa-file-signature"></i> Generate Contract & Dispatch →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- AI Assistant -->
+<script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/gemini-service.js?v=9"></script>
+  <script src="js/razorpay-checkout.js?v=6"></script>
+  <script src="js/product-images.js?v=1"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "consumer", active: "marketplace", searchPlaceholder: "Search produce..." });
+
+    // Short i18n helper with an English fallback for every dynamic string
+    const T = (k, f) => (window.i18n && window.i18n.t ? window.i18n.t(k, f) : f);
+
+    let currentMode = "normal";
+    let currentCategory = "all";
+    let currentSearch = "";
+    let currentBulkCategory = "all";
+    let currentBulkSearch = "";
+    let selectedRfqProduct = null;
+
+    window._productMap = {};
+    window._bulkProductMap = {};
+
+    window.addToCartById = function (id) { const p = window._productMap[id]; if (p) SamruddhiCart.addToCart(p); };
+    window.addBulkToCartById = function (id) { const p = window._bulkProductMap[id]; if (p) addBulkToCart(p); };
+    window.openBulkRfqModalById = function (id) { const p = window._bulkProductMap[id]; if (p) openBulkRfqModal(p); };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = SamruddhiAuth.getStoredUser();
+      if (user) {
+        document.getElementById("dashConsumerName").innerText = "Welcome, " + user.name.split(" ")[0];
+        if (user.avatar) document.getElementById("dashConsumerAvatar").src = user.avatar;
+        document.getElementById("dashConsumerLoc").innerText = user.location || "Bengaluru, Karnataka";
+        if (user.subType) document.getElementById("dashConsumerSub").innerText = user.subType === "bulk_buyer" ? "Bulk Buyer" : "Household Buyer";
+      }
+      const urlParams = new URLSearchParams(window.location.search);
+      const modeParam = urlParams.get("mode");
+      const storedMode = localStorage.getItem("samruddhi_consumer_mode");
+      if (modeParam === "bulk" || (!modeParam && user?.subType === "bulk_buyer") || (!modeParam && storedMode === "bulk")) {
+        switchBuyingMode("bulk");
+      } else {
+        switchBuyingMode("normal");
+      }
+      renderFloatingCart();
+      // Firestore is the source of truth: repaint immediately whenever inventory changes.
+      window.AgriSetuDB.db.collection("products").onSnapshot(s => { mkAllProducts = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => p.saleStatus !== "sold"); mkProductsLoaded = true; if (currentMode !== "bulk") renderProducts(); }, e => console.warn("Realtime products listener:", e));
+      window.AgriSetuDB.db.collection("bulkProducts").onSnapshot(s => { mkAllBulkProducts = s.docs.map(d => ({ id: d.id, ...d.data() })); mkBulkProductsLoaded = true; if (currentMode === "bulk") renderBulkProducts(); }, e => console.warn("Realtime bulk products listener:", e));
+
+      // Re-paint dynamic (JS-rendered) strings when the language changes
+      window.addEventListener("languageChanged", () => {
+        if (currentMode === "bulk") renderBulkProducts(); else renderProducts();
+        renderFloatingCart();
+      });
+
+      // The basket icon in the app shell topbar opens the floating panel
+      document.getElementById("cartToggleBtn")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleCartPanel();
+      });
+
+      // Close the cart panel when clicking outside it
+      document.addEventListener("click", (e) => {
+        const panel = document.getElementById("mkCartPanel");
+        const bar = document.getElementById("mkCartBar");
+        if (!panel.classList.contains("show")) return;
+        if (!panel.contains(e.target) && !bar.contains(e.target)) toggleCartPanel(false);
+      });
+    });
+
+    function switchBuyingMode(mode) {
+      currentMode = mode;
+      localStorage.setItem("samruddhi_consumer_mode", mode);
+
+      const normalBtn = document.getElementById("modeNormalBtn");
+      const bulkBtn = document.getElementById("modeBulkBtn");
+      const normalContainer = document.getElementById("normalMarketContainer");
+      const bulkContainer = document.getElementById("bulkMarketContainer");
+
+      if (mode === "bulk") {
+        normalBtn.classList.remove("active");
+        bulkBtn.classList.add("active");
+        normalBtn.querySelector(".buying-mode-badge").innerHTML = `Retail Fresh`;
+        bulkBtn.querySelector(".buying-mode-badge").innerHTML = `<i class="fa-solid fa-check"></i> B2B Wholesale`;
+        normalContainer.style.display = "none";
+        bulkContainer.style.display = "block";
+        document.getElementById("mkCategorySection").style.display = "none";
+        renderBulkProducts();
+      } else {
+        bulkBtn.classList.remove("active");
+        normalBtn.classList.add("active");
+        normalBtn.querySelector(".buying-mode-badge").innerHTML = `<i class="fa-solid fa-check"></i> Retail Fresh`;
+        bulkBtn.querySelector(".buying-mode-badge").innerHTML = `B2B Wholesale`;
+        bulkContainer.style.display = "none";
+        normalContainer.style.display = "block";
+        document.getElementById("mkCategorySection").style.display = "block";
+        renderProducts();
+      }
+
+      const url = new URL(window.location);
+      url.searchParams.set("mode", mode);
+      window.history.replaceState({}, "", url);
+    }
+
+    /* ===================== Categories ===================== */
+
+    const MK_CATEGORIES = [
+      { key: "all",        i18n: "allProducts",   name: "All Products",    img: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&auto=format&fit=crop&q=80" },
+      { key: "fruits",     i18n: "catFruits",     name: "Fruits",          img: "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=400&auto=format&fit=crop&q=80" },
+      { key: "vegetables", i18n: "catVegetables", name: "Vegetables",      img: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&auto=format&fit=crop&q=80" },
+      { key: "grains",     i18n: "catGrains",     name: "Grains & Millets",img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&auto=format&fit=crop&q=80" },
+      { key: "dairy",      i18n: "catDairy",      name: "A2 Dairy",        img: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&auto=format&fit=crop&q=80" },
+      { key: "seafood",    i18n: "catSeafood",    name: "Coastal Catch",   img: "https://images.unsplash.com/photo-1534043464124-3be32fe000c9?w=400&auto=format&fit=crop&q=80" },
+      { key: "poultry",    i18n: "catPoultry",    name: "Country Eggs",    img: "https://images.unsplash.com/photo-1518569656558-1f25e69d93d7?w=400&auto=format&fit=crop&q=80" },
+    ];
+
+    let mkAllProducts = [];
+    let mkAllBulkProducts = [];
+    let mkProductsLoaded = false;
+    let mkBulkProductsLoaded = false;
+
+    function renderCategories() {
+      const counts = {};
+      mkAllProducts.forEach(p => { counts[p.category] = (counts[p.category] || 0) + 1; });
+
+      document.getElementById("mkCatScroller").innerHTML = MK_CATEGORIES.map(c => {
+        const n = c.key === "all" ? mkAllProducts.length : (counts[c.key] || 0);
+        return `
+        <div class="mk-cat-card ${currentCategory === c.key ? "active" : ""}" data-cat="${c.key}" onclick="filterCategory('${c.key}')">
+          <div class="mk-cat-thumb"><img src="${c.img}" alt="${T(c.i18n, c.name)}" loading="lazy" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80';" /></div>
+          <div class="mk-cat-meta">
+            <div class="name">${T(c.i18n, c.name)}</div>
+            <div class="count">${n} product${n === 1 ? "" : "s"}</div>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    function scrollToProducts() {
+      document.getElementById("mkProductsAnchor")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    /* ===================== Product grid ===================== */
+
+    async function renderProducts() {
+      if (!mkProductsLoaded) {
+        const snap = await window.AgriSetuDB.db.collection("products").get();
+        mkAllProducts = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => p.saleStatus !== "sold");
+      }
+      await Promise.allSettled(mkAllProducts.filter(p => ["Free-Range Country Chicken Eggs (Brown)", "Farmhouse Sweet Lassi (Bottled)"].includes(p.title) && p.id).map(p => window.AgriSetuDB.db.collection("products").doc(p.id).set({ imageURL: SamruddhiProductImages.productImage(p) }, { merge: true })));
+      // Persist the semantic photo correction once per browser session. This only updates imageURL.
+      if (!sessionStorage.getItem("samruddhiProductImagesSynced")) {
+        const updates = mkAllProducts.map(p => {
+          const corrected = SamruddhiProductImages.productImage(p);
+          return corrected !== p.imageURL && p.id ? window.AgriSetuDB.db.collection("products").doc(p.id).set({ imageURL: corrected }, { merge: true }) : null;
+        }).filter(Boolean);
+        Promise.allSettled(updates).finally(() => sessionStorage.setItem("samruddhiProductImagesSynced", "1"));
+      }
+
+      let products = mkAllProducts.slice();
+      if (currentCategory !== "all") products = products.filter(p => p.category === currentCategory);
+      if (currentSearch.trim() !== "") {
+        const q = currentSearch.toLowerCase();
+        products = products.filter(p =>
+          (p.title || "").toLowerCase().includes(q) ||
+          (p.farmerLocation || "").toLowerCase().includes(q) ||
+          (p.farmerName || "").toLowerCase().includes(q));
+      }
+
+      // Sorting
+      const sort = document.getElementById("mkSort")?.value || "recommended";
+      if (sort === "price_asc") products.sort((a, b) => a.price - b.price);
+      else if (sort === "price_desc") products.sort((a, b) => b.price - a.price);
+      else if (sort === "name") products.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+      else if (sort === "savings") products.sort((a, b) => ((b.mandiPrice - b.price) - (a.mandiPrice - a.price)));
+
+      renderCategories();
+
+      const cat = MK_CATEGORIES.find(c => c.key === currentCategory);
+      const catName = cat ? T(cat.i18n, cat.name) : T("allProducts", "All Products");
+      document.getElementById("mkGridTitle").innerText = catName;
+      document.getElementById("mkGridCount").innerText = `${products.length} product${products.length === 1 ? "" : "s"}`;
+
+      const grid = document.getElementById("marketProductsGrid");
+      if (!grid) return;
+
+      if (products.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--f2f-muted);">
+            <i class="fa-solid fa-seedling" style="font-size:2.2rem; color:#C9D8D0; display:block; margin-bottom:14px;"></i>
+            <div style="font-weight:800; color:var(--f2f-ink); margin-bottom:4px;">No produce found</div>
+            <div style="font-size:0.88rem;">Try a different category or search term.</div>
+          </div>`;
+        return;
+      }
+
+      const cart = SamruddhiCart.getCart();
+
+      grid.innerHTML = products.map(p => {
+        window._productMap[p.id] = p;
+        const inCart = cart.find(i => i.id === p.id);
+        const saving = (p.mandiPrice || 0) - (p.price || 0);
+        const fav = isFavourite(p.id);
+
+        return `
+        <div class="mk-card">
+          <div class="mk-card-img">
+            ${p.isOrganic ? `<span class="mk-flag">${T("organicLbl","Organic")}</span>` : ""}
+            <button class="mk-fav ${fav ? "on" : ""}" onclick="toggleFavourite('${p.id}')" title="Save for later">
+              <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
+            </button>
+            <img src="${SamruddhiProductImages.productImage(p)}" alt="${p.title}" loading="lazy" onerror="this.onerror=null; this.src=SamruddhiProductImages.FALLBACK;" />
+            <span class="mk-verified"><i class="fa-solid fa-circle-check"></i> ${T("verifiedFarmerLbl","Verified Farmer")}</span>
+          </div>
+
+          <div class="mk-card-body">
+            <div class="mk-card-top">
+              <span class="mk-card-cat">${(p.category || "").toUpperCase()}</span>
+              <span class="mk-card-stock ${p.stockQuantity > 0 ? "" : "out"}">${p.stockQuantity > 0 ? T("inStock","In stock") : T("outOfStock","Out of stock")}</span>
+            </div>
+
+            <div class="mk-card-name">${p.title}</div>
+
+            <div class="mk-card-farm">${p.farmerName || "Verified Farm"}</div>
+            <div class="mk-card-loc"><i class="fa-solid fa-location-dot"></i> ${p.farmerLocation || "India"}</div>
+
+            <div class="mk-card-rating">
+              ${p.rating ? `<span class="stars">★</span> ${p.rating} · ${p.reviewCount || 0} reviews` : T("noRatingsYet","No ratings yet")}
+              ${saving > 0 ? `<div style="color:#15803D; font-weight:700; margin-top:4px;">${T("youSave","You save")} ₹${saving}/${p.unit}</div>` : ""}
+            </div>
+
+            <div class="mk-card-foot">
+              <div class="mk-price">₹${p.price}<small>per ${p.unit}</small></div>
+              ${inCart ? `
+                <div class="mk-qty">
+                  <button onclick="changeQty('${p.id}', -1)"><i class="fa-solid fa-minus"></i></button>
+                  <span>${inCart.quantity}</span>
+                  <button onclick="changeQty('${p.id}', 1)"><i class="fa-solid fa-plus"></i></button>
+                </div>` : `
+                <button class="mk-add" onclick="addToCartById('${p.id}')" ${p.stockQuantity > 0 ? "" : "disabled"}>${T("addToCart","Add")}</button>`}
+            </div>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    function filterCategory(cat, btn) {
+      currentCategory = cat;
+      renderProducts();
+      if (cat !== "all") scrollToProducts();
+    }
+
+    function handleSearch(val) { currentSearch = val; renderProducts(); }
+
+    /* ===================== Favourites ===================== */
+
+    function getFavourites() {
+      try { return JSON.parse(localStorage.getItem("samruddhi_favourites") || "[]"); } catch (e) { return []; }
+    }
+    function isFavourite(id) { return getFavourites().includes(id); }
+    function toggleFavourite(id) {
+      let favs = getFavourites();
+      if (favs.includes(id)) { favs = favs.filter(f => f !== id); showToast("Removed from saved items."); }
+      else { favs.push(id); showToast("Saved for later ♥"); }
+      localStorage.setItem("samruddhi_favourites", JSON.stringify(favs));
+      renderProducts();
+    }
+
+    /* ===================== Floating cart ===================== */
+
+    function changeQty(id, delta) {
+      const cart = SamruddhiCart.getCart();
+      const item = cart.find(i => i.id === id);
+      if (!item) return;
+      item.quantity += delta;
+      const next = item.quantity <= 0 ? cart.filter(i => i.id !== id) : cart;
+      SamruddhiCart.saveCart(next);
+      renderFloatingCart();
+      renderProducts();
+    }
+
+    function renderFloatingCart() {
+      const cart = SamruddhiCart.getCart();
+      const count = cart.reduce((s, i) => s + i.quantity, 0);
+      const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+      const savings = cart.reduce((s, i) => s + Math.max((i.mandiPrice || i.price) - i.price, 0) * i.quantity, 0);
+
+      document.getElementById("mkCartCount").innerText = count;
+      document.getElementById("mkCartLabel").innerText = `${count} ${T("itemsSelected","items selected")}`;
+      document.getElementById("mkCartTotal").innerText = "₹" + subtotal.toLocaleString("en-IN");
+      document.getElementById("mkCartSavings").innerText = "₹" + savings.toLocaleString("en-IN");
+
+      document.getElementById("mkCartBar").classList.toggle("show", count > 0);
+      if (count === 0) toggleCartPanel(false);
+
+      document.getElementById("mkCartLines").innerHTML = cart.length ? cart.map(i => `
+        <div class="mk-line">
+          <img src="${SamruddhiProductImages.productImage(i)}" alt="${i.title}" />
+          <div class="mk-line-info">
+            <div class="t">${i.title}</div>
+            <div class="s">₹${i.price}/${i.unit} × ${i.quantity}</div>
+          </div>
+          <div class="mk-line-amt">₹${(i.price * i.quantity).toLocaleString("en-IN")}</div>
+          <button class="mk-line-del" onclick="SamruddhiCart.removeFromCart('${i.id}'); renderFloatingCart(); renderProducts();"><i class="fa-solid fa-trash"></i></button>
+        </div>`).join("")
+        : `<div style="text-align:center; padding:26px; color:var(--f2f-muted);">Your farm basket is empty.</div>`;
+    }
+
+    function toggleCartPanel(force) {
+      const panel = document.getElementById("mkCartPanel");
+      const show = typeof force === "boolean" ? force : !panel.classList.contains("show");
+      panel.classList.toggle("show", show);
+    }
+
+    // Keep the floating bar in sync with every cart mutation made by app.js
+    const _origSaveCart = SamruddhiCart.saveCart.bind(SamruddhiCart);
+    SamruddhiCart.saveCart = function (cart) {
+      _origSaveCart(cart);
+      renderFloatingCart();
+    };
+    // app.js opens the legacy drawer after adds — neutralise it in favour of the bar
+    SamruddhiCart.openDrawer = function () { renderFloatingCart(); };
+
+    async function renderBulkProducts() {
+      if (!mkBulkProductsLoaded) {
+        const snap = await window.AgriSetuDB.db.collection("bulkProducts").get();
+        mkAllBulkProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      }
+      let bulkItems = mkAllBulkProducts.slice();
+      // Exact supplied image migration for the Silver Pomfret bulk lot.
+      await Promise.allSettled(bulkItems.filter(p => p.title === "Deep-Sea Silver Pomfret (Flash-Frozen Insulated Export Crates)" && p.id).map(p => window.AgriSetuDB.db.collection("bulkProducts").doc(p.id).set({ imageURL: SamruddhiProductImages.productImage(p) }, { merge: true })));
+      if (!sessionStorage.getItem("samruddhiBulkImagesSynced")) {
+        await Promise.allSettled(bulkItems.map(p => { const corrected = SamruddhiProductImages.productImage(p); return corrected !== p.imageURL && p.id ? window.AgriSetuDB.db.collection("bulkProducts").doc(p.id).set({ imageURL: corrected }, { merge: true }) : null; }).filter(Boolean));
+        sessionStorage.setItem("samruddhiBulkImagesSynced", "1");
+      }
+      if (currentBulkCategory !== "all") bulkItems = bulkItems.filter(p => p.category === currentBulkCategory);
+      if (currentBulkSearch.trim() !== "") {
+        const q = currentBulkSearch.toLowerCase();
+        bulkItems = bulkItems.filter(p => p.title.toLowerCase().includes(q) || p.farmerLocation.toLowerCase().includes(q) || (p.lotId && p.lotId.toLowerCase().includes(q)));
+      }
+      const grid = document.getElementById("bulkProductsGrid");
+      if (!grid) return;
+      if (bulkItems.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">No bulk production lots found matching your filter.</div>`;
+        return;
+      }
+      grid.innerHTML = bulkItems.map(p => {
+        window._bulkProductMap[p.id] = p;
+        return `
+        <div class="bulk-product-card">
+          <div class="bulk-img-box">
+            <img src="${SamruddhiProductImages.productImage(p)}" alt="${p.title}" onerror="this.onerror=null; this.src=SamruddhiProductImages.FALLBACK;" />
+            <span class="bulk-badge-moq"><i class="fa-solid fa-weight-hanging"></i> MOQ: ${p.moqDisplay}</span>
+            <span class="bulk-badge-lot">${p.lotId}</span>
+            <span class="bulk-badge-temp"><i class="fa-solid fa-snowflake"></i> ${p.coldChainReq}</span>
+          </div>
+          <div class="bulk-body">
+            <div class="bulk-fpo-strip"><span><i class="fa-solid fa-building-wheat"></i> ${p.fpoName}</span><span style="color:var(--gold-primary); font-weight:800;">${p.aiGrade.split(' ')[0]}</span></div>
+            <h4 class="prod-title" style="font-size:1.1rem; margin-bottom:4px;">${p.title}</h4>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;"><i class="fa-solid fa-location-dot"></i> Origin: ${p.farmerLocation}</div>
+            <div class="bulk-stock-bar-wrap">
+              <div class="bulk-stock-bar-header"><span>Available Harvest Stock</span><span>${p.stockDisplay}</span></div>
+              <div class="stock-progress-bar" style="width:100%;"><div class="stock-progress-fill" style="width: 82%;"></div></div>
+            </div>
+            <div class="mandi-compare-box" style="margin-bottom:10px;">
+              <div>APMC Mandi Wholesale: <del>${p.mandiPriceDisplay}</del></div>
+              <div style="font-size:0.95rem; font-weight:800; color:#15803D; margin-top:2px;">Direct Farm Wholesale: ${p.pricePerUnitDisplay}</div>
+              <span style="display:block; font-size:0.7rem; color:#15803D; margin-top:2px;">(Save ₹${(p.mandiPrice - p.price).toLocaleString()} per ${p.unit})</span>
+            </div>
+            <div class="bulk-volume-tiers-box">
+              <div class="bulk-volume-tiers-title"><i class="fa-solid fa-tags" style="color:var(--gold-primary);"></i> Volume Tier Discounts</div>
+              ${p.volumeTiers.map(t => `<div class="bulk-tier-row"><span>${t.tier}:</span><strong>${t.price} (${t.discount})</strong></div>`).join("")}
+            </div>
+            <div class="bulk-actions-row">
+              <button class="btn-bulk-rfq" onclick="openBulkRfqModalById('${p.id}')"><i class="fa-solid fa-file-contract"></i> Contract RFQ</button>
+              <button class="btn-bulk-add" onclick="addBulkToCartById('${p.id}')"><i class="fa-solid fa-cart-flatbed"></i> Order Bulk</button>
+            </div>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    function filterBulkCategory(cat, btn) {
+      document.querySelectorAll("#bulkMarketContainer .category-chip").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      currentBulkCategory = cat;
+      renderBulkProducts();
+    }
+    function handleBulkSearch(val) { currentBulkSearch = val; renderBulkProducts(); }
+
+    function openBulkRfqModal(product) {
+      selectedRfqProduct = product;
+      document.getElementById("rfqProductId").value = product.id;
+      document.getElementById("rfqProductTitle").innerText = product.title;
+      document.getElementById("rfqLotId").innerText = `Lot: ${product.lotId}`;
+      document.getElementById("rfqFpoName").innerText = product.fpoName;
+      document.getElementById("rfqUnitLabel").innerText = product.unit;
+      const qtyInput = document.getElementById("rfqQuantity");
+      qtyInput.min = product.minOrderQuantity;
+      qtyInput.value = product.minOrderQuantity;
+      document.getElementById("rfqMoqWarning").innerText = `Minimum Order Quantity (MOQ): ${product.minOrderQuantity} ${product.unit}`;
+      const activeUser = SamruddhiAuth.getStoredUser();
+      if (activeUser) {
+        if (activeUser.gstNumber) document.getElementById("rfqGst").value = activeUser.gstNumber;
+        if (activeUser.address || activeUser.location) document.getElementById("rfqAddress").value = activeUser.address || activeUser.location;
+      }
+      updateRfqCalculation();
+      document.getElementById("bulkContractModal").classList.add("open");
+    }
+    function closeBulkRfqModal() { document.getElementById("bulkContractModal").classList.remove("open"); }
+    function updateRfqCalculation() {
+      if (!selectedRfqProduct) return;
+      const qty = parseInt(document.getElementById("rfqQuantity").value) || selectedRfqProduct.minOrderQuantity;
+      const directTotal = qty * selectedRfqProduct.price;
+      const mandiTotal = qty * selectedRfqProduct.mandiPrice;
+      document.getElementById("rfqTotalDirectPrice").innerText = "₹" + directTotal.toLocaleString();
+      document.getElementById("rfqTotalSavings").innerText = "₹" + (mandiTotal - directTotal).toLocaleString();
+    }
+    async function handleBulkContractSubmit(e) {
+      e.preventDefault();
+      if (!selectedRfqProduct) return;
+      const qty = parseInt(document.getElementById("rfqQuantity").value) || selectedRfqProduct.minOrderQuantity;
+      const frequency = document.getElementById("rfqFrequency").value;
+      const coldChain = document.getElementById("rfqColdChain").value;
+      const gst = document.getElementById("rfqGst").value;
+      const address = document.getElementById("rfqAddress").value;
+      const activeUser = SamruddhiAuth.getStoredUser();
+      const orderId = `CONTR-${Math.floor(1000 + Math.random() * 9000)}`;
+      const totalAmount = qty * selectedRfqProduct.price;
+      const savings = (qty * selectedRfqProduct.mandiPrice) - totalAmount;
+      const newOrder = {
+        id: orderId, buyerId: activeUser?.uid || `guest-${Date.now()}`, buyerName: activeUser?.name || "Guest Buyer",
+        buyerPhone: activeUser?.phone || "", farmerId: selectedRfqProduct.farmerId, farmerName: selectedRfqProduct.farmerName,
+        logisticsId: null, driverName: "Awaiting Dispatch Assignment",
+        items: [{ productId: selectedRfqProduct.id, title: selectedRfqProduct.title, quantity: qty, unit: selectedRfqProduct.unit, price: selectedRfqProduct.price }],
+        totalAmount, savings, deliveryType: "large_truck", status: "pending_pickup",
+        statusHistory: [{ status: "pending_pickup", label: "Contract confirmed & payment recorded", at: new Date().toISOString() }],
+        deliveryAddress: address, gstNumber: gst, contractFrequency: frequency, coldChainRequirement: coldChain, createdAt: new Date().toISOString()
+      };
+      await window.AgriSetuDB.db.collection("orders").add(newOrder);
+      closeBulkRfqModal();
+      showToast(`Contract ${orderId} executed! Reefer Freight scheduled for dispatch.`);
+      showInvoiceModal(newOrder);
+    }
+    function addBulkToCart(product) {
+      const bulkItem = { id: product.id, title: product.title, price: product.price, mandiPrice: product.mandiPrice, unit: product.unit, imageURL: SamruddhiProductImages.productImage(product), isBulk: true, minOrderQuantity: product.minOrderQuantity };
+      const cart = SamruddhiCart.getCart();
+      const existing = cart.find(item => item.id === product.id);
+      if (existing) existing.quantity += product.minOrderQuantity;
+      else cart.push({ ...bulkItem, quantity: product.minOrderQuantity });
+      SamruddhiCart.saveCart(cart);
+      SamruddhiCart.renderDrawer();
+      SamruddhiCart.openDrawer();
+      showToast(`Added ${product.minOrderQuantity} ${product.unit} of ${product.title} to Farm Basket!`);
+    }
+  </script>
+<script src="js/global-chatbot.js?v=1"></script></body>
+</html>

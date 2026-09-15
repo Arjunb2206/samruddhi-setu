@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samruddhi Setu | Direct Agricultural & Coastal Platform</title>
+  <meta name="description" content="Samruddhi Setu - Empowering Farmers, Delivering Freshness at Fair Prices. Direct-to-consumer ecosystem eliminating middlemen with AI quality grading and live logistics.">
+
+  <!-- Favicon / Logo -->
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6.5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/redesign.css?v=7">
+</head>
+<body>
+
+  <!-- ================= HERO: full-bleed video + overlaid nav ================= -->
+  <section class="ss-hero-shell">
+    <div class="ss-hero-media">
+      <video autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1920&auto=format&fit=crop&q=80">
+        <source src="assets/hero-hd.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="ss-hero-scrim"></div>
+
+    <nav class="ss-nav">
+      <div>
+        <a href="index.html" class="ss-nav-brand">
+          <img src="assets/logo.jpg" alt="Samruddhi Setu" />
+          <div>
+            <div class="ss-brand-name">Samruddhi Setu</div>
+            <div class="ss-brand-sub">समृद्धि सेतु · Farmer Direct</div>
+          </div>
+        </a>
+        <div class="ss-nav-chips">
+          <div class="ss-chip">
+            <i class="fa-solid fa-globe"></i>
+            <select onchange="window.i18n && window.i18n.setLanguage(this.value)" aria-label="Language">
+              <option value="en">English (EN)</option>
+              <option value="hi">हिन्दी (HI)</option>
+              <option value="ta">தமிழ் (TA)</option>
+              <option value="te">తెలుగు (TE)</option>
+              <option value="kn">ಕನ್ನಡ (KN)</option>
+              <option value="mr">मराठी (MR)</option>
+              <option value="bn">বাংলা (BN)</option>
+            </select>
+          </div>
+          <button class="ss-chip" onclick="detectHeroLocation()">
+            <i class="fa-solid fa-location-dot"></i>
+            <span id="heroLocationLabel" data-i18n="location">Location</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="ss-nav-links">
+        <a href="index.html" class="active" data-i18n="navHome">Home</a>
+        <a href="#about" data-i18n="navAbout">About</a>
+        <a href="#services" data-i18n="navServices">Services</a>
+        <a href="register.html?role=farmer" data-i18n="navFarmer">Farmer</a>
+        <a href="register.html?role=consumer" data-i18n="navCustomer">Customer</a>
+        <a href="logistics-register.html" data-i18n="navLogistics">Logistics</a>
+      </div>
+
+      <div class="ss-nav-cta">
+        <a href="admin.html" class="ss-nav-pill" data-i18n="adminPortal">Admin Portal</a>
+        <button class="ss-nav-icon" title="Notifications"><i class="fa-regular fa-bell"></i></button>
+        <a href="profile.html"><img src="assets/logo.jpg" class="ss-nav-avatar" alt="Account" /></a>
+      </div>
+    </nav>
+
+    <div class="ss-hero-body">
+      <span class="ss-hero-eyebrow" data-i18n="heroEyebrow">Farmer · Direct · Fair</span>
+      <h1 class="ss-hero-title" data-i18n="brandName">Samruddhi Setu</h1>
+      <p class="ss-hero-quote" data-i18n="motto">"Empowering Farmers, Delivering Freshness at Fair Prices"</p>
+      <div class="ss-hero-actions">
+        <a href="onboarding.html" class="ss-btn ss-btn-primary"><span data-i18n="joinOurFamily">Join Our Family</span> <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="login.html" class="ss-btn ss-btn-ghost" data-i18n="signIn">Sign In</a>
+        <a href="admin.html" class="ss-btn ss-btn-gold" data-i18n="adminPortal">Admin Portal</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- (Cooperative Societies Directory link now lives only in the top navbar as "Societies Hub") -->
+
+  <!-- Impact Strip Section -->
+  <section class="impact-strip-section" id="about">
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-icon"><i class="fa-solid fa-handshake-slash"></i></div>
+        <div class="impact-number">100%</div>
+        <div class="impact-label" data-i18n="middlemenCutEliminated">Middlemen Cut Eliminated</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+        <div class="impact-number">+38%</div>
+        <div class="impact-label" data-i18n="farmerProfitBoost">Farmer Profit Boost</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon"><i class="fa-solid fa-wallet"></i></div>
+        <div class="impact-number">-28%</div>
+        <div class="impact-label" data-i18n="consumerSavings">Consumer Price Savings</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-icon"><i class="fa-solid fa-stopwatch"></i></div>
+        <div class="impact-number">&lt; 18h</div>
+        <div class="impact-label" data-i18n="freshnessDelivered">Harvest-to-Door Time</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Trust Strip ================= -->
+  <section class="trust-strip-section">
+    <div class="trust-strip-inner">
+      <div class="trust-strip-item">
+        <div class="trust-avatar-stack">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Farmer" />
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" alt="Consumer" />
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Logistics" />
+        </div>
+        <div>
+          <h4>100K+ Farmers &amp; Buyers</h4>
+          <p>With Positive Reviews Across India</p>
+        </div>
+      </div>
+
+      <div class="trust-strip-item">
+        <div class="trust-badge-circle"><i class="fa-solid fa-leaf"></i></div>
+        <div>
+          <h4>100% Direct Trade</h4>
+          <p>Zero Middlemen · Fair Pricing</p>
+        </div>
+      </div>
+
+      <div class="trust-strip-item">
+        <div class="trust-video-thumb" onclick="document.getElementById('storyVideoModal').classList.add('open')">
+          <video autoplay muted loop playsinline>
+            <source src="assets/hero-hd.mp4" type="video/mp4">
+          </video>
+          <div class="play-badge"><i class="fa-solid fa-circle-play"></i></div>
+        </div>
+        <div>
+          <h4>Healthy Life</h4>
+          <p>With Fresh, Farm-Direct Products</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Our Services ================= -->
+  <section class="landing-services-section" id="services">
+    <div class="landing-section-head">
+      <div>
+        <span class="landing-section-eyebrow">Our Ecosystem</span>
+        <h2>We Offer Direct Farm & Coastal Services</h2>
+      </div>
+    </div>
+    <div class="landing-services-grid">
+      <div class="landing-service-card">
+        <img class="landing-service-img" src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=600&auto=format&fit=crop&q=80" alt="Farmer marketplace" />
+        <div class="landing-service-body">
+          <span class="landing-service-tag">Farmer Marketplace</span>
+          <h3>Direct-to-Consumer Selling</h3>
+          <p>Farmers list crops, dairy, poultry & seafood directly — no commission agents, no middlemen cut.</p>
+        </div>
+      </div>
+      <div class="landing-service-card">
+        <img class="landing-service-img" src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=600&auto=format&fit=crop&q=80" alt="AI quality grading" />
+        <div class="landing-service-body">
+          <span class="landing-service-tag">AI Quality Grading</span>
+          <h3>Smart Produce Scanner</h3>
+          <p>On-device AI checks freshness and quality, giving buyers confidence and farmers fairer prices.</p>
+        </div>
+      </div>
+      <div class="landing-service-card">
+        <img class="landing-service-img" src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=600&auto=format&fit=crop&q=80" alt="Cold chain logistics" />
+        <div class="landing-service-body">
+          <span class="landing-service-tag">Cold-Chain Logistics</span>
+          <h3>Instant & Bulk Delivery</h3>
+          <p>EV bikes for same-day orders and reefer trucks for bulk & institutional cold-chain dispatch.</p>
+        </div>
+      </div>
+      <div class="landing-service-card">
+        <img class="landing-service-img" src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80" alt="Fair price index" />
+        <div class="landing-service-body">
+          <span class="landing-service-tag">Fair Trade Index</span>
+          <h3>Transparent Live Pricing</h3>
+          <p>Real-time mandi vs. direct price comparisons so every farmer and buyer sees a fair deal.</p>
+        </div>
+      </div>
+      <div class="landing-service-card">
+        <img class="landing-service-img" src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&auto=format&fit=crop&q=80" alt="Bulk contracts" />
+        <div class="landing-service-body">
+          <span class="landing-service-tag">Bulk &amp; Institutional</span>
+          <h3>FPO & Contract Supply</h3>
+          <p>Hotels, retailers and exporters can source quintals or tonnes with recurring supply contracts.</p>
+        </div>
+      </div>
+      <div class="landing-service-card">
+        <img class="landing-service-img" src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&auto=format&fit=crop&q=80" alt="Advisory and schemes" />
+        <div class="landing-service-body">
+          <span class="landing-service-tag">Advisory &amp; Schemes</span>
+          <h3>AI Advisory + Govt. Schemes</h3>
+          <p>Crop & livestock care tips, weather alerts, and a personalised feed of government schemes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Meet Our Partners ================= -->
+  <section class="landing-team-section">
+    <div class="landing-team-inner">
+      <span class="landing-section-eyebrow">Community</span>
+      <h2>Meet Our Verified Farmer & Fleet Partners</h2>
+      <div class="landing-team-grid">
+        <div class="landing-team-card">
+          <img src="https://images.unsplash.com/photo-1639229969089-92a9255062c5?w=400&auto=format&fit=crop&q=80" alt="Ramesh Patil, crop grower" />
+          <div class="landing-team-card-overlay"><h4>Ramesh Patil</h4><span>Crop Grower, Maharashtra</span></div>
+        </div>
+        <div class="landing-team-card">
+          <img src="https://images.unsplash.com/photo-1637296697301-0b4b855dad3a?w=400&auto=format&fit=crop&q=80" alt="Suresh Nair, coastal fisher" />
+          <div class="landing-team-card-overlay"><h4>Suresh Nair</h4><span>Coastal Fisher, Tuticorin</span></div>
+        </div>
+        <div class="landing-team-card">
+          <img src="https://images.unsplash.com/photo-1609252285522-ed0ebdd43551?w=400&auto=format&fit=crop&q=80" alt="Lakshmi Devi, dairy producer" />
+          <div class="landing-team-card-overlay"><h4>Lakshmi Devi</h4><span>Dairy Producer, Karnataka</span></div>
+        </div>
+        <div class="landing-team-card">
+          <img src="https://images.unsplash.com/photo-1698465358843-5f5a24271bfd?w=400&auto=format&fit=crop&q=80" alt="Vikram Singh, reefer fleet partner" />
+          <div class="landing-team-card-overlay"><h4>Vikram Singh</h4><span>Reefer Fleet Partner</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Testimonials ================= -->
+  <section class="landing-testimonials-section">
+    <div class="landing-section-head">
+      <div>
+        <span class="landing-section-eyebrow">Recently Completed</span>
+        <h2>Trusted By 100K+ Customers</h2>
+      </div>
+    </div>
+    <div class="landing-testimonials-grid">
+      <div class="landing-testimonial-card">
+        <div class="landing-testimonial-stars">★★★★★</div>
+        <p class="quote">"The freshest produce I've ever had. I love knowing exactly where my food comes from — we've been buying our vegetables here for years."</p>
+        <div class="landing-testimonial-author">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" alt="Aleesha Brown" />
+          <div><strong>Aleesha Brown</strong><span>Verified Direct Buyer</span></div>
+        </div>
+      </div>
+      <div class="landing-testimonial-card">
+        <div class="landing-testimonial-stars">★★★★★</div>
+        <p class="quote">"My farm income went up almost 40% after I stopped selling through the mandi. Payments land directly in my account, on time."</p>
+        <div class="landing-testimonial-author">
+          <img src="https://images.unsplash.com/photo-1639229969089-92a9255062c5?w=100&auto=format&fit=crop&q=80" alt="Ramesh Patil" />
+          <div><strong>Ramesh Patil</strong><span>Crop Grower, Maharashtra</span></div>
+        </div>
+      </div>
+      <div class="landing-testimonial-card">
+        <div class="landing-testimonial-stars">★★★★★</div>
+        <p class="quote">"The cold-chain tracking gives our institution total confidence — every reefer dispatch arrives on schedule and at the right temperature."</p>
+        <div class="landing-testimonial-author">
+          <img src="https://images.unsplash.com/photo-1698465358843-5f5a24271bfd?w=100&auto=format&fit=crop&q=80" alt="Vikram Singh" />
+          <div><strong>Vikram Singh</strong><span>Reefer Fleet Partner</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FAQ + Call Banner ================= -->
+  <section class="landing-faq-section">
+    <div class="landing-faq-callcard">
+      <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&auto=format&fit=crop&q=80" alt="Farmer" />
+      <div class="landing-faq-call-chip">
+        <i class="fa-solid fa-phone"></i>
+        <span>+1800-180-1551<small>Book a free visit</small></span>
+      </div>
+    </div>
+    <div class="landing-faq-list">
+      <span class="landing-section-eyebrow" style="margin:16px 0 0 16px;">Frequently Asked Questions</span>
+      <h2 style="font-family:'Playfair Display', serif; color:var(--primary-deep); margin:8px 16px 6px;">How Can We Help You?</h2>
+
+      <div class="landing-faq-item">
+        <button class="landing-faq-q" onclick="this.parentElement.classList.toggle('open')">What produce do you sell? <i class="fa-solid fa-plus"></i></button>
+        <div class="landing-faq-a">Fresh vegetables, fruits, A2 dairy, poultry, eggs and coastal seafood — sourced directly from verified farmers and fishers.</div>
+      </div>
+      <div class="landing-faq-item">
+        <button class="landing-faq-q" onclick="this.parentElement.classList.toggle('open')">How do I join as a farmer or logistics partner? <i class="fa-solid fa-plus"></i></button>
+        <div class="landing-faq-a">Tap "Sign Up", pick your role (Farmer, Consumer or Logistics), and fill in a short registration form to get verified.</div>
+      </div>
+      <div class="landing-faq-item">
+        <button class="landing-faq-q" onclick="this.parentElement.classList.toggle('open')">Do you offer bulk or institutional supply? <i class="fa-solid fa-plus"></i></button>
+        <div class="landing-faq-a">Yes — hotels, retailers, exporters and institutions can request FPO lots, quintal/tonne volumes and recurring contracts.</div>
+      </div>
+      <div class="landing-faq-item">
+        <button class="landing-faq-q" onclick="this.parentElement.classList.toggle('open')">How can I pay for my order? <i class="fa-solid fa-plus"></i></button>
+        <div class="landing-faq-a">Pay online via Razorpay (cards, UPI, netbanking) or choose Cash on Delivery for eligible orders.</div>
+      </div>
+      <div class="landing-faq-item">
+        <button class="landing-faq-q" onclick="this.parentElement.classList.toggle('open')">Do you use any chemicals or pesticides? <i class="fa-solid fa-plus"></i></button>
+        <div class="landing-faq-a">Every farmer profile shows their practices, and our AI quality scanner flags freshness so you always know what you're buying.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Story Video Modal ================= -->
+  <div class="modal-overlay" id="storyVideoModal">
+    <div class="modal-box" style="max-width:720px; padding:0; overflow:hidden;">
+      <button class="modal-close-btn" style="z-index:5;" onclick="document.getElementById('storyVideoModal').classList.remove('open')"><i class="fa-solid fa-xmark"></i></button>
+      <video controls autoplay muted loop playsinline style="width:100%; display:block;">
+        <source src="assets/hero-hd.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+
+  <!-- ================= Footer ================= -->
+  <footer class="landing-footer">
+    &copy; 2026 <strong>Samruddhi Setu</strong> — Empowering Farmers, Delivering Freshness at Fair Prices.
+  </footer>
+
+  <!-- ================= API & Firebase Configuration Modal ================= -->
+  <div class="modal-overlay" id="apiConfigModal">
+    <div class="modal-box" style="max-width: 480px;">
+      <button class="modal-close-btn" onclick="document.getElementById('apiConfigModal').classList.remove('open')"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="color:var(--primary-deep); font-family:'Cinzel', serif; margin-bottom:12px;">
+        <i class="fa-solid fa-sliders"></i> Platform Settings & API Configuration
+      </h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">
+        Samruddhi Setu works out of the box with local zero-config reactive storage (private to this browser). To share data live across every user's device, connect a real Firebase project below.
+      </p>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label>Google Gemini API Key (Google AI Studio)</label>
+        <input type="password" id="geminiApiKeyInput" class="form-control" placeholder="Your Gemini API key" />
+      </div>
+
+      <div style="border-top: 1px dashed var(--border-light); margin: 18px 0 14px; padding-top: 14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 10px;">
+          <strong style="font-size: 0.92rem; color: var(--primary-deep);"><i class="fa-solid fa-fire"></i> Live Firebase Project</strong>
+          <a href="https://console.firebase.google.com/" target="_blank" style="font-size: 0.74rem; color: var(--primary); font-weight: 700;">Get these from Firebase Console →</a>
+        </div>
+        <p style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 12px;">
+          Firebase Console → Project Settings → General → "Your apps" → Web app → SDK setup and configuration. All 6 fields below are required for live sync to activate.
+        </p>
+
+        <div class="form-group" style="margin-bottom:10px;">
+          <label style="font-size: 0.8rem;">API Key</label>
+          <input type="password" id="fbApiKeyInput" class="form-control" placeholder="Your Gemini API key" />
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label style="font-size: 0.8rem;">Project ID</label>
+          <input type="text" id="firebaseProjectIdInput" class="form-control" placeholder="my-project-id" />
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label style="font-size: 0.8rem;">Auth Domain</label>
+          <input type="text" id="fbAuthDomainInput" class="form-control" placeholder="my-project-id.firebaseapp.com" />
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label style="font-size: 0.8rem;">Storage Bucket</label>
+          <input type="text" id="fbStorageBucketInput" class="form-control" placeholder="my-project-id.appspot.com" />
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label style="font-size: 0.8rem;">Messaging Sender ID</label>
+          <input type="text" id="fbSenderIdInput" class="form-control" placeholder="109876543210" />
+        </div>
+        <div class="form-group" style="margin-bottom:4px;">
+          <label style="font-size: 0.8rem;">App ID</label>
+          <input type="text" id="fbAppIdInput" class="form-control" placeholder="1:109876543210:web:abcdef" />
+        </div>
+      </div>
+
+      <button class="btn-luxury-gold" style="width:100%; padding:10px;" onclick="saveApiConfig()">
+        Save Configuration
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= Floating AgriMitra AI Assistant ================= -->
+<!-- Scripts -->
+  <script src="js/i18n.js?v=5"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/onnx-ai-scanner.js?v=5"></script>
+  <script src="js/gemini-service.js?v=5"></script>
+  <script src="js/app.js?v=8"></script>
+
+  <script>
+    // Hero location chip — reverse-geocode the browser's coordinates so the
+    // landing page can greet the visitor with their own city.
+    function detectHeroLocation() {
+      const label = document.getElementById("heroLocationLabel");
+      if (!navigator.geolocation) { showToast("Location is not supported on this browser."); return; }
+      label.innerText = "Locating...";
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          const a = data.address || {};
+          const city = a.city || a.town || a.village || a.county || "Your area";
+          label.innerText = city;
+          localStorage.setItem("samruddhi_location", JSON.stringify({ city, latitude, longitude }));
+          showToast(`Delivering to ${city}`);
+        } catch (e) {
+          label.innerText = "Location set";
+        }
+      }, () => {
+        label.innerText = "Location";
+        showToast("Could not access your location. Please allow permission.");
+      });
+    }
+
+    // Restore a previously detected location on load
+    document.addEventListener("DOMContentLoaded", () => {
+      try {
+        const saved = JSON.parse(localStorage.getItem("samruddhi_location") || "null");
+        if (saved && saved.city) document.getElementById("heroLocationLabel").innerText = saved.city;
+      } catch (e) {}
+    });
+
+    function openApiConfigModal() {
+      // Pre-fill Firebase fields with whatever is currently configured,
+      // so re-opening Settings doesn't wipe out a saved project.
+      const current = (window.AgriSetuDB && window.AgriSetuDB.getStoredConfig()) || {};
+      const isPlaceholder = !current.apiKey || String(current.apiKey).includes("Dummy");
+      document.getElementById("fbApiKeyInput").value = isPlaceholder ? "" : current.apiKey || "";
+      document.getElementById("firebaseProjectIdInput").value = isPlaceholder ? "" : (current.projectId || "");
+      document.getElementById("fbAuthDomainInput").value = isPlaceholder ? "" : current.authDomain || "";
+      document.getElementById("fbStorageBucketInput").value = isPlaceholder ? "" : current.storageBucket || "";
+      document.getElementById("fbSenderIdInput").value = isPlaceholder ? "" : current.messagingSenderId || "";
+      document.getElementById("fbAppIdInput").value = isPlaceholder ? "" : current.appId || "";
+      document.getElementById("apiConfigModal").classList.add("open");
+    }
+
+    async function saveApiConfig() {
+      const geminiKey = document.getElementById("geminiApiKeyInput").value.trim();
+      if (geminiKey && window.geminiService) window.geminiService.setApiKey(geminiKey);
+
+      const fbConfig = {
+        apiKey: document.getElementById("fbApiKeyInput").value.trim(),
+        projectId: document.getElementById("firebaseProjectIdInput").value.trim(),
+        authDomain: document.getElementById("fbAuthDomainInput").value.trim(),
+        storageBucket: document.getElementById("fbStorageBucketInput").value.trim(),
+        messagingSenderId: document.getElementById("fbSenderIdInput").value.trim(),
+        appId: document.getElementById("fbAppIdInput").value.trim(),
+      };
+
+      const anyFbFieldFilled = Object.values(fbConfig).some(v => v);
+      const allFbFieldsFilled = Object.values(fbConfig).every(v => v);
+
+      if (anyFbFieldFilled && !allFbFieldsFilled) {
+        showToast("⚠️ Please fill in all 6 Firebase fields, or leave them all blank to keep local demo mode.");
+        return;
+      }
+
+      if (allFbFieldsFilled && window.AgriSetuDB) {
+        const result = await window.AgriSetuDB.connectLiveFirebase(fbConfig);
+        if (result.success) {
+          document.getElementById("apiConfigModal").classList.remove("open");
+          showToast("✅ Firebase project saved! Reloading to connect...");
+          setTimeout(() => window.location.reload(), 1200);
+          return;
+        } else {
+          showToast("❌ Could not save Firebase config: " + (result.error || "unknown error"));
+          return;
+        }
+      }
+
+      document.getElementById("apiConfigModal").classList.remove("open");
+      showToast("Settings updated successfully!");
+    }
+  </script>
+<script src="js/global-chatbot.js?v=1"></script></body>
+</html>

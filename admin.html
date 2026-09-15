@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cooperative Society Admin & Directory | Samruddhi Setu</title>
+  <meta name="description" content="Official Cooperative Societies Directory, Member Farmers Registry, and Real-Time Produce Sales Status Portal.">
+
+  <!-- Favicon / Logo -->
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6.5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/redesign.css?v=7">
+
+  <style>
+    /* Admin & Cooperative Specific Styles */
+    .admin-hero-header {
+      background: linear-gradient(135deg, rgba(8, 28, 21, 0.95) 0%, rgba(27, 67, 50, 0.9) 100%), url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1600') center/cover;
+      color: #FFF;
+      padding: 40px 24px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+      border: 1px solid var(--border-gold);
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .admin-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .admin-metric-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(212, 163, 115, 0.3);
+      padding: 16px 20px;
+      border-radius: 14px;
+      transition: var(--transition-smooth);
+    }
+    .admin-metric-card:hover {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateY(-2px);
+    }
+    .admin-metric-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+    }
+    .admin-metric-lbl {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.82);
+      font-weight: 600;
+    }
+
+    /* Cooperative Society Card */
+    .coop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+      margin-top: 20px;
+    }
+
+    .coop-card {
+      background: #FFF;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(45, 106, 79, 0.15);
+      box-shadow: var(--shadow-md);
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      position: relative;
+    }
+    .coop-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--gold-primary);
+    }
+
+    .coop-card-media {
+      height: 170px;
+      position: relative;
+      overflow: hidden;
+    }
+    .coop-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .coop-card:hover .coop-card-img {
+      transform: scale(1.04);
+    }
+
+    .coop-badge-type {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(27, 67, 50, 0.9);
+      color: var(--gold-light);
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border: 1px solid var(--border-gold);
+    }
+
+    .coop-badge-verified {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #16A34A;
+      color: #FFF;
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .coop-card-body {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .coop-title {
+      font-size: 1.15rem;
+      color: var(--primary-deep);
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+
+    .coop-reg {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      font-family: monospace;
+    }
+
+    .coop-info-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    .coop-info-row i {
+      color: var(--accent-mint);
+      width: 16px;
+      text-align: center;
+    }
+
+    .coop-stats-bar {
+      background: #F8F9FA;
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      margin: 14px 0;
+      font-size: 0.8rem;
+      border: 1px solid #E2E8F0;
+    }
+    .coop-stats-item {
+      text-align: center;
+    }
+    .coop-stats-item strong {
+      display: block;
+      color: var(--primary-deep);
+      font-size: 0.95rem;
+    }
+    .coop-stats-item span {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+    }
+
+    .coop-card-action {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid #F1F5F9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Society Profile Drawer / Modal */
+    .profile-drawer-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(8, 28, 21, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 2500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .profile-drawer-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .profile-drawer-panel {
+      width: 100%;
+      max-width: 820px;
+      height: 100%;
+      background: #FFF;
+      box-shadow: -10px 0 35px rgba(0, 0, 0, 0.25);
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .profile-drawer-overlay.open .profile-drawer-panel {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary) 100%);
+      color: #FFF;
+      padding: 24px;
+      position: relative;
+    }
+    .drawer-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.18);
+      color: #FFF;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .drawer-close-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: rotate(90deg);
+    }
+
+    .drawer-tabs {
+      display: flex;
+      background: #F1F5F9;
+      border-bottom: 1px solid #CBD5E1;
+      padding: 0 20px;
+    }
+    .drawer-tab-btn {
+      padding: 14px 20px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .drawer-tab-btn.active {
+      color: var(--primary-deep);
+      border-bottom-color: var(--primary);
+      background: #FFF;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      background: #FAFAFA;
+    }
+
+    /* Product Status Pill & Card */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .status-pill.available {
+      background: #DCFCE7;
+      color: #166534;
+      border: 1px solid #86EFAC;
+    }
+    .status-pill.sold {
+      background: #FEE2E2;
+      color: #991B1B;
+      border: 1px solid #FCA5A5;
+    }
+    .status-pill.pending {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FCD34D;
+    }
+
+    .farmer-member-item {
+      background: #FFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: var(--transition-fast);
+    }
+    .farmer-member-item:hover {
+      border-color: var(--accent-mint);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .product-coop-item {
+      background: #FFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      transition: var(--transition-fast);
+    }
+    .product-coop-item:hover {
+      box-shadow: var(--shadow-sm);
+      border-color: var(--gold-primary);
+    }
+
+    .product-img-thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= ADMIN SECURITY GATE PASSKEY MODAL ================= -->
+  <div class="modal-overlay open" id="adminSecurityGateModal" style="background: rgba(8, 28, 21, 0.96); backdrop-filter: blur(14px); z-index: 9999;">
+    <div class="modal-box" style="max-width: 440px; text-align: center; border: 2px solid var(--border-gold); box-shadow: 0 20px 50px rgba(0,0,0,0.6); padding: 36px 28px;">
+      <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(212, 163, 115, 0.2); border: 2px solid var(--gold-primary); color: var(--gold-light); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 16px auto;">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h2 style="font-family: 'Cinzel', serif; color: var(--primary-deep); font-size: 1.5rem; margin-bottom: 6px;">
+        Admin Security Gate
+      </h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+        Access to the Cooperative Societies Apex Governance Hub is password protected. Enter the administrator passkey to proceed.
+      </p>
+
+      <form id="adminGateForm" onsubmit="verifyAdminGatePassword(event)">
+        <div class="form-group" style="margin-bottom: 16px; text-align: left;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: var(--primary-deep);">Administrator Password</label>
+          <input type="password" id="gateAdminPassword" class="form-control" placeholder="••••••••" required autofocus style="padding: 12px; font-size: 1.1rem; text-align: center; letter-spacing: 0.2em;" />
+        </div>
+
+        <button type="submit" class="btn-luxury-gold" style="width: 100%; padding: 12px; font-size: 0.95rem; margin-bottom: 10px;">
+          <i class="fa-solid fa-unlock"></i> Unlock Admin Portal
+        </button>
+        <a href="index.html" class="btn-luxury-outline" style="width: 100%; display: block; padding: 10px; font-size: 0.84rem; text-align: center;">
+          <i class="fa-solid fa-arrow-left"></i> Return to Home
+        </a>
+      </form>
+    </div>
+  </div>
+
+  <!-- Top Utility Bar -->
+  <div class="top-utility-bar">
+    <div class="top-helpline-info">
+      <i class="fa-solid fa-building-columns" style="color:var(--gold-light);"></i>
+      <span>Cooperative Societies & Mandi Regulatory Apex Hub | Directorate Helpline: <strong>1800-233-0245</strong></span>
+    </div>
+    <div class="top-right-tools">
+      <a href="seed.html" class="btn-luxury-outline" style="padding: 4px 12px; font-size: 0.78rem; border-color: var(--accent-mint); color: #FFF;">
+        <i class="fa-solid fa-database" style="color:var(--accent-mint);"></i> Seed Firebase Data
+      </a>
+      <select class="lang-selector-select" onchange="window.i18n.setLanguage(this.value)">
+        <option value="en">English (Global)</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="te">తెలుగు (Telugu)</option>
+        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+        <option value="mr">मराठी (Marathi)</option>
+        <option value="bn">বাংলা (Bengali)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="main-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo-wrap">
+        <img src="assets/logo.jpg" alt="Samruddhi Setu Logo" class="brand-logo-img" />
+        <div class="brand-text-block">
+          <h2>SAMRUDDHI SETU</h2>
+          <p>Cooperative Governance & Direct Market Portal</p>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="admin.html" class="nav-item active"><i class="fa-solid fa-building-columns"></i> Societies Hub</a></li>
+        <li><a href="payment-history.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> Payment History</a></li>
+        <li><a href="seed.html" class="nav-item"><i class="fa-solid fa-database"></i> Seed DB</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button onclick="lockAdminPortal()" class="btn-luxury-outline" style="padding: 6px 12px; font-size: 0.78rem; color: #EF4444; border-color: #F87171;">
+          <i class="fa-solid fa-lock"></i> Lock Portal
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================= MAIN ADMIN CONTENT CONTAINER ================= -->
+  <div class="dashboard-view-container">
+
+    <!-- Admin Hero & KPI Banner -->
+    <div class="admin-hero-header">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+        <div style="max-width: 650px;">
+          <span style="background: rgba(212, 163, 115, 0.25); color: var(--gold-light); padding: 4px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; border: 1px solid var(--border-gold); text-transform: uppercase;">
+            <i class="fa-solid fa-shield-halved"></i> Apex Governance Registry
+          </span>
+          <h1 style="font-size: 2.2rem; margin-top: 10px; font-family: 'Cinzel', serif;">
+            Cooperative Societies & Pooled Aggregation Directory
+          </h1>
+          <p style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.85); margin-top: 8px;">
+            Inspect nearby agricultural & coastal producer societies, view registered member farmers, track produce lots, and toggle live sold vs available status.
+          </p>
+          <div style="margin-top: 12px; font-size: 0.85rem; color: var(--accent-mint); font-weight: 600;">
+            <i class="fa-solid fa-circle-info"></i> <strong>Rule for Producers:</strong> Farmers with volume <strong>&gt; 50 kg</strong> can choose to sell through their nearby Cooperative Society (for cold-chain pooling & collective bargaining) or sell directly without society.
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-luxury-gold" onclick="openConsignmentGuideModal()">
+            <i class="fa-solid fa-scale-balanced"></i> > 50kg Policy Rules
+          </button>
+          <a href="seed.html" class="btn-luxury-outline" style="border-color: #FFF; color: #FFF;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Seed / Sync DB
+          </a>
+          <a href="payment-history.html" class="btn-luxury-outline" style="border-color: var(--gold-light); color: var(--gold-light);">
+            <i class="fa-solid fa-clock-rotate-left"></i> Payment History
+          </a>
+        </div>
+      </div>
+
+      <!-- KPI Metrics -->
+      <div class="admin-metrics-grid">
+        <div class="admin-metric-card">
+          <div class="admin-metric-val" id="metricCoopCount">4</div>
+          <div class="admin-metric-lbl">Registered Cooperative Societies</div>
+        </div>
+        <div class="admin-metric-card">
+          <div class="admin-metric-val" id="metricFarmerCount">6</div>
+          <div class="admin-metric-lbl">Member Farmers Under Societies</div>
+        </div>
+        <div class="admin-metric-card">
+          <div class="admin-metric-val" id="metricProduceVolume">38.5 MT</div>
+          <div class="admin-metric-lbl">Pooled Produce Capacity</div>
+        </div>
+        <div class="admin-metric-card">
+          <div class="admin-metric-val" id="metricSoldRatio" style="color: var(--accent-mint);">3 Lots Sold</div>
+          <div class="admin-metric-lbl">Consignments Fully Cleared</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== Logistics Partner Approval Queue ===================== -->
+    <div style="background:#FFF; border-radius:16px; padding:22px 24px; box-shadow:var(--shadow-sm); border:1px solid #E2E8F0; margin-bottom:24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px;">
+        <div>
+          <h2 style="font-family:'Cinzel', serif; color:var(--primary-deep); font-size:1.4rem;">
+            <i class="fa-solid fa-id-card-clip" style="color:var(--accent-mint);"></i> Logistics Partner Approval Queue
+          </h2>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">
+            Inspect driving licences and vehicle RC documents, then activate or reject partner accounts.
+          </p>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span style="font-size:0.85rem; color:var(--text-muted);" id="lgQueueBadge">0 pending</span>
+          <button class="btn-luxury-outline" style="padding:8px 16px; font-size:0.82rem;" onclick="loadLogisticsApplications()">
+            <i class="fa-solid fa-rotate"></i> Refresh Queue
+          </button>
+        </div>
+      </div>
+      <div id="lgQueueContainer"></div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div style="background: #FFF; border-radius: 16px; padding: 16px 20px; box-shadow: var(--shadow-sm); border: 1px solid #E2E8F0; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 12px; flex: 1; max-width: 460px;">
+        <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
+        <input type="text" id="coopSearchInput" class="form-control" placeholder="Search by society name, district, or produce type..." style="margin: 0;" oninput="filterCooperativeSocieties()" />
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary-deep);">Filter Sector:</span>
+        <select id="coopSectorFilter" class="form-control" style="width: auto; margin: 0; padding: 6px 14px;" onchange="filterCooperativeSocieties()">
+          <option value="all">All Sectors & Regions</option>
+          <option value="Horticulture">Horticulture & Fruits</option>
+          <option value="Dairy">Dairy & Grains</option>
+          <option value="Marine">Marine & Fisheries</option>
+        </select>
+        <button class="btn-luxury-outline" onclick="resetCoopFilters()" style="padding: 6px 14px; font-size: 0.82rem;">
+          <i class="fa-solid fa-rotate-left"></i> Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- Cooperative Societies Grid Container -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+      <h2 style="font-family: 'Cinzel', serif; color: var(--primary-deep); font-size: 1.4rem;">
+        <i class="fa-solid fa-network-wired" style="color: var(--accent-mint);"></i> Nearby Cooperative Societies
+      </h2>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-size: 0.85rem; color: var(--text-muted);" id="coopCountBadge">Showing 4 societies</span>
+        <button class="btn-luxury-gold" style="padding: 8px 16px; font-size: 0.82rem;" onclick="openAddCoopModal()">
+          <i class="fa-solid fa-circle-plus"></i> Add Community
+        </button>
+      </div>
+    </div>
+
+    <div class="coop-grid" id="coopGridContainer">
+      <!-- Dynamically populated via JS -->
+    </div>
+  </div>
+
+  <!-- ================= SOCIETY PROFILE DRAWER (Opens on Tap) ================= -->
+  <div class="profile-drawer-overlay" id="societyProfileModal" onclick="closeDrawerOnOutsideClick(event)">
+    <div class="profile-drawer-panel">
+      <!-- Drawer Header -->
+      <div class="drawer-header">
+        <button class="drawer-close-btn" onclick="closeSocietyDrawer()"><i class="fa-solid fa-xmark"></i></button>
+        <button class="drawer-close-btn" title="Delete this Community" style="right: 56px; background: rgba(220,38,38,0.25); border: 1px solid rgba(252,165,165,0.6);" onclick="deleteCooperative(currentActiveCoopId)">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+        <span style="background: rgba(212, 163, 115, 0.3); color: var(--gold-light); padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;" id="drawerCoopType">
+          Horticulture & Crops
+        </span>
+        <h2 style="font-family: 'Cinzel', serif; font-size: 1.5rem; margin: 8px 0 4px 0;" id="drawerCoopName">
+          Sahyadri Farmers Agro Cooperative Society Ltd.
+        </h2>
+        <p style="font-size: 0.82rem; opacity: 0.9; font-family: monospace;" id="drawerCoopReg">
+          Reg: MH/NSK/COOP/AGRI/2014-988 • Est. 2014
+        </p>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="drawer-tabs">
+        <button class="drawer-tab-btn active" id="tabBtnFarmers" onclick="switchDrawerTab('farmers')">
+          <i class="fa-solid fa-users"></i> Member Farmers (<span id="tabFarmerCount">0</span>)
+        </button>
+        <button class="drawer-tab-btn" id="tabBtnProducts" onclick="switchDrawerTab('products')">
+          <i class="fa-solid fa-boxes-stacked"></i> Produce & Sales Status (<span id="tabProductCount">0</span>)
+        </button>
+        <button class="drawer-tab-btn" id="tabBtnOverview" onclick="switchDrawerTab('overview')">
+          <i class="fa-solid fa-circle-info"></i> Society Infrastructure
+        </button>
+      </div>
+
+      <!-- Drawer Content -->
+      <div class="drawer-body">
+        
+        <!-- Tab 1: Member Farmers -->
+        <div id="drawerTabFarmers">
+          <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 12px; margin-bottom: 16px; font-size: 0.84rem; color: #1E40AF; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-user-check" style="font-size: 1.1rem;"></i>
+            <span>These verified farmers pool their produce through this society to access cold-chain logistics and collective wholesale pricing.</span>
+          </div>
+          <div id="drawerFarmerList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Produce & Sales Status Tracking -->
+        <div id="drawerTabProducts" style="display: none;">
+          <div style="background: #FFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <div style="font-weight: 700; color: var(--primary-deep); font-size: 0.95rem;">Live Produce Consignments</div>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">Manage sales status of lots pooled by farmers (>50kg consignments).</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <span class="status-pill available"><i class="fa-solid fa-circle-check"></i> Available</span>
+              <span class="status-pill sold"><i class="fa-solid fa-lock"></i> Sold Out</span>
+            </div>
+          </div>
+
+          <div id="drawerProductList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Tab 3: Society Infrastructure & Governance -->
+        <div id="drawerTabOverview" style="display: none;">
+          <div style="background: #FFF; border-radius: 14px; padding: 20px; border: 1px solid #E2E8F0; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+            <h3 style="font-family: 'Cinzel', serif; color: var(--primary-deep); font-size: 1.15rem; margin-bottom: 14px;">
+              <i class="fa-solid fa-warehouse" style="color: var(--gold-primary);"></i> Storage & Cold-Chain Capacity
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; font-size: 0.88rem;">
+              <div style="background: #F8F9FA; padding: 12px; border-radius: 8px;">
+                <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Cold Storage / Silo Volume</span>
+                <strong id="drawerStorageCap" style="color: var(--primary-deep);">-</strong>
+              </div>
+              <div style="background: #F8F9FA; padding: 12px; border-radius: 8px;">
+                <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Reefer Logistics Fleet</span>
+                <strong id="drawerFleetSize" style="color: var(--primary-deep);">-</strong>
+              </div>
+              <div style="background: #F8F9FA; padding: 12px; border-radius: 8px;">
+                <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Society Commission / Fee</span>
+                <strong id="drawerCommission" style="color: #15803D;">-</strong>
+              </div>
+              <div style="background: #F8F9FA; padding: 12px; border-radius: 8px;">
+                <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Nearby Radius Zone</span>
+                <strong id="drawerNearbyZone" style="color: var(--primary-deep);">-</strong>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: #FFF; border-radius: 14px; padding: 20px; border: 1px solid #E2E8F0; box-shadow: var(--shadow-sm); margin-bottom: 20px;">
+            <h3 style="font-family: 'Cinzel', serif; color: var(--primary-deep); font-size: 1.15rem; margin-bottom: 14px;">
+              <i class="fa-solid fa-address-book" style="color: var(--gold-primary);"></i> Governance & Official Contacts
+            </h3>
+            <div style="font-size: 0.88rem; line-height: 1.8;">
+              <p><strong>President / Chairman:</strong> <span id="drawerPresident">-</span></p>
+              <p><strong>Secretary:</strong> <span id="drawerSecretary">-</span></p>
+              <p><strong>Phone:</strong> <span id="drawerPhone">-</span></p>
+              <p><strong>Official Email:</strong> <span id="drawerEmail">-</span></p>
+              <p><strong>Operating Address:</strong> <span id="drawerAddress">-</span></p>
+            </div>
+          </div>
+
+          <div style="background: #FFF; border-radius: 14px; padding: 20px; border: 1px solid #E2E8F0; box-shadow: var(--shadow-sm);">
+            <h3 style="font-family: 'Cinzel', serif; color: var(--primary-deep); font-size: 1.15rem; margin-bottom: 14px;">
+              <i class="fa-solid fa-hand-holding-dollar" style="color: var(--accent-mint);"></i> Linked Government Schemes
+            </h3>
+            <div id="drawerSchemesList"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: Add New Cooperative Community ================= -->
+  <div class="modal-overlay" id="addCoopModal">
+    <div class="modal-box" style="max-width: 640px; max-height: 86vh; overflow-y: auto;">
+      <button class="modal-close-btn" onclick="closeAddCoopModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div style="text-align: center; margin-bottom: 18px;">
+        <i class="fa-solid fa-people-roof" style="font-size: 2.2rem; color: var(--gold-primary);"></i>
+        <h2 style="font-family: 'Cinzel', serif; color: var(--primary-deep); margin-top: 8px;">
+          Register New Cooperative Community
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Add a new cooperative society to the apex directory. Farmers will be able to join it from Community &amp; Support.
+        </p>
+      </div>
+
+      <form id="addCoopForm" onsubmit="handleAddCooperative(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Society Name *</label>
+            <input type="text" id="newCoopName" class="form-control" placeholder="e.g. Krishna Valley Farmers Co-op" required />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Short Name</label>
+            <input type="text" id="newCoopShortName" class="form-control" placeholder="e.g. Krishna Valley" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Registration No.</label>
+            <input type="text" id="newCoopRegNo" class="form-control" placeholder="e.g. MH/PUN/COOP/AGRI/2024-101" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Sector / Type *</label>
+            <select id="newCoopType" class="form-control" required>
+              <option value="Horticulture & Crops">Horticulture & Crops</option>
+              <option value="Dairy, Livestock & Grains">Dairy, Livestock & Grains</option>
+              <option value="Marine & Fisheries">Marine & Fisheries</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Established Year</label>
+            <input type="number" id="newCoopEstablished" class="form-control" placeholder="e.g. 2024" min="1900" max="2100" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">District *</label>
+            <input type="text" id="newCoopDistrict" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">State *</label>
+            <input type="text" id="newCoopState" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">PIN Code</label>
+            <input type="text" id="newCoopPincode" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Nearby Zone</label>
+            <input type="text" id="newCoopNearbyZone" class="form-control" placeholder="e.g. Within 15 km" />
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Address</label>
+            <input type="text" id="newCoopAddress" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">President</label>
+            <input type="text" id="newCoopPresident" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Secretary</label>
+            <input type="text" id="newCoopSecretary" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Phone</label>
+            <input type="text" id="newCoopPhone" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Email</label>
+            <input type="email" id="newCoopEmail" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Member Capacity (seats)</label>
+            <input type="number" id="newCoopMemberCapacity" class="form-control" min="1" placeholder="e.g. 25" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Commission Rate</label>
+            <input type="text" id="newCoopCommissionRate" class="form-control" placeholder="e.g. 1.5% Pooled Maintenance" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Storage Capacity</label>
+            <input type="text" id="newCoopStorageCapacity" class="form-control" placeholder="e.g. 5,000 MT Cold Storage" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Fleet Size</label>
+            <input type="text" id="newCoopFleetSize" class="form-control" placeholder="e.g. 6 Reefer Trucks" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Min. Weight Threshold (kg)</label>
+            <input type="number" id="newCoopMinWeight" class="form-control" value="50" min="1" />
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Banner Image URL</label>
+            <input type="url" id="newCoopBannerImage" class="form-control" placeholder="https://..." />
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">Description</label>
+            <textarea id="newCoopDescription" class="form-control" rows="2" placeholder="Short description of the community and what it handles..."></textarea>
+          </div>
+        </div>
+
+        <div id="addCoopFormError" style="color: #DC2626; font-size: 0.82rem; margin-top: 6px; display: none;"></div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button type="button" class="btn-luxury-outline" style="flex: 1;" onclick="closeAddCoopModal()">Cancel</button>
+          <button type="submit" class="btn-luxury-gold" style="flex: 1;"><i class="fa-solid fa-circle-plus"></i> Add Community</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: > 50kg Policy Rules Guide ================= -->
+  <div class="modal-overlay" id="consignmentPolicyModal">
+    <div class="modal-box" style="max-width: 600px;">
+      <button class="modal-close-btn" onclick="document.getElementById('consignmentPolicyModal').classList.remove('open')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div style="text-align: center; margin-bottom: 18px;">
+        <i class="fa-solid fa-scale-balanced" style="font-size: 2.2rem; color: var(--gold-primary);"></i>
+        <h2 style="font-family: 'Cinzel', serif; color: var(--primary-deep); margin-top: 8px;">
+          > 50kg Farmer Selling Policy
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Understanding Direct Farmer Sales vs. Cooperative Society Aggregation
+        </p>
+      </div>
+
+      <div style="background: #F8F9FA; border-radius: 12px; padding: 16px; margin-bottom: 16px; font-size: 0.88rem;">
+        <h4 style="color: var(--primary-deep); margin-bottom: 6px;">
+          <i class="fa-solid fa-circle-check" style="color: #16A34A;"></i> 1. Volume &gt; 50 kg (Dual-Option Selling)
+        </h4>
+        <p style="color: var(--text-main); margin-bottom: 8px;">
+          When a farmer harvests more than 50 kg (e.g. 500 kg tomatoes, 20 quintals onions, or 200L milk), they have two authorized pathways:
+        </p>
+        <ul style="padding-left: 20px; line-height: 1.7; color: var(--text-main);">
+          <li><strong>Option A: Sell through Cooperative Society:</strong> The farmer routes produce via a nearby society. The society provides bulk grading, cold storage, refrigerated transport, and locks in wholesale contracts with luxury buyers.</li>
+          <li><strong>Option B: Sell Directly (Farmer Direct):</strong> The farmer bypasses the society and lists directly on the Samruddhi Setu marketplace as an independent grower with direct farm-gate pickup.</li>
+        </ul>
+      </div>
+
+      <div style="background: #F8F9FA; border-radius: 12px; padding: 16px; font-size: 0.88rem;">
+        <h4 style="color: var(--primary-deep); margin-bottom: 6px;">
+          <i class="fa-solid fa-box" style="color: var(--primary);"></i> 2. Volume &le; 50 kg (Direct D2C Mode)
+        </h4>
+        <p style="color: var(--text-main);">
+          Smaller household quantities are listed directly on the consumer marketplace for instant bike delivery without requiring cooperative consignment handling.
+        </p>
+      </div>
+
+      <button class="btn-luxury-gold" style="width: 100%; margin-top: 18px;" onclick="document.getElementById('consignmentPolicyModal').classList.remove('open')">
+        Understood & Close
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/i18n.js?v=7"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+
+  <script>
+    const ADMIN_PASSKEY = "admin123";
+    let currentCooperatives = [];
+    let currentActiveCoopId = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      checkAdminAuth();
+      await loadCooperativesData();
+      await loadLogisticsApplications();
+    });
+
+    /* ===================== Logistics partner approvals ===================== */
+
+    let lgApplications = [];
+
+    async function loadLogisticsApplications() {
+      const host = document.getElementById("lgQueueContainer");
+      if (!host) return;
+      try {
+        const snap = await window.AgriSetuDB.db.collection("logisticsApplications").get();
+        lgApplications = snap.docs.map(d => ({ _id: d.id, ...d.data() }))
+          .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+        renderLogisticsApplications();
+      } catch (e) {
+        host.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Could not load the approval queue.</p></div>`;
+      }
+    }
+
+    function renderLogisticsApplications() {
+      const host = document.getElementById("lgQueueContainer");
+      const pending = lgApplications.filter(a => (a.approvalStatus || "pending_review") === "pending_review");
+      document.getElementById("lgQueueBadge").innerText = `${pending.length} pending`;
+
+      if (!lgApplications.length) {
+        host.innerHTML = `
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+            <i class="fa-solid fa-inbox" style="font-size:2rem; color:#C9D8D0; display:block; margin-bottom:12px;"></i>
+            <p>No logistics partner applications have been submitted yet.</p>
+          </div>`;
+        return;
+      }
+
+      host.innerHTML = lgApplications.map(a => {
+        const st = a.approvalStatus || "pending_review";
+        const badge = st === "approved"
+          ? `<span class="lg-badge approved"><i class="fa-solid fa-circle-check"></i> Approved</span>`
+          : st === "rejected"
+          ? `<span class="lg-badge rejected"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>`
+          : `<span class="lg-badge pending"><i class="fa-solid fa-clock"></i> Pending Review</span>`;
+        const v = a.vehicle || {};
+        const docs = Object.entries(a.documents || {});
+
+        return `
+        <div class="lg-status-row" style="align-items:flex-start; flex-wrap:wrap;">
+          <div class="lg-status-ico" style="background:#EEF2FF; color:#3730A3;"><i class="fa-solid fa-truck-fast"></i></div>
+          <div class="lg-status-body" style="min-width:240px;">
+            <div class="t">${a.name} <span style="font-weight:600; color:var(--text-muted); font-size:0.82rem;">(${a.id})</span></div>
+            <div class="s">
+              <i class="fa-solid fa-envelope"></i> ${a.email} &nbsp;•&nbsp;
+              <i class="fa-solid fa-phone"></i> ${a.phone} &nbsp;•&nbsp;
+              ${a.workerType === "large_transport" ? "Large Transport" : "Delivery Agent"}
+            </div>
+            <div class="s" style="margin-top:4px;">
+              <i class="fa-solid fa-location-dot"></i> ${a.address || "—"}
+            </div>
+            <div class="s" style="margin-top:4px;">
+              <i class="fa-solid fa-car"></i> ${v.make || "—"} ${v.model || ""} · <strong>${v.plate || "—"}</strong> · ${v.capacityKg || "—"} kg
+            </div>
+            <div class="s" style="margin-top:6px;">
+              <i class="fa-solid fa-paperclip"></i> ${docs.length} document${docs.length === 1 ? "" : "s"} submitted:
+              ${docs.map(([k, d]) => `<span style="display:inline-block; background:#F1F5F9; border-radius:5px; padding:1px 7px; margin:2px 3px 0 0; font-size:0.72rem;">${k}</span>`).join("")}
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px; margin-left:auto;">
+            ${badge}
+            ${st === "pending_review" ? `
+              <div style="display:flex; gap:8px;">
+                <button class="btn-luxury-outline" style="padding:7px 14px; font-size:0.78rem;" onclick="setApplicationStatus('${a._id}','rejected')">
+                  <i class="fa-solid fa-xmark"></i> Reject
+                </button>
+                <button class="btn-luxury-gold" style="padding:7px 14px; font-size:0.78rem;" onclick="setApplicationStatus('${a._id}','approved')">
+                  <i class="fa-solid fa-check"></i> Approve
+                </button>
+              </div>` : `
+              <button class="btn-luxury-outline" style="padding:7px 14px; font-size:0.78rem;" onclick="setApplicationStatus('${a._id}','pending_review')">
+                <i class="fa-solid fa-rotate-left"></i> Re-open Review
+              </button>`}
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    window.setApplicationStatus = async function (docId, status) {
+      const app = lgApplications.find(a => a._id === docId);
+      if (!app) return;
+      try {
+        const docs = { ...(app.documents || {}) };
+        Object.keys(docs).forEach(k => { docs[k] = { ...docs[k], status: status === "approved" ? "approved" : status === "rejected" ? "rejected" : "pending_review" }; });
+
+        await window.AgriSetuDB.db.collection("logisticsApplications").doc(docId).set(
+          { approvalStatus: status, documents: docs, reviewedAt: new Date().toISOString() }, { merge: true }
+        );
+
+        // Mirror the decision onto the partner's user record so the dashboard unlocks
+        const usersSnap = await window.AgriSetuDB.db.collection("users").get();
+        const match = usersSnap.docs.find(d => (d.data().applicationId === app.id) || (d.data().email === app.email && d.data().role === "logistics"));
+        if (match) {
+          await window.AgriSetuDB.db.collection("users").doc(match.id).set(
+            { approvalStatus: status, verified: status === "approved" }, { merge: true }
+          );
+        }
+
+        showToast(status === "approved" ? `✅ ${app.name} approved — dashboard unlocked.`
+                : status === "rejected" ? `❌ ${app.name}'s application was rejected.`
+                : `↩️ ${app.name}'s application re-opened for review.`);
+        await loadLogisticsApplications();
+      } catch (e) {
+        console.error(e);
+        showToast("❌ Could not update the application status.");
+      }
+    };
+
+    function checkAdminAuth() {
+      const isAuth = sessionStorage.getItem("samruddhi_admin_auth") === "true";
+      const storedUser = SamruddhiAuth.getStoredUser();
+      const gate = document.getElementById("adminSecurityGateModal");
+
+      if (isAuth && storedUser && storedUser.role === "admin") {
+        if (gate) gate.classList.remove("open");
+      } else {
+        if (gate) {
+          gate.classList.add("open");
+          const input = document.getElementById("gateAdminPassword");
+          if (input) input.focus();
+        }
+      }
+    }
+
+    window.verifyAdminGatePassword = function(e) {
+      e.preventDefault();
+      const input = document.getElementById("gateAdminPassword").value;
+      if (input === ADMIN_PASSKEY) {
+        sessionStorage.setItem("samruddhi_admin_auth", "true");
+        const adminUser = {
+          uid: `admin-${Date.now()}`,
+          name: "Cooperative Admin",
+          email: "registrar@samruddhisetu.in",
+          role: "admin",
+          verified: true,
+          avatar: "assets/default-avatar.jpg"
+        };
+        SamruddhiAuth.setStoredUser(adminUser);
+        document.getElementById("adminSecurityGateModal").classList.remove("open");
+        showToast("✅ Admin Authentication Verified! Welcome to Societies Apex.");
+      } else {
+        showToast("❌ Incorrect Admin Password!");
+        document.getElementById("gateAdminPassword").value = "";
+        document.getElementById("gateAdminPassword").focus();
+      }
+    };
+
+    window.lockAdminPortal = function() {
+      sessionStorage.removeItem("samruddhi_admin_auth");
+      showToast("🔒 Admin Portal Locked. Password required to re-enter.");
+      checkAdminAuth();
+    };
+
+    async function loadCooperativesData() {
+      try {
+        const coopSnapshot = await window.AgriSetuDB.db.collection("cooperatives").get();
+        currentCooperatives = coopSnapshot.docs.map(d => d.data());
+        renderCooperatives(currentCooperatives);
+        updateTopMetrics();
+      } catch (e) {
+        console.error("Error loading cooperatives:", e);
+      }
+    }
+
+    function renderCooperatives(coops) {
+      const container = document.getElementById("coopGridContainer");
+      const badge = document.getElementById("coopCountBadge");
+      if (!container) return;
+
+      if (badge) badge.innerText = `Showing ${coops.length} societies`;
+
+      if (coops.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: #FFF; border-radius: 16px;">
+            <i class="fa-solid fa-building-circle-xmark" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 12px;"></i>
+            <h3>No cooperative societies match your filter.</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Try adjusting your search keywords or resetting the sector filter.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = coops.map(coop => `
+        <div class="coop-card" onclick="openSocietyProfile('${coop.id}')">
+          <div class="coop-card-media">
+            <img src="${coop.bannerImage}" class="coop-card-img" alt="${coop.name}" />
+            <span class="coop-badge-type">${coop.type}</span>
+            <span class="coop-badge-verified"><i class="fa-solid fa-check"></i> Verified Apex</span>
+          </div>
+
+          <div class="coop-card-body">
+            <h3 class="coop-title">${coop.name}</h3>
+            <div class="coop-reg">REG NO: ${coop.regNo}</div>
+
+            <div class="coop-info-row">
+              <i class="fa-solid fa-location-dot"></i>
+              <span>${coop.district}, ${coop.state}</span>
+            </div>
+            <div class="coop-info-row">
+              <i class="fa-solid fa-route"></i>
+              <span><strong>Nearby Zone:</strong> ${coop.nearbyZone}</span>
+            </div>
+            <div class="coop-info-row">
+              <i class="fa-solid fa-user-tie"></i>
+              <span><strong>President:</strong> ${coop.president}</span>
+            </div>
+
+            <div class="coop-stats-bar">
+              <div class="coop-stats-item">
+                <strong>${coop.totalMembers}</strong>
+                <span>Members</span>
+              </div>
+              <div class="coop-stats-item">
+                <strong>${coop.fleetSize.split(" ")[0]}</strong>
+                <span>Reefer Fleet</span>
+              </div>
+              <div class="coop-stats-item">
+                <strong style="color:#16A34A;">${coop.commissionRate.split(" ")[0]}</strong>
+                <span>Fee Rate</span>
+              </div>
+            </div>
+
+            <div class="coop-card-action">
+              <span style="font-size: 0.78rem; color: var(--primary); font-weight: 700;">
+                <i class="fa-solid fa-box-open"></i> Tap to View Farmers & Produce
+              </span>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-luxury-outline" title="Delete Community" style="padding: 6px 10px; font-size: 0.8rem; color: #DC2626; border-color: #FCA5A5;" onclick="event.stopPropagation(); deleteCooperative('${coop.id}')">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+                <button class="btn-luxury-gold" style="padding: 6px 14px; font-size: 0.8rem;" onclick="event.stopPropagation(); openSocietyProfile('${coop.id}')">
+                  Profile →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function filterCooperativeSocieties() {
+      const query = (document.getElementById("coopSearchInput")?.value || "").toLowerCase();
+      const sector = document.getElementById("coopSectorFilter")?.value || "all";
+
+      const filtered = currentCooperatives.filter(c => {
+        const matchesQuery = 
+          c.name.toLowerCase().includes(query) ||
+          c.district.toLowerCase().includes(query) ||
+          c.type.toLowerCase().includes(query) ||
+          c.nearbyZone.toLowerCase().includes(query);
+
+        const matchesSector = 
+          sector === "all" || 
+          c.type.toLowerCase().includes(sector.toLowerCase());
+
+        return matchesQuery && matchesSector;
+      });
+
+      renderCooperatives(filtered);
+    }
+
+    function resetCoopFilters() {
+      if (document.getElementById("coopSearchInput")) document.getElementById("coopSearchInput").value = "";
+      if (document.getElementById("coopSectorFilter")) document.getElementById("coopSectorFilter").value = "all";
+      renderCooperatives(currentCooperatives);
+    }
+
+    async function updateTopMetrics() {
+      try {
+        const usersSnap = await window.AgriSetuDB.db.collection("users").get();
+        const memberFarmers = usersSnap.docs.filter(d => d.data().role === "farmer" && d.data().societyId);
+        
+        const prodsSnap = await window.AgriSetuDB.db.collection("products").get();
+        const bulkSnap = await window.AgriSetuDB.db.collection("bulkProducts").get();
+        
+        const allItems = [...prodsSnap.docs.map(d => d.data()), ...bulkSnap.docs.map(d => d.data())];
+        const soldItems = allItems.filter(i => i.saleStatus === "sold" && i.societyId);
+
+        if (document.getElementById("metricCoopCount")) document.getElementById("metricCoopCount").innerText = currentCooperatives.length;
+        if (document.getElementById("metricFarmerCount")) document.getElementById("metricFarmerCount").innerText = memberFarmers.length;
+        if (document.getElementById("metricSoldRatio")) document.getElementById("metricSoldRatio").innerText = `${soldItems.length} Lots Sold`;
+      } catch (e) {
+        console.warn("Error calculating metrics:", e);
+      }
+    }
+
+    // ================= Interactive Society Profile Drawer =================
+    window.openSocietyProfile = async function(coopId) {
+      currentActiveCoopId = coopId;
+      const coop = currentCooperatives.find(c => c.id === coopId);
+      if (!coop) return;
+
+      // Populate Header & Overview
+      document.getElementById("drawerCoopName").innerText = coop.name;
+      document.getElementById("drawerCoopType").innerText = coop.type;
+      document.getElementById("drawerCoopReg").innerText = `Reg: ${coop.regNo} • Est. ${coop.established}`;
+      document.getElementById("drawerStorageCap").innerText = coop.storageCapacity;
+      document.getElementById("drawerFleetSize").innerText = coop.fleetSize;
+      document.getElementById("drawerCommission").innerText = coop.commissionRate;
+      document.getElementById("drawerNearbyZone").innerText = coop.nearbyZone;
+      document.getElementById("drawerPresident").innerText = coop.president;
+      document.getElementById("drawerSecretary").innerText = coop.secretary || "Official Secretariat";
+      document.getElementById("drawerPhone").innerText = coop.phone;
+      document.getElementById("drawerEmail").innerText = coop.email;
+      document.getElementById("drawerAddress").innerText = coop.address;
+
+      // Render Schemes
+      const schemesContainer = document.getElementById("drawerSchemesList");
+      schemesContainer.innerHTML = (coop.activeSchemes || []).map(s => `
+        <span class="role-badge-pill" style="margin: 3px 4px 3px 0; background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; font-size: 0.78rem;">
+          <i class="fa-solid fa-check"></i> ${s}
+        </span>
+      `).join("");
+
+      // Load Farmers in this society
+      await loadSocietyFarmers(coopId);
+
+      // Load Products sold through this society
+      await loadSocietyProducts(coopId);
+
+      // Open Modal Drawer
+      document.getElementById("societyProfileModal").classList.add("open");
+    };
+
+    window.closeSocietyDrawer = function() {
+      document.getElementById("societyProfileModal").classList.remove("open");
+      currentActiveCoopId = null;
+    };
+
+    window.closeDrawerOnOutsideClick = function(e) {
+      if (e.target.id === "societyProfileModal") {
+        closeSocietyDrawer();
+      }
+    };
+
+    window.switchDrawerTab = function(tabName) {
+      document.getElementById("tabBtnFarmers").classList.toggle("active", tabName === "farmers");
+      document.getElementById("tabBtnProducts").classList.toggle("active", tabName === "products");
+      document.getElementById("tabBtnOverview").classList.toggle("active", tabName === "overview");
+
+      document.getElementById("drawerTabFarmers").style.display = tabName === "farmers" ? "block" : "none";
+      document.getElementById("drawerTabProducts").style.display = tabName === "products" ? "block" : "none";
+      document.getElementById("drawerTabOverview").style.display = tabName === "overview" ? "block" : "none";
+    };
+
+    async function loadSocietyFarmers(coopId) {
+      const container = document.getElementById("drawerFarmerList");
+      const usersSnap = await window.AgriSetuDB.db.collection("users").get();
+      const farmers = usersSnap.docs
+        .map(d => d.data())
+        .filter(u => u.role === "farmer" && u.societyId === coopId);
+
+      document.getElementById("tabFarmerCount").innerText = farmers.length;
+
+      if (farmers.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);">No farmers registered under this society yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = farmers.map(f => `
+        <div class="farmer-member-item">
+          <img src="${f.avatar || 'assets/default-avatar.jpg'}" style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-mint);" />
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <strong style="color: var(--primary-deep); font-size: 1rem;">${f.name}</strong>
+              <span class="verified-pill" style="font-size: 0.68rem; padding: 2px 8px;"><i class="fa-solid fa-circle-check"></i> Verified Member</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;">
+              <i class="fa-solid fa-location-dot"></i> ${f.location} • <strong>Farm/Herd:</strong> ${f.farmSize || f.herdSize || 'Registered Producer'}
+            </div>
+            <div style="font-size: 0.78rem; color: var(--text-main); margin-top: 4px;">
+              <strong>Crops / Output:</strong> ${(f.cropsGrown || f.productionType || []).join(", ") || 'Agricultural Harvest'}
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">Cleared Earnings</span>
+            <strong style="color: var(--primary-deep); font-size: 0.95rem;">₹${(f.earningsCleared || 0).toLocaleString()}</strong>
+            <a href="tel:${f.phone}" style="display: inline-block; margin-top: 6px; font-size: 0.75rem; color: var(--primary); font-weight: 700;">
+              <i class="fa-solid fa-phone"></i> Contact
+            </a>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function loadSocietyProducts(coopId) {
+      const container = document.getElementById("drawerProductList");
+      const prodsSnap = await window.AgriSetuDB.db.collection("products").get();
+      const bulkSnap = await window.AgriSetuDB.db.collection("bulkProducts").get();
+
+      const allItems = [
+        ...prodsSnap.docs.map(d => ({ ...d.data(), isBulk: false })),
+        ...bulkSnap.docs.map(d => ({ ...d.data(), isBulk: true }))
+      ];
+
+      const societyProducts = allItems.filter(i => i.societyId === coopId);
+      document.getElementById("tabProductCount").innerText = societyProducts.length;
+
+      if (societyProducts.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);">No products currently linked to this society.</div>`;
+        return;
+      }
+
+      container.innerHTML = societyProducts.map(p => {
+        const isSold = (p.saleStatus === "sold");
+        const statusClass = isSold ? "sold" : "available";
+        const statusLabel = isSold ? "Sold Out" : "Available";
+
+        return `
+          <div class="product-coop-item">
+            <img src="${p.imageURL}" class="product-img-thumb" alt="${p.title}" />
+            <div style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                <strong style="color: var(--primary-deep); font-size: 0.95rem;">${p.title}</strong>
+                <span class="status-pill ${statusClass}">
+                  <i class="fa-solid ${isSold ? 'fa-lock' : 'fa-circle-check'}"></i> ${statusLabel}
+                </span>
+              </div>
+
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">
+                👨‍🌾 <strong>Farmer:</strong> ${p.farmerName} • <i class="fa-solid fa-scale-balanced"></i> <strong>Weight / Vol:</strong> ${p.weightKg ? p.weightKg + ' kg' : p.stockDisplay || (p.stockQuantity + ' ' + p.unit)}
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 12px; font-size: 0.84rem;">
+                <span style="color: var(--primary); font-weight: 700;">Price: ₹${p.price}/${p.unit}</span>
+                <span style="color: var(--text-muted); text-decoration: line-through;">Mandi: ₹${p.mandiPrice}/${p.unit}</span>
+                <span class="role-badge-pill" style="font-size: 0.68rem; padding: 2px 6px;">${p.aiGrade || 'Grade A'}</span>
+              </div>
+            </div>
+
+            <!-- Status Toggle Button -->
+            <div style="text-align: right; flex-shrink: 0;">
+              <button 
+                class="${isSold ? 'btn-luxury-outline' : 'btn-luxury-gold'}" 
+                style="padding: 6px 12px; font-size: 0.76rem;" 
+                onclick="toggleProductSaleStatus('${p.id}', ${p.isBulk}, '${isSold ? 'available' : 'sold'}')">
+                <i class="fa-solid ${isSold ? 'fa-rotate-left' : 'fa-check'}"></i> 
+                ${isSold ? 'Mark Available' : 'Mark as Sold'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    window.toggleProductSaleStatus = async function(productId, isBulk, newStatus) {
+      try {
+        const colName = isBulk ? "bulkProducts" : "products";
+        await window.AgriSetuDB.db.collection(colName).doc(productId).update({
+          saleStatus: newStatus
+        });
+        showToast(`Product status updated to '${newStatus.toUpperCase()}'!`);
+        if (currentActiveCoopId) {
+          await loadSocietyProducts(currentActiveCoopId);
+        }
+        updateTopMetrics();
+      } catch (err) {
+        showToast("Error updating product status: " + err.message);
+      }
+    };
+
+    window.openConsignmentGuideModal = function() {
+      document.getElementById("consignmentPolicyModal").classList.add("open");
+    };
+
+    // ===================== Add Cooperative Community =====================
+
+    window.openAddCoopModal = function() {
+      document.getElementById("addCoopForm").reset();
+      document.getElementById("newCoopMinWeight").value = 50;
+      const errBox = document.getElementById("addCoopFormError");
+      errBox.style.display = "none";
+      errBox.innerText = "";
+      document.getElementById("addCoopModal").classList.add("open");
+    };
+
+    window.closeAddCoopModal = function() {
+      document.getElementById("addCoopModal").classList.remove("open");
+    };
+
+    function slugifyCoopId(name) {
+      const base = (name || "").toLowerCase().trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+      const suffix = Date.now().toString(36).slice(-5);
+      return `coop-${base || "society"}-${suffix}`;
+    }
+
+    window.handleAddCooperative = async function(event) {
+      event.preventDefault();
+      const errBox = document.getElementById("addCoopFormError");
+      errBox.style.display = "none";
+
+      const name = document.getElementById("newCoopName").value.trim();
+      const district = document.getElementById("newCoopDistrict").value.trim();
+      const state = document.getElementById("newCoopState").value.trim();
+
+      if (!name || !district || !state) {
+        errBox.innerText = "Please fill in the required fields: Society Name, District and State.";
+        errBox.style.display = "block";
+        return;
+      }
+
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      const originalBtnHtml = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+
+      try {
+        const newId = slugifyCoopId(name);
+        const memberCapacityVal = parseInt(document.getElementById("newCoopMemberCapacity").value, 10);
+        const establishedVal = parseInt(document.getElementById("newCoopEstablished").value, 10);
+        const minWeightVal = parseInt(document.getElementById("newCoopMinWeight").value, 10);
+
+        const newCoop = {
+          id: newId,
+          name: name,
+          shortName: document.getElementById("newCoopShortName").value.trim() || name,
+          regNo: document.getElementById("newCoopRegNo").value.trim() || "Pending Registration",
+          type: document.getElementById("newCoopType").value,
+          district: district,
+          state: state,
+          pinCode: document.getElementById("newCoopPincode").value.trim(),
+          address: document.getElementById("newCoopAddress").value.trim(),
+          nearbyZone: document.getElementById("newCoopNearbyZone").value.trim() || `${district} Belt (Nearby)`,
+          president: document.getElementById("newCoopPresident").value.trim() || "-",
+          secretary: document.getElementById("newCoopSecretary").value.trim() || "-",
+          phone: document.getElementById("newCoopPhone").value.trim() || "-",
+          email: document.getElementById("newCoopEmail").value.trim() || "-",
+          established: !isNaN(establishedVal) ? establishedVal : new Date().getFullYear(),
+          totalMembers: 0,
+          memberCapacity: !isNaN(memberCapacityVal) ? memberCapacityVal : 25,
+          activeFarmersCount: 0,
+          storageCapacity: document.getElementById("newCoopStorageCapacity").value.trim() || "Not specified",
+          fleetSize: document.getElementById("newCoopFleetSize").value.trim() || "Not specified",
+          commissionRate: document.getElementById("newCoopCommissionRate").value.trim() || "1.5% Pooled Maintenance",
+          minWeightKgThreshold: !isNaN(minWeightVal) ? minWeightVal : 50,
+          activeSchemes: [],
+          bannerImage: document.getElementById("newCoopBannerImage").value.trim() || "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&auto=format&fit=crop&q=80",
+          description: document.getElementById("newCoopDescription").value.trim() || "Newly registered cooperative community on Samruddhi Setu.",
+          rating: 0,
+          verified: false
+        };
+
+        await window.AgriSetuDB.db.collection("cooperatives").doc(newId).set(newCoop);
+
+        currentCooperatives.push(newCoop);
+        renderCooperatives(currentCooperatives);
+        updateTopMetrics();
+        closeAddCoopModal();
+        showToast(`✅ "${newCoop.name}" added to the cooperative directory!`);
+      } catch (err) {
+        errBox.innerText = "Error adding community: " + err.message;
+        errBox.style.display = "block";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+      }
+    };
+
+    // ===================== Delete Cooperative Community =====================
+
+    window.deleteCooperative = async function(coopId) {
+      if (!coopId) return;
+      const coop = currentCooperatives.find(c => c.id === coopId);
+      if (!coop) return;
+
+      // Check for linked farmers so the admin knows the impact before deleting
+      let linkedFarmerCount = 0;
+      try {
+        const usersSnap = await window.AgriSetuDB.db.collection("users").get();
+        linkedFarmerCount = usersSnap.docs
+          .map(d => d.data())
+          .filter(u => u.role === "farmer" && u.societyId === coopId).length;
+      } catch (e) { /* proceed without the count if lookup fails */ }
+
+      const warningLine = linkedFarmerCount > 0
+        ? `\n\n⚠️ ${linkedFarmerCount} farmer(s) are currently members of this community. They will be removed from it and will need to join another community to sell produce over the weight threshold.`
+        : "";
+
+      const confirmed = confirm(`Delete "${coop.name}"?\n\nThis will permanently remove the community from the directory.${warningLine}`);
+      if (!confirmed) return;
+
+      try {
+        // Un-link any member farmers from the deleted society
+        if (linkedFarmerCount > 0) {
+          const usersSnap = await window.AgriSetuDB.db.collection("users").get();
+          const linkedFarmers = usersSnap.docs.filter(d => {
+            const u = d.data();
+            return u.role === "farmer" && u.societyId === coopId;
+          });
+          await Promise.all(linkedFarmers.map(d =>
+            window.AgriSetuDB.db.collection("users").doc(d.id).set({ societyId: null, societyName: null }, { merge: true })
+          ));
+        }
+
+        await window.AgriSetuDB.db.collection("cooperatives").doc(coopId).delete();
+
+        currentCooperatives = currentCooperatives.filter(c => c.id !== coopId);
+        renderCooperatives(currentCooperatives);
+        updateTopMetrics();
+
+        if (currentActiveCoopId === coopId) {
+          closeSocietyDrawer();
+        }
+
+        showToast(`🗑️ "${coop.name}" has been deleted from the directory.`);
+      } catch (err) {
+        showToast("Error deleting community: " + err.message);
+      }
+    };
+  </script>
+
+  <!-- ========= Floating AgriMitra AI Assistant (Admin) ========= -->
+<script src="js/gemini-service.js?v=7"></script>
+<script src="js/global-chatbot.js?v=1"></script></body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Seeder & Firebase Sync | Samruddhi Setu</title>
+  <meta name="description" content="One-click database seeder for Firebase Firestore and local reactive storage with cooperative societies, farmers, produce lots, and sales tracking.">
+
+  <!-- Favicon / Logo -->
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6.5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="css/style.css?v=7">
+
+  <style>
+    .seed-hero {
+      background: linear-gradient(135deg, #081C15 0%, #1B4332 50%, #2D6A4F 100%);
+      color: #FFF;
+      padding: 44px 24px;
+      border-radius: 24px;
+      margin-bottom: 30px;
+      border: 1px solid var(--border-gold);
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      position: relative;
+    }
+
+    .seed-btn-cta {
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-primary) 100%);
+      color: #081C15;
+      font-size: 1.15rem;
+      font-weight: 800;
+      padding: 16px 36px;
+      border-radius: 40px;
+      border: 2px solid #FFF;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(212, 163, 115, 0.45);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .seed-btn-cta:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(212, 163, 115, 0.6);
+      background: #FFF;
+      color: var(--primary-deep);
+    }
+    .seed-btn-cta:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .seed-collections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin: 24px 0;
+    }
+
+    .seed-collection-card {
+      background: #FFF;
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid #E2E8F0;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: var(--transition-fast);
+    }
+    .seed-collection-card:hover {
+      border-color: var(--accent-mint);
+      box-shadow: var(--shadow-md);
+    }
+
+    .seed-icon-bubble {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #ECFDF5;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .seed-console-window {
+      background: #081C15;
+      color: #A7F3D0;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border-gold);
+      height: 250px;
+      overflow-y: auto;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .progress-bar-wrap {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 30px;
+      height: 12px;
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto 0 auto;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-bar-inner {
+      background: linear-gradient(90deg, var(--accent-mint), var(--gold-light));
+      height: 100%;
+      width: 0%;
+      border-radius: 30px;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Utility Bar -->
+  <div class="top-utility-bar">
+    <div class="top-helpline-info">
+      <i class="fa-solid fa-database" style="color:var(--gold-light);"></i>
+      <span>Samruddhi Setu Universal Database Seeder & Firebase Synchronizer</span>
+    </div>
+    <div class="top-right-tools">
+      <a href="admin.html" class="btn-luxury-outline" style="padding: 4px 12px; font-size: 0.78rem; color: #FFF; border-color: var(--gold-primary);">
+        <i class="fa-solid fa-building-columns"></i> Societies Hub
+      </a>
+      <select class="lang-selector-select" onchange="window.i18n.setLanguage(this.value)">
+        <option value="en">English (Global)</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="main-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo-wrap">
+        <img src="assets/logo.jpg" alt="Samruddhi Setu Logo" class="brand-logo-img" />
+        <div class="brand-text-block">
+          <h2>SAMRUDDHI SETU</h2>
+          <p>Database & Cloud Sync Control</p>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="seed.html" class="nav-item active"><i class="fa-solid fa-database"></i> Database Seeder</a></li>
+        <li><a href="admin.html" class="nav-item"><i class="fa-solid fa-building-columns"></i> Admin Societies</a></li>
+        <li><a href="farmer-dashboard.html" class="nav-item"><i class="fa-solid fa-tractor"></i> Farmer Portal</a></li>
+        <li><a href="consumer-marketplace.html" class="nav-item"><i class="fa-solid fa-store"></i> Marketplace</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="index.html" class="btn-luxury-outline"><i class="fa-solid fa-house"></i> Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================= SEEDER CONTENT ================= -->
+  <div class="dashboard-view-container">
+
+    <!-- Hero Card -->
+    <div class="seed-hero">
+      <span style="background: rgba(212, 163, 115, 0.25); color: var(--gold-light); padding: 4px 14px; border-radius: 30px; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; border: 1px solid var(--border-gold);">
+        <i class="fa-solid fa-bolt"></i> One-Click Firestore Engine
+      </span>
+
+      <h1 style="font-family: 'Cinzel', serif; font-size: 2.3rem; margin-top: 14px;">
+        Seed All Agricultural & Cooperative Data into Firebase
+      </h1>
+      <p style="max-width: 680px; margin: 10px auto 0 auto; font-size: 0.95rem; color: rgba(255, 255, 255, 0.88);">
+        Populate or reset the entire platform database with cooperative societies, verified farmers, bulk &gt;50kg lots, direct fresh produce, sales tracking statuses, and cold-chain orders. This seed contains <strong id="seedTotalDocs">…</strong> documents and every one is written to Firestore when a live project is connected.
+      </p>
+
+      <!-- Primary Action Button -->
+      <div>
+        <button class="seed-btn-cta" id="seedDatabaseBtn" onclick="runDatabaseSeed()">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Click to Seed Database (Firebase & Local)
+        </button>
+      </div>
+
+      <!-- Animated Progress Bar -->
+      <div class="progress-bar-wrap" id="seedProgressBarWrap">
+        <div class="progress-bar-inner" id="seedProgressBar"></div>
+      </div>
+      <div id="seedProgressLabel" style="margin-top: 8px; font-size: 0.82rem; color: var(--gold-light); font-weight: 600;"></div>
+    </div>
+
+    <!-- Collection Counters Grid -->
+    <h3 style="font-family: 'Cinzel', serif; color: var(--primary-deep); font-size: 1.25rem; margin-bottom: 8px;">
+      <i class="fa-solid fa-table-cells"></i> Database Collections Included in Seed
+    </h3>
+
+    <div class="seed-collections-grid" id="seedCollectionsGrid">
+      <div class="seed-collection-card"><div class="seed-icon-bubble"><i class="fa-solid fa-spinner fa-spin"></i></div>
+        <div><div style="font-weight:800; color:var(--primary-deep);">Loading…</div>
+        <div style="font-size:0.78rem; color:var(--text-muted);">Reading seed catalogue</div></div></div>
+    </div>
+
+    <!-- Per-category catalogue breakdown -->
+    <div style="background:#FFF; border-radius:16px; padding:20px 22px; border:1px solid #E2E8F0; box-shadow:var(--shadow-sm); margin-bottom:24px;">
+      <h4 style="font-family:'Cinzel', serif; color:var(--primary-deep); font-size:1rem; margin-bottom:12px;">
+        <i class="fa-solid fa-layer-group" style="color:var(--gold-primary);"></i> Catalogue Breakdown by Category
+      </h4>
+      <div id="seedCategoryBreakdown" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:12px;"></div>
+        <div style="margin-top:22px;display:flex;align-items:center;justify-content:space-between;gap:12px;"><div><h3 style="margin:0;color:var(--primary-deep);">Supplied product photos</h3><p style="margin:4px 0;color:var(--text-muted);font-size:.8rem;">These exact files are uploaded with the seed catalogue and used by the marketplace.</p></div><span id="seedImageCount" style="font-size:.8rem;color:var(--text-muted);"></span></div><div id="seedProductPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:12px;"></div>
+    </div>
+
+    <!-- Live Seeding Console & Firebase Credentials Panel -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px;">
+      <!-- Console Window -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 style="font-family: 'Cinzel', serif; color: var(--primary-deep); font-size: 1.15rem;">
+            <i class="fa-solid fa-terminal"></i> Seeding Console Output
+          </h3>
+          <button class="btn-luxury-outline" style="padding: 3px 10px; font-size: 0.75rem;" onclick="clearConsole()">
+            Clear
+          </button>
+        </div>
+        <div class="seed-console-window" id="seedConsole">
+          <div>[System Ready] Click the "Click to Seed Database" button above to initiate seeding...</div>
+        </div>
+      </div>
+
+      <!-- Firebase Configuration Settings -->
+      <div style="background: #FFF; border-radius: 16px; padding: 22px; border: 1px solid #E2E8F0; box-shadow: var(--shadow-sm);">
+        <h3 style="font-family: 'Cinzel', serif; color: var(--primary-deep); font-size: 1.15rem; margin-bottom: 12px;">
+          <i class="fa-solid fa-sliders" style="color: var(--gold-primary);"></i> Firebase Project Configuration
+        </h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">
+          By default, the platform runs with <strong>Zero-Config Local Reactive Storage</strong>. To sync directly to your live Google Firebase Cloud Firestore, enter your project details:
+        </p>
+
+        <form id="firebaseConfigForm" onsubmit="saveFirebaseConfig(event)">
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label style="font-size: 0.78rem;">Firebase Project ID</label>
+            <input type="text" id="cfgProjectId" class="form-control" placeholder="e.g. samruddhi-setu-prod" style="padding: 8px 12px; font-size: 0.85rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label style="font-size: 0.78rem;">Web API Key</label>
+            <input type="text" id="cfgApiKey" class="form-control" placeholder="Your Gemini API key" style="padding: 8px 12px; font-size: 0.85rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label style="font-size: 0.78rem;">Storage Bucket</label>
+            <input type="text" id="cfgStorageBucket" class="form-control" placeholder="samruddhi-setu.appspot.com" style="padding: 8px 12px; font-size: 0.85rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label style="font-size: 0.78rem;">Auth Domain</label>
+            <input type="text" id="cfgAuthDomain" class="form-control" placeholder="samruddhi-setu.firebaseapp.com" style="padding: 8px 12px; font-size: 0.85rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 10px;">
+            <label style="font-size: 0.78rem;">Messaging Sender ID</label>
+            <input type="text" id="cfgSenderId" class="form-control" placeholder="109876543210" style="padding: 8px 12px; font-size: 0.85rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label style="font-size: 0.78rem;">App ID</label>
+            <input type="text" id="cfgAppId" class="form-control" placeholder="1:109876543210:web:abcdef" style="padding: 8px 12px; font-size: 0.85rem;" />
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button type="submit" class="btn-luxury-gold" style="flex: 1; padding: 10px; font-size: 0.85rem;">
+              Save & Test Firebase Config
+            </button>
+            <button type="button" class="btn-luxury-outline" style="padding: 10px 16px; font-size: 0.85rem;" onclick="resetToSandboxConfig()">
+              Use Sandbox
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Links -->
+    <div style="margin-top: 36px; padding: 24px; background: #FFF; border-radius: 16px; border: 1px solid #E2E8F0; text-align: center;">
+      <h4 style="color: var(--primary-deep); margin-bottom: 12px; font-family: 'Cinzel', serif;">
+        Navigate Across The Updated Platform
+      </h4>
+      <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+        <a href="admin.html" class="btn-luxury-gold" style="padding: 10px 20px; font-size: 0.88rem;">
+          <i class="fa-solid fa-building-columns"></i> Go to Societies Directory & Admin →
+        </a>
+        <a href="farmer-dashboard.html" class="btn-luxury-outline" style="padding: 10px 20px; font-size: 0.88rem;">
+          <i class="fa-solid fa-tractor"></i> Go to Farmer Dashboard (>50kg Selling) →
+        </a>
+        <a href="consumer-marketplace.html" class="btn-luxury-outline" style="padding: 10px 20px; font-size: 0.88rem;">
+          <i class="fa-solid fa-store"></i> Go to Consumer Marketplace →
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/i18n.js?v=7"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      loadStoredConfig();
+      renderSeedCounters();
+    });
+
+    /**
+     * Counters are derived from the live initialDataSeed object rather than
+     * being hard-coded, so they always match what the seeder will actually
+     * upload — including newly added produce and bulk lots.
+     */
+    function renderSeedCounters() {
+      const seed = (window.AgriSetuDB && window.AgriSetuDB.initialSeed) || {};
+
+      const META = {
+        cooperatives: { icon: "fa-building-columns", label: "Societies",    sub: "Horticulture, Dairy, Marine" },
+        users:        { icon: "fa-users",            label: "Users",        sub: "Farmers, Buyers, Fleet, Admin" },
+        products:     { icon: "fa-apple-whole",      label: "Products",     sub: "Retail fresh produce listings" },
+        bulkProducts: { icon: "fa-boxes-stacked",    label: "Bulk Lots",    sub: "> 50 kg & tonne consignments" },
+        orders:       { icon: "fa-truck-ramp-box",   label: "Orders",       sub: "Reefer cold-chain dispatches" },
+        schemes:      { icon: "fa-hand-holding-dollar", label: "Govt Schemes", sub: "PM-KISAN, PMMSY, AIF" },
+        forums:       { icon: "fa-comments",         label: "Forum Posts",  sub: "Farmer community threads" },
+      };
+
+      const grid = document.getElementById("seedCollectionsGrid");
+      grid.innerHTML = Object.keys(META).map(key => {
+        const n = Array.isArray(seed[key]) ? seed[key].length : 0;
+        const m = META[key];
+        const dim = n === 0 ? "opacity:0.55;" : "";
+        return `
+          <div class="seed-collection-card" style="${dim}">
+            <div class="seed-icon-bubble"><i class="fa-solid ${m.icon}"></i></div>
+            <div>
+              <div style="font-weight:800; font-size:1.2rem; color:var(--primary-deep);">${n} ${m.label}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">${n === 0 ? "None seeded — created at sign-up" : m.sub}</div>
+            </div>
+          </div>`;
+      }).join("");
+
+      // Category split across retail + bulk catalogues
+      const CATS = {
+        vegetables: "🥦 Vegetables", fruits: "🍇 Fruits", dairy: "🥛 A2 Dairy",
+        grains: "🌾 Grains & Millets", seafood: "🐟 Coastal Catch", poultry: "🥚 Poultry & Eggs"
+      };
+      const count = (arr, c) => (Array.isArray(arr) ? arr.filter(p => p.category === c).length : 0);
+
+      document.getElementById("seedCategoryBreakdown").innerHTML = Object.entries(CATS).map(([c, label]) => {
+        const r = count(seed.products, c);
+        const b = count(seed.bulkProducts, c);
+        return `
+          <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:12px 14px;">
+            <div style="font-size:0.85rem; font-weight:800; color:var(--primary-deep); margin-bottom:4px;">${label}</div>
+            <div style="font-size:0.78rem; color:var(--text-muted);">
+              <strong style="color:#15803D;">${r}</strong> retail &nbsp;·&nbsp; <strong style="color:#B45309;">${b}</strong> bulk
+            </div>
+          </div>`;
+      }).join("");
+
+      const preview = document.getElementById("seedProductPreview");
+      const supplied = [...(seed.products || []), ...(seed.bulkProducts || [])].filter(p => String(p.imageURL || "").startsWith("assets/products/")).filter((p, i, a) => a.findIndex(x => x.title === p.title) === i);
+      if (preview) preview.innerHTML = supplied.map(p => `<div style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;"><img src="${p.imageURL}" alt="${p.title}" style="width:100%;height:110px;object-fit:cover;display:block;" onerror="this.style.opacity='.25'"><div style="padding:8px;font-size:.72rem;font-weight:700;color:var(--primary-deep);line-height:1.25;">${p.title}</div></div>`).join("");
+      const imageCount = document.getElementById("seedImageCount"); if (imageCount) imageCount.textContent = `${supplied.length} supplied images mapped`;
+
+      const totalDocs = Object.values(seed).reduce((n, v) => n + (Array.isArray(v) ? v.length : 0), 0);
+      const totalEl = document.getElementById("seedTotalDocs");
+      if (totalEl) totalEl.innerText = totalDocs;
+      appendConsole(`📦 Seed catalogue loaded: <strong>${totalDocs}</strong> documents ready to upload (${(seed.products || []).length} products, ${(seed.bulkProducts || []).length} bulk lots).`);
+    }
+
+    function loadStoredConfig() {
+      const cfg = window.AgriSetuDB.getStoredConfig();
+      if (cfg) {
+        const isPlaceholder = !cfg.apiKey || String(cfg.apiKey).includes("Dummy");
+        if (document.getElementById("cfgProjectId")) document.getElementById("cfgProjectId").value = (cfg.projectId && cfg.projectId !== "samruddhi-setu") ? cfg.projectId : "";
+        if (document.getElementById("cfgApiKey")) document.getElementById("cfgApiKey").value = isPlaceholder ? "" : (cfg.apiKey || "");
+        if (document.getElementById("cfgStorageBucket")) document.getElementById("cfgStorageBucket").value = isPlaceholder ? "" : (cfg.storageBucket || "");
+        if (document.getElementById("cfgAuthDomain")) document.getElementById("cfgAuthDomain").value = isPlaceholder ? "" : (cfg.authDomain || "");
+        if (document.getElementById("cfgSenderId")) document.getElementById("cfgSenderId").value = isPlaceholder ? "" : (cfg.messagingSenderId || "");
+        if (document.getElementById("cfgAppId")) document.getElementById("cfgAppId").value = isPlaceholder ? "" : (cfg.appId || "");
+      }
+    }
+
+    function appendConsole(msg) {
+      const consoleEl = document.getElementById("seedConsole");
+      if (!consoleEl) return;
+      const row = document.createElement("div");
+      row.style.marginBottom = "4px";
+      row.innerHTML = `<span style="color:#6EE7B7;">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+      consoleEl.appendChild(row);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function clearConsole() {
+      const consoleEl = document.getElementById("seedConsole");
+      if (consoleEl) consoleEl.innerHTML = `<div>[Console Cleared]</div>`;
+    }
+
+    async function runDatabaseSeed() {
+      const btn = document.getElementById("seedDatabaseBtn");
+      const progressWrap = document.getElementById("seedProgressBarWrap");
+      const progressBar = document.getElementById("seedProgressBar");
+      const progressLabel = document.getElementById("seedProgressLabel");
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Seeding Database...`;
+      progressWrap.style.display = "block";
+      progressBar.style.width = "20%";
+      progressLabel.innerText = "Initializing database seeder...";
+
+      appendConsole("⚡ Initiating full database seed process...");
+
+      try {
+        const result = await window.AgriSetuDB.seedDatabase(null, (progress) => {
+          progressBar.style.width = `${progress.percent}%`;
+          if (progress.logs) {
+            progress.logs.forEach(log => appendConsole(log));
+          }
+        });
+
+        progressBar.style.width = "100%";
+
+        const synced = result.liveSyncedCount || 0;
+        const total = result.totalDocs || 0;
+        const failed = result.failed || 0;
+
+        if (synced > 0) {
+          progressLabel.innerText = `✅ ${synced}/${total} documents synced to Firebase${failed ? ` — ${failed} failed` : ""}`;
+          appendConsole(`✅ <strong>Firebase sync complete:</strong> ${synced} of ${total} documents uploaded.`);
+          showToast(`Seeded ${synced} documents to Firebase, including all products and bulk lots!`);
+        } else {
+          progressLabel.innerText = `✅ ${total} documents re-seeded into local storage`;
+          appendConsole(`✅ <strong>Local re-seed complete:</strong> ${total} documents written to this browser.`);
+          appendConsole(`⚠️ No live Firebase project is connected, so nothing was uploaded to the cloud. Enter your project details on the right to sync.`);
+          showToast(`Re-seeded ${total} documents locally. Connect Firebase to push them to the cloud.`);
+        }
+
+        btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> Database Seeded Successfully!`;
+        btn.style.background = "#16A34A";
+        btn.style.color = "#FFF";
+
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-rotate"></i> Re-Seed Database`;
+          btn.style.background = "";
+          btn.style.color = "";
+        }, 4000);
+
+      } catch (err) {
+        appendConsole(`❌ Seeding failed: ${err.message}`);
+        progressLabel.innerText = "Error during seeding: " + err.message;
+        btn.disabled = false;
+        btn.innerHTML = `Retry Database Seed`;
+      }
+    }
+
+    async function saveFirebaseConfig(e) {
+      e.preventDefault();
+      const projectId = document.getElementById("cfgProjectId").value.trim();
+      const apiKey = document.getElementById("cfgApiKey").value.trim();
+      const storageBucket = document.getElementById("cfgStorageBucket").value.trim();
+      const authDomain = document.getElementById("cfgAuthDomain").value.trim();
+      const messagingSenderId = document.getElementById("cfgSenderId").value.trim();
+      const appId = document.getElementById("cfgAppId").value.trim();
+
+      const allFilled = projectId && apiKey && storageBucket && authDomain && messagingSenderId && appId;
+      if (!allFilled) {
+        showToast("Please fill in all 6 Firebase fields — copy them from Project Settings > Your Apps in the Firebase Console.");
+        return;
+      }
+
+      const res = await window.AgriSetuDB.connectLiveFirebase({
+        projectId,
+        apiKey,
+        storageBucket,
+        authDomain,
+        messagingSenderId,
+        appId
+      });
+
+      if (res.success) {
+        appendConsole(`✅ Updated Firebase configuration for project: ${projectId}`);
+        showToast(`Connected to Firebase Project: ${projectId}. Reloading...`);
+        setTimeout(() => window.location.reload(), 1200);
+      } else {
+        appendConsole(`⚠️ Firebase warning: ${res.error}`);
+      }
+    }
+
+    function resetToSandboxConfig() {
+      localStorage.removeItem("samruddhisetu_firebase_config");
+      loadStoredConfig();
+      appendConsole("ℹ️ Reset to Sandbox Local Reactive Firestore.");
+      showToast("Reset to Sandbox Reactive Mode.");
+    }
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

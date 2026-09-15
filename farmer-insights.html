@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insights & Advisory | Samruddhi Setu</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div><h1>Insights & Advisory</h1><p>AI insights, crop & livestock advisory, sustainability and government schemes.</p></div>
+      </div>
+
+      <div class="shell-grid cols-2">
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge"><i class="fa-solid fa-chart-line"></i></div>
+            <div><h3>AI Insights</h3><p>Demand trends & price analytics</p></div>
+          </div>
+          <div class="simple-list-row"><span>Tomato demand</span><strong style="color:#16A34A;">▲ 18%</strong></div>
+          <div class="simple-list-row"><span>Onion price forecast (7d)</span><strong>₹26–29/kg</strong></div>
+          <div class="simple-list-row"><span>Best listing window</span><strong>Thu–Sat</strong></div>
+        </div>
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-cloud-sun-rain"></i></div>
+            <div><h3>Crop Advisory</h3><p>Best practices & weather alerts</p></div>
+          </div>
+          <div class="simple-list-row"><span>⛈️ Rain expected in 2 days — delay harvest of leafy greens</span></div>
+          <div class="simple-list-row"><span>🌱 Ideal sowing window for maize opens next week</span></div>
+        </div>
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-cow"></i></div>
+            <div><h3>Animal / Dairy Advisory</h3><p>Feed management & veterinary tips</p></div>
+          </div>
+          <div class="simple-list-row"><span>🐄 Increase fodder protein mix during monsoon</span></div>
+          <div class="simple-list-row"><span>💉 Vaccination camp near you — this Sunday</span></div>
+        </div>
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge" style="background:#DCFCE7; color:#15803D;"><i class="fa-solid fa-leaf"></i></div>
+            <div><h3>Sustainability Metrics</h3><p>Reduced waste, optimized logistics</p></div>
+          </div>
+          <div class="simple-list-row"><span>Produce wastage this month</span><strong style="color:#16A34A;">▼ 12%</strong></div>
+          <div class="simple-list-row"><span>Water usage efficiency</span><strong>Good</strong></div>
+        </div>
+      </div>
+
+      <div class="shell-card" style="margin-top:24px;">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#FCE7F3; color:#9D174D;"><i class="fa-solid fa-building-columns"></i></div>
+          <div><h3>Government Schemes</h3><p>Personalized feed of subsidies & support programs</p></div>
+        </div>
+        <div id="farmerSchemesList"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "farmer", active: "insights", searchPlaceholder: "Search schemes, advisory..." });
+
+    document.addEventListener("DOMContentLoaded", renderSchemes);
+
+    async function renderSchemes() {
+      const snap = await window.AgriSetuDB.db.collection("schemes").get();
+      const schemes = snap.docs.map(d => d.data());
+      const list = document.getElementById("farmerSchemesList");
+      if (!schemes.length) {
+        list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-building-columns"></i><p>No schemes available right now.</p></div>`;
+        return;
+      }
+      list.innerHTML = schemes.map(s => `
+        <div class="simple-list-row" style="align-items:flex-start; flex-direction:column; gap:8px;">
+          <div style="display:flex; justify-content:space-between; width:100%;">
+            <h4 style="color:var(--primary-deep);">${s.title}</h4>
+            <span class="role-badge-pill" style="font-size:0.68rem;">${s.category}</span>
+          </div>
+          <p style="font-size:0.84rem;"><strong>Benefit:</strong> ${s.benefit}</p>
+          <p style="color:#059669; font-size:0.8rem; font-style:italic;">${s.aiRecommendation || ""}</p>
+          <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+            <span style="font-size:0.75rem; color:var(--text-muted);">Deadline: ${s.deadline}</span>
+            <a href="${s.officialLink}" target="_blank" class="btn-luxury-outline" style="padding:4px 12px; font-size:0.75rem;">Official Portal →</a>
+          </div>
+        </div>
+      `).join("");
+    }
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

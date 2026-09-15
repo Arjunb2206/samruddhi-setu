@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile & Settings | Samruddhi Setu</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+
+      <div class="shell-card" style="background:linear-gradient(120deg, var(--primary-deep) 0%, var(--primary) 100%); color:#fff; border:none; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
+        <img id="profilePageAvatar" src="assets/default-avatar.jpg" style="width:76px; height:76px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.4);" alt="avatar" />
+        <div>
+          <h2 id="profilePageName" style="font-family:'Playfair Display',serif; font-size:1.6rem;">Loading…</h2>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px; font-size:0.85rem;">
+            <span style="background:rgba(255,255,255,0.18); padding:5px 12px; border-radius:999px;"><i class="fa-solid fa-shield-halved"></i> Verified Account</span>
+            <span id="profilePageRoleBadge" style="background:rgba(255,255,255,0.18); padding:5px 12px; border-radius:999px;">FARMER</span>
+            <span style="opacity:0.85;"><i class="fa-solid fa-envelope"></i> <span id="profilePageEmail">—</span></span>
+          </div>
+        </div>
+        <button class="btn-luxury-gold" id="btnLaunchMyDashboard" style="margin-left:auto; white-space:nowrap;"><i class="fa-solid fa-table-columns"></i> Go to My Dashboard</button>
+      </div>
+
+      <!-- Edit profile -->
+      <div class="shell-card" style="margin-top:24px;">
+        <div class="shell-card-head">
+          <div class="icon-badge"><i class="fa-solid fa-user-pen"></i></div>
+          <div><h3>Edit Profile Details</h3><p>Synced with your Samruddhi Setu account</p></div>
+        </div>
+        <form id="standaloneProfileForm" onsubmit="handleProfileSave(event)">
+          <div class="form-grid-2">
+            <div class="form-group"><label>Full Name / Business Name *</label><input type="text" id="editProfileName" class="form-control" required /></div>
+            <div class="form-group"><label>Mobile Number *</label><input type="tel" id="editProfilePhone" class="form-control" required /></div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group"><label>Email Address *</label><input type="email" id="editProfileEmail" class="form-control" required /></div>
+            <div class="form-group">
+              <label>Account Role</label>
+              <input type="text" id="editProfileRole" class="form-control" readonly aria-readonly="true" />
+              <small style="display:block; margin-top:6px; color:var(--text-muted);">Your account role is managed securely by the platform.</small>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group"><label>Location / Delivery Address *</label><input type="text" id="editProfileLocation" class="form-control" placeholder="City, District, State" required /></div>
+            <div class="form-group"><label>Bank / UPI Details *</label><input type="text" id="editProfileBank" class="form-control" placeholder="UPI ID / Bank IFSC" required /></div>
+          </div>
+          <div class="form-grid-2" style="margin-top:8px;">
+            <div class="form-group"><label>Avatar Photo URL</label><input type="url" id="editProfileAvatar" class="form-control" placeholder="https://..." /></div>
+            <div class="form-group"><label>Specialization / Farm / Fleet Details</label><input type="text" id="editProfileSubInfo" class="form-control" placeholder="e.g. 12 Acres Farm / Reefer Truck" /></div>
+          </div>
+          <button type="submit" class="btn-luxury-gold" style="margin-top:20px; width:100%; padding:14px; font-size:1rem;"><i class="fa-solid fa-floppy-disk"></i> Save & Update Profile</button>
+        </form>
+      </div>
+
+      <!-- My Products (farmer only) -->
+      <div class="shell-card" id="myProductsPanel" style="display:none; margin-top:24px;">
+        <div class="shell-card-head">
+          <div class="icon-badge"><i class="fa-solid fa-basket-shopping"></i></div>
+          <div><h3>My Products</h3><p><span id="myProductsCountBadge">0 Listed</span></p></div>
+        </div>
+        <div id="myProductsList"></div>
+      </div>
+
+      <!-- My Society -->
+      <div class="shell-card" id="mySocietyPanel" style="display:none; margin-top:24px;">
+        <div class="shell-card-head"><div class="icon-badge"><i class="fa-solid fa-building-columns"></i></div><div><h3>My Cooperative Society</h3></div></div>
+        <div id="mySocietyContent"></div>
+      </div>
+
+      <!-- My Orders -->
+      <div class="shell-card" id="myOrdersPanel" style="margin-top:24px;">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-box"></i></div>
+          <div><h3>My Orders</h3><p><span id="myOrdersCountBadge">0 Orders</span></p></div>
+        </div>
+        <div id="myOrdersMiniList"></div>
+        <div style="margin-top:14px; text-align:right;">
+          <a href="consumer-orders.html" class="btn-luxury-outline" style="padding:8px 16px; font-size:0.82rem;"><i class="fa-solid fa-list"></i> View All Orders</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/gemini-service.js?v=6"></script>
+  <script src="js/product-images.js?v=1"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    const _profileUser = SamruddhiAuth.getStoredUser();
+    renderAppShell({ role: (_profileUser && _profileUser.role) || "farmer", active: "profile", searchPlaceholder: "Search settings..." });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadProfileData();
+      document.getElementById("btnLaunchMyDashboard")?.addEventListener("click", () => {
+        const u = SamruddhiAuth.getStoredUser() || { role: "farmer" };
+        if (u.role === "farmer") window.location.href = "farmer-dashboard.html";
+        else if (u.role === "consumer") window.location.href = "consumer-marketplace.html";
+        else if (u.role === "logistics") window.location.href = "logistics-dashboard.html";
+      });
+    });
+
+    async function loadProfileData() {
+      const sessionUser = SamruddhiAuth.getStoredUser();
+      const uid = sessionUser?.uid || null;
+      let user = null;
+      if (uid) {
+        try {
+          const docSnap = await window.AgriSetuDB.db.collection("users").doc(uid).get();
+          if (docSnap.exists) user = docSnap.data();
+        } catch (err) { console.warn("Could not fetch profile from Firebase:", err); }
+      }
+      if (!user) user = sessionUser || { uid: `guest-${Date.now()}`, role: "consumer" };
+
+      document.getElementById("profilePageAvatar").src = user.avatar || "assets/default-avatar.jpg";
+      document.getElementById("profilePageName").innerText = user.name || "Complete your profile";
+      document.getElementById("profilePageRoleBadge").innerText = `${(user.role || "guest").toUpperCase()} • ${user.subType || 'Verified Partner'}`;
+      document.getElementById("profilePageEmail").innerText = user.email || "—";
+
+      document.getElementById("editProfileName").value = user.name || "";
+      document.getElementById("editProfilePhone").value = user.phone || "";
+      document.getElementById("editProfileEmail").value = user.email || "";
+      document.getElementById("editProfileRole").value = ({ farmer: "Farmer / Agricultural Producer", consumer: "Consumer / Bulk Buyer", logistics: "Logistics & Transport Partner" }[user.role] || "Verified Partner");
+      document.getElementById("editProfileLocation").value = user.location || "";
+      document.getElementById("editProfileBank").value = user.bankDetails || "";
+      document.getElementById("editProfileAvatar").value = user.avatar || "";
+      document.getElementById("editProfileSubInfo").value = user.subType || "";
+
+      SamruddhiAuth.setStoredUser(user);
+      renderMyProducts(user);
+      renderMySociety(user);
+      renderMyOrdersMini(user);
+    }
+
+    async function handleProfileSave(e) {
+      e.preventDefault();
+      const currentUser = SamruddhiAuth.getStoredUser() || {};
+      const updatedUser = {
+        ...currentUser, uid: currentUser.uid || `user-${Date.now()}`,
+        name: document.getElementById("editProfileName").value,
+        phone: document.getElementById("editProfilePhone").value,
+        email: document.getElementById("editProfileEmail").value,
+        role: currentUser.role || "consumer",
+        location: document.getElementById("editProfileLocation").value,
+        bankDetails: document.getElementById("editProfileBank").value,
+        avatar: document.getElementById("editProfileAvatar").value || currentUser.avatar,
+        subType: document.getElementById("editProfileSubInfo").value
+      };
+      try { await window.AgriSetuDB.db.collection("users").doc(updatedUser.uid).set(updatedUser, { merge: true }); } catch (err) { console.warn(err); }
+      SamruddhiAuth.setStoredUser(updatedUser);
+      showToast("Profile saved and updated successfully!");
+      loadProfileData();
+    }
+
+    async function renderMyProducts(user) {
+      const panel = document.getElementById("myProductsPanel");
+      const list = document.getElementById("myProductsList");
+      const countBadge = document.getElementById("myProductsCountBadge");
+      if (!panel || !list) return;
+      if (user.role !== "farmer") { panel.style.display = "none"; return; }
+      panel.style.display = "block";
+      let myProducts = [];
+      try {
+        const snap = await window.AgriSetuDB.db.collection("products").get();
+        myProducts = snap.docs.map(d => d.data()).filter(p => p.farmerId === user.uid);
+      } catch (err) { console.warn("Could not fetch products:", err); }
+      countBadge.innerText = `${myProducts.length} Listed`;
+      if (myProducts.length === 0) {
+        list.innerHTML = `<div class="empty-state">You haven't listed any products yet. <a href="farmer-produce.html" style="color:var(--primary); font-weight:700;">Add one →</a></div>`;
+        return;
+      }
+      list.innerHTML = myProducts.map(p => {
+        const isSold = p.saleStatus === "sold";
+        return `<div class="simple-list-row">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <img src="${SamruddhiProductImages.productImage(p)}" style="width:44px; height:44px; border-radius:10px; object-fit:cover;" alt="${p.title}" onerror="this.onerror=null; this.src=SamruddhiProductImages.FALLBACK;" />
+            <div><div style="font-weight:700; color:var(--primary-deep);">${p.title}</div><div style="font-size:0.8rem; color:var(--text-muted);">₹${p.price}/${p.unit} • ${p.stockQuantity || 0} ${p.unit} in stock</div></div>
+          </div>
+          <span class="status-pill ${isSold ? 'sold' : 'available'}">${isSold ? 'Sold' : 'Available'}</span>
+        </div>`;
+      }).join("");
+    }
+
+    function renderMySociety(user) {
+      const panel = document.getElementById("mySocietyPanel");
+      const content = document.getElementById("mySocietyContent");
+      if (!panel || !content) return;
+      if (!user.societyId) { panel.style.display = "none"; return; }
+      panel.style.display = "block";
+      content.innerHTML = `<div class="simple-list-row">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:44px; height:44px; border-radius:10px; background:var(--primary); color:#FFF; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-building-columns"></i></div>
+          <div><div style="font-weight:700; color:var(--primary-deep);">${user.societyName || "Cooperative Society"}</div><div style="font-size:0.8rem; color:var(--text-muted);">Pooled produce is aggregated, graded & sold through this society.</div></div>
+        </div>
+      </div>`;
+    }
+
+    async function renderMyOrdersMini(user) {
+      const list = document.getElementById("myOrdersMiniList");
+      const countBadge = document.getElementById("myOrdersCountBadge");
+      if (!list) return;
+      let myOrders = [];
+      try {
+        const snap = await window.AgriSetuDB.db.collection("orders").get();
+        myOrders = snap.docs.map(d => d.data()).filter(o => o.buyerId === user.uid).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+      } catch (err) { console.warn("Could not fetch orders:", err); }
+      if (countBadge) countBadge.innerText = `${myOrders.length} Recent`;
+      if (myOrders.length === 0) {
+        list.innerHTML = `<div class="empty-state">No orders placed yet. <a href="consumer-marketplace.html" style="color:var(--primary); font-weight:700;">Browse the Marketplace →</a></div>`;
+        return;
+      }
+      list.innerHTML = myOrders.map(ord => `
+        <div class="simple-list-row" style="cursor:pointer;" onclick="goToOrderEdit('${ord.id}')">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:44px; height:44px; border-radius:10px; background:#F1F5F9; color:var(--primary); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-box"></i></div>
+            <div><div style="font-weight:700; color:var(--primary-deep);">${ord.id}</div><div style="font-size:0.8rem; color:var(--text-muted);">${(ord.items || []).map(i => i.title).join(", ")}</div></div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:800; color:var(--primary-deep);">₹${(ord.totalAmount || 0).toLocaleString()}</div>
+            <span class="role-badge-pill" style="font-size:0.65rem;">${window.SamruddhiOrders.statusLabel(ord.status)}</span>
+          </div>
+        </div>`).join("");
+    }
+
+    function goToOrderEdit(orderId) { window.location.href = `consumer-orders.html?order=${encodeURIComponent(orderId)}&edit=1`; }
+
+  </script>
+<script src="js/global-chatbot.js?v=1"></script></body>
+</html>

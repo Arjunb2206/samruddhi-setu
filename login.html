@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Samruddhi Setu</title>
+  <meta name="description" content="Sign in securely to your Samruddhi Setu portal.">
+
+  <!-- Favicon / Logo -->
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6.5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="css/style.css?v=6">
+</head>
+<body style="background: radial-gradient(circle at center, #2D6A4F 0%, #1B4332 60%, #081C15 100%); min-height: 100vh; display: flex; flex-direction: column;">
+
+  <!-- Navigation Bar -->
+  <nav class="main-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo-wrap">
+        <img src="assets/logo.jpg" alt="Samruddhi Setu Logo" class="brand-logo-img" />
+        <div class="brand-text-block">
+          <h2 data-i18n="brandName">SAMRUDDHI SETU</h2>
+          <p data-i18n="brandSubtitle">Direct Agricultural & Coastal Platform</p>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <a href="onboarding.html" class="btn-luxury-gold" data-i18n="signUp">Sign Up?</a>
+        <a href="index.html" class="btn-luxury-outline"><i class="fa-solid fa-arrow-left"></i> Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Login Card Container -->
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+    <div style="background: #FFF; max-width: 480px; width: 100%; border-radius: 24px; padding: 36px; box-shadow: var(--shadow-lg); border: 1px solid var(--border-gold);">
+      
+      <div style="text-align: center; margin-bottom: 24px;">
+        <img src="assets/logo.jpg" style="width: 68px; height: 68px; border-radius: 50%; border: 2px solid var(--gold-primary); margin-bottom: 10px;" />
+        <h2 style="color: var(--primary-deep); font-family: 'Cinzel', serif; font-size: 1.6rem;">
+          Portal Sign In
+        </h2>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">
+          Enter your credentials to access your designated portal
+        </p>
+      </div>
+
+      <!-- Dedicated Admin Security Gate Callout -->
+      <div style="background: #F8F9FA; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary-deep); color: var(--gold-light); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.88rem; color: var(--primary-deep);">Cooperative Admin Gate</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Password protected: <code style="background:#E2E8F0; padding:1px 5px; border-radius:4px; font-weight:700; color:#1B4332;"> Admin Only </code></div>
+          </div>
+        </div>
+        <button type="button" class="btn-luxury-outline" style="padding: 6px 12px; font-size: 0.78rem;" onclick="selectAdminRole()">
+          Select Admin
+        </button>
+      </div>
+
+      <!-- Standard Secure Login Form -->
+      <form id="standaloneLoginForm" onsubmit="handleCredentialLogin(event)">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-size: 0.84rem; font-weight: 700; color: var(--primary-deep);">Target Portal / Role</label>
+          <select id="loginTargetRole" class="form-control" onchange="onRoleChanged(this.value)">
+            <option value="farmer">👨‍🌾 Farmer Dashboard</option>
+            <option value="consumer">🛒 Consumer Marketplace</option>
+            <option value="logistics">🚚 Logistics Dispatch Hub</option>
+            <option value="admin">🏛️ Cooperative Society Admin Portal (Password Protected)</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-size: 0.84rem; font-weight: 700; color: var(--primary-deep);" id="loginIdentifierLabel">Email Address</label>
+          <input type="email" id="loginEmail" class="form-control" placeholder="user@samruddhisetu.in" required />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label style="font-size: 0.84rem; font-weight: 700; color: var(--primary-deep);">Password</label>
+            <span id="adminHintBadge" style="display: none; font-size: 0.75rem; color: #B45309; font-weight: 700;">
+              <i class="fa-solid fa-key"></i> 
+            </span>
+          </div>
+          <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required />
+          <div style="text-align: right; margin-top: 6px;">
+            <a href="#" id="forgotPasswordLink" onclick="openForgotPasswordModal(event)" style="font-size: 0.8rem; color: var(--primary); font-weight: 700;">Forgot Password?</a>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-luxury-gold" style="width: 100%; padding: 14px; font-size: 1rem;">
+          Sign In to Portal →
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 20px; font-size: 0.84rem; color: var(--text-muted);">
+        Don't have an account yet? <a href="onboarding.html" style="color: var(--primary); font-weight: 700;">Register Here</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal-overlay" id="forgotPasswordModal">
+    <div class="modal-box" style="max-width: 420px;">
+      <button type="button" class="modal-close-btn" onclick="closeForgotPasswordModal()"><i class="fa-solid fa-xmark"></i></button>
+
+      <!-- Reset via a real Firebase Auth password-reset email -->
+      <div id="fpStepVerify">
+        <h3 style="color: var(--primary-deep); font-family: 'Cinzel', serif; margin-bottom: 6px;">Reset Password</h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 18px;">
+          Enter the email address linked to your account. We'll send a secure password-reset link to it via Firebase Authentication.
+        </p>
+
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label style="font-size: 0.84rem; font-weight: 700; color: var(--primary-deep);">Email Address</label>
+          <input type="email" id="fpIdentifier" class="form-control" placeholder="user@samruddhisetu.in" required />
+        </div>
+
+        <button type="button" class="btn-luxury-gold" style="width: 100%; padding: 12px; font-size: 0.95rem;" onclick="handleSendResetEmail()" id="fpFindAccountBtn">
+          Send Reset Link →
+        </button>
+      </div>
+
+      <!-- Confirmation -->
+      <div id="fpStepReset" style="display: none;">
+        <h3 style="color: var(--primary-deep); font-family: 'Cinzel', serif; margin-bottom: 6px;">Check Your Inbox</h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 18px;">
+          If an account exists for <strong id="fpFoundUserLabel"></strong>, a password-reset email has been sent. Follow the link in that email to choose a new password, then come back and sign in.
+        </p>
+
+        <button type="button" class="btn-luxury-outline" style="width: 100%; padding: 12px; font-size: 0.95rem;" onclick="closeForgotPasswordModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/i18n.js?v=5"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+
+  <script>
+    const ADMIN_SECRET_PASSWORD = "admin123";
+
+    function onRoleChanged(role) {
+      const hint = document.getElementById("adminHintBadge");
+      const emailInput = document.getElementById("loginEmail");
+      const passInput = document.getElementById("loginPassword");
+
+      if (role === "admin") {
+        hint.style.display = "inline-block";
+        if (!emailInput.value) emailInput.value = "registrar@samruddhisetu.in";
+      } else {
+        hint.style.display = "none";
+      }
+    }
+
+    function selectAdminRole() {
+      document.getElementById("loginTargetRole").value = "admin";
+      document.getElementById("loginEmail").value = "registrar@samruddhisetu.in";
+      document.getElementById("loginPassword").value = "";
+      document.getElementById("loginPassword").focus();
+      onRoleChanged("admin");
+      showToast("Admin portal selected. Enter your administrator password to sign in.");
+    }
+
+    async function handleCredentialLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const role = document.getElementById("loginTargetRole").value;
+
+      // Strict Password Protection for Admin
+      if (role === "admin") {
+        if (password !== ADMIN_SECRET_PASSWORD) {
+          showToast("❌ Access Denied: Invalid Admin Password!");
+          return;
+        }
+
+        const adminUser = {
+          uid: `admin-${Date.now()}`,
+          name: email.split("@")[0] || "Admin User",
+          email: email || "registrar@samruddhisetu.in",
+          role: "admin",
+          subType: "cooperative_registrar",
+          phone: "",
+          location: "",
+          department: "Directorate of Marketing & Cooperative Societies",
+          verified: true,
+          avatar: "assets/default-avatar.jpg"
+        };
+
+        showToast("✅ Admin Authentication Verified! Accessing Societies Hub...");
+        setTimeout(() => {
+          SamruddhiAuth.login(adminUser, true);
+        }, 500);
+        return;
+      }
+
+      // Standard Farmer, Consumer, Logistics Login —
+      // authenticated against real Firebase Authentication, then the
+      // matching profile is loaded from Firestore by the Auth uid.
+      const submitBtn = e.target.querySelector("button[type='submit']");
+      const originalBtnHTML = submitBtn ? submitBtn.innerHTML : "";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Checking your account...`;
+      }
+
+      try {
+        const firebaseUser = await SamruddhiAuth.signInWithFirebase(email, password);
+        const profile = await SamruddhiAuth.getUserProfile(firebaseUser.uid);
+
+        if (!profile) {
+          showToast("❌ No profile found for this account. Please contact support.");
+          await window.AgriSetuAuth.signOutUser();
+          return;
+        }
+        if (profile.role !== role) {
+          showToast(`❌ This account is registered under the ${String(profile.role || "").toUpperCase()} portal, not ${role.toUpperCase()}. Please pick the correct portal tab.`);
+          await window.AgriSetuAuth.signOutUser();
+          return;
+        }
+
+        showToast(`Welcome back! Signing in to ${role.toUpperCase()} portal...`);
+        SamruddhiAuth.login(profile, true);
+      } catch (err) {
+        console.error("Login failed:", err);
+        showToast(`❌ ${SamruddhiAuth.describeAuthError(err)}`);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnHTML;
+        }
+      }
+    }
+
+    // -------------------- Forgot Password (real Firebase Authentication) --------------------
+    // Accounts now live in Firebase Authentication itself, so "reset" means
+    // asking Firebase to email the person a secure reset link — the app
+    // never sees or sets the new password directly.
+    function openForgotPasswordModal(e) {
+      if (e) e.preventDefault();
+      document.getElementById("fpStepVerify").style.display = "block";
+      document.getElementById("fpStepReset").style.display = "none";
+      document.getElementById("fpIdentifier").value = document.getElementById("loginEmail").value || "";
+      document.getElementById("forgotPasswordModal").classList.add("open");
+    }
+
+    function closeForgotPasswordModal() {
+      document.getElementById("forgotPasswordModal").classList.remove("open");
+    }
+
+    async function handleSendResetEmail() {
+      const identifier = document.getElementById("fpIdentifier").value.trim();
+      const btn = document.getElementById("fpFindAccountBtn");
+
+      if (!identifier) {
+        showToast("❌ Please enter your email address.");
+        return;
+      }
+
+      const originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Sending via Firebase...`;
+
+      try {
+        await SamruddhiAuth.sendPasswordReset(identifier);
+        document.getElementById("fpFoundUserLabel").innerText = identifier;
+        document.getElementById("fpStepVerify").style.display = "none";
+        document.getElementById("fpStepReset").style.display = "block";
+      } catch (err) {
+        console.error("Password reset email failed:", err);
+        showToast(`❌ ${SamruddhiAuth.describeAuthError(err)}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+      }
+    }
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

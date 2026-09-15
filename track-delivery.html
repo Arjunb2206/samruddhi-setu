@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Delivery | Samruddhi Setu</title>
+  <meta name="description" content="Live, read-only tracking of your produce in transit.">
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div><h1><i class="fa-solid fa-map-location-dot"></i> Track Delivery</h1><p>Live, read-only view of your produce in transit — no dispatch actions here.</p></div>
+      </div>
+
+      <div id="trackDeliveryEmpty" class="empty-state" style="display:none;">
+        <i class="fa-solid fa-box-open"></i>
+        <p>We couldn't find an active delivery to track. Once an order is picked up by a logistics partner, it'll show up here.</p>
+      </div>
+
+      <div id="trackDeliveryContent" style="display:none;">
+        <div class="shell-card" id="trackOrderSummaryCard">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+            <div>
+              <strong style="font-size:1.05rem; color:var(--primary-deep);" id="trackOrderId">Order —</strong>
+              <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;" id="trackOrderRoute">Farm → Buyer</div>
+            </div>
+            <span class="role-badge-pill" id="trackOrderStatusPill">Status</span>
+          </div>
+          <div id="trackOrderTimeline" style="margin-top:10px;"></div>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-top:10px;" id="trackOrderItems"></div>
+        </div>
+
+        <div class="dash-panel-card" id="trackMapSection" style="margin-top:20px;">
+          <div class="panel-header-row">
+            <h3><i class="fa-solid fa-route"></i> Live Location</h3>
+            <span class="role-badge-pill" id="trackCargoTempPill">Temp: 4.2°C Active</span>
+          </div>
+          <div class="map-card-container"><div id="trackLiveMap"></div></div>
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:14px; font-size:0.85rem; color:var(--text-muted);">
+            <span><i class="fa-solid fa-truck"></i> Driver: <strong id="trackDriverName" style="color:var(--primary-deep);">Awaiting Dispatch Assignment</strong></span>
+            <span><i class="fa-solid fa-location-dot"></i> Delivering to: <strong id="trackDeliveryAddress" style="color:var(--primary-deep);">—</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shell-card" style="margin-top:20px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <i class="fa-solid fa-circle-info" style="color:var(--accent-mint); font-size:1.1rem;"></i>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">This is a read-only tracking view. Accepting jobs, marking pickups and deliveries is handled by your logistics partner's own console.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    const trackUser = window.SamruddhiAuth ? SamruddhiAuth.getStoredUser() : null;
+    const trackRole = (trackUser && (trackUser.role === "farmer" || trackUser.role === "consumer")) ? trackUser.role : "consumer";
+    renderAppShell({ role: trackRole, active: "orders", searchPlaceholder: "Search orders..." });
+
+    let trackMap = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get("order");
+
+      window.AgriSetuDB.db.collection("orders").onSnapshot((snap) => {
+        const orders = snap.docs.map(d => d.data());
+        let order = null;
+
+        if (orderId) {
+          order = orders.find(o => o.id === orderId) || null;
+        } else if (trackUser) {
+          // No specific order requested — show this user's most recent
+          // in-transit order, falling back to their most recent order overall.
+          const mine = orders.filter(o => trackRole === "farmer" ? o.farmerId === trackUser.uid : o.buyerId === trackUser.uid);
+          order = mine.find(o => o.status === "out_for_delivery")
+               || mine.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
+               || null;
+        }
+
+        if (!order) {
+          document.getElementById("trackDeliveryEmpty").style.display = "block";
+          document.getElementById("trackDeliveryContent").style.display = "none";
+          return;
+        }
+
+        document.getElementById("trackDeliveryEmpty").style.display = "none";
+        document.getElementById("trackDeliveryContent").style.display = "block";
+        paintOrder(order);
+      });
+    });
+
+    function paintOrder(order) {
+      document.getElementById("trackOrderId").innerText = "Order " + order.id;
+      document.getElementById("trackOrderRoute").innerText = `${order.farmerName || "Farm Pickup"} → ${order.buyerName || "Customer"}`;
+      const statusPill = document.getElementById("trackOrderStatusPill");
+      statusPill.innerText = window.SamruddhiOrders ? window.SamruddhiOrders.statusLabel(order.status) : (order.status || "Processing");
+      const color = window.SamruddhiOrders ? window.SamruddhiOrders.statusColor(order.status) : "#475569";
+      statusPill.style.background = color + "1A";
+      statusPill.style.color = color;
+      statusPill.style.borderColor = color + "55";
+
+      document.getElementById("trackOrderTimeline").innerHTML = window.SamruddhiOrders ? window.SamruddhiOrders.renderTimeline(order) : "";
+      document.getElementById("trackOrderItems").innerText = (order.items || []).map(i => `${i.title} (${i.quantity} ${i.unit || "unit"})`).join(", ");
+      document.getElementById("trackDriverName").innerText = order.driverName || "Awaiting Dispatch Assignment";
+      document.getElementById("trackDeliveryAddress").innerText = order.deliveryAddress || "Address on file";
+
+      initTrackMap(order);
+    }
+
+    function initTrackMap(order) {
+      if (!trackMap) {
+        trackMap = L.map('trackLiveMap', { zoomControl: true }).setView([13.02, 77.85], 10);
+        const primaryTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles © Esri — Source: Esri, HERE, Garmin, FAO, NOAA, USGS | Samruddhi Setu', maxZoom: 19
+        }).addTo(trackMap);
+        let fellBack = false;
+        primaryTiles.on('tileerror', () => {
+          if (fellBack) return; fellBack = true;
+          trackMap.removeLayer(primaryTiles);
+          L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles © Esri — Source: Esri, HERE, Garmin, USGS, FAO | Samruddhi Setu', maxZoom: 19
+          }).addTo(trackMap);
+        });
+      }
+      trackMap.eachLayer(l => { if (l instanceof L.Polyline || l instanceof L.Marker || l instanceof L.CircleMarker) trackMap.removeLayer(l); });
+
+      const waypoints = [[13.1358, 78.1298], [13.0707, 77.7963], [12.9698, 77.7500], [12.9352, 77.6245]];
+      L.polyline(waypoints, { color: '#2D6A4F', weight: 5, dashArray: '8, 8' }).addTo(trackMap);
+      L.marker([13.1358, 78.1298]).addTo(trackMap).bindPopup(`<b>Pickup: ${order.farmerName || "Farm"}</b><br>Order ${order.id}`);
+      L.marker([12.9352, 77.6245]).addTo(trackMap).bindPopup(`<b>Drop: ${order.buyerName || "Customer"}</b><br>${order.deliveryAddress || "Address on file"}`);
+
+      if (order.status === "out_for_delivery") {
+        const truckMarker = L.circleMarker([13.0707, 77.7963], { radius: 10, fillColor: "#00E676", color: "#081C15", weight: 3, opacity: 1, fillOpacity: 0.9 }).addTo(trackMap);
+        truckMarker.bindPopup(`<b>🚚 ${order.driverName || "Logistics Partner"}</b><br>Cargo Temp: 4.2°C`).openPopup();
+      }
+      setTimeout(() => trackMap.invalidateSize(), 100);
+    }
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

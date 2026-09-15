@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insights & Advisory | Samruddhi Setu</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div><h1>Insights & Advisory</h1><p>Price trends, spending patterns, and bulk procurement analytics.</p></div>
+      </div>
+
+      <div class="shell-grid cols-4">
+        <div class="stat-tile"><div class="stat-value" id="kpiTotalSpent">₹0</div><div class="stat-label">Total Spend to Date</div></div>
+        <div class="stat-tile"><div class="stat-value" id="kpiTotalSaved">₹0</div><div class="stat-label">Total Saved vs Mandi</div></div>
+        <div class="stat-tile"><div class="stat-value" id="kpiSavingsPct">0%</div><div class="stat-label">Avg. Savings Rate</div></div>
+        <div class="stat-tile"><div class="stat-value" id="kpiMandiEquivalent">₹0</div><div class="stat-label">Would-Be Mandi Cost</div></div>
+      </div>
+      <span style="display:none;" id="statTotalOrders"></span><span style="display:none;" id="statAvgSavings"></span>
+
+      <div id="analyticsEmptyState" style="display:none; margin-top:24px;">
+        <div class="empty-state" style="background:#fff; border-radius:var(--shell-radius-lg); border:1.5px dashed #CBD5E1; padding:60px 20px;">
+          <i class="fa-solid fa-chart-pie"></i>
+          <h3 style="color:var(--primary-deep); margin-bottom:6px;">No order history yet</h3>
+          <p>Place your first direct farm order to start tracking insights here.</p>
+          <a href="consumer-marketplace.html" class="btn-luxury-gold" style="display:inline-block; margin-top:16px; padding:10px 22px;"><i class="fa-solid fa-basket-shopping"></i> Browse Marketplace</a>
+        </div>
+      </div>
+
+      <div id="analyticsContent">
+        <div class="shell-grid cols-2" style="margin-top:24px;">
+          <div class="shell-card">
+            <div class="shell-card-head"><div><h3>Spend vs Savings Over Time</h3><p>Consumption analytics</p></div></div>
+            <div style="height:260px;"><canvas id="trendChartCanvas"></canvas></div>
+          </div>
+          <div class="shell-card">
+            <div class="shell-card-head"><div><h3>Spend by Category</h3><p>Top categories this period</p></div></div>
+            <div style="height:260px;"><canvas id="categoryChartCanvas"></canvas></div>
+          </div>
+          <div class="shell-card">
+            <div class="shell-card-head"><div><h3>Price Trends</h3><p>Direct price vs. local mandi</p></div></div>
+            <div style="height:240px;"><canvas id="comparisonChartCanvas"></canvas></div>
+          </div>
+          <div class="shell-card">
+            <div class="shell-card-head"><div><h3>Best Savings by Order</h3><p>Your top value purchases</p></div></div>
+            <div style="overflow-x:auto;">
+              <table class="analytics-table" style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+                <thead><tr style="text-align:left; color:var(--text-muted); border-bottom:2px solid #E2E8F0;"><th style="padding:8px;">Order</th><th>Producer</th><th>Spend</th><th>Saved</th><th>Rate</th></tr></thead>
+                <tbody id="bestSavingsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="shell-card" style="margin-top:24px;">
+          <div class="shell-card-head">
+            <div class="icon-badge" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-boxes-packing"></i></div>
+            <div><h3>Bulk Buyer Analytics</h3><p>Cost optimization & supplier reliability scores</p></div>
+          </div>
+          <div class="shell-grid cols-3">
+            <div class="simple-list-row"><span>Avg. bulk order cost cut</span><strong style="color:#16A34A;">▼ 34%</strong></div>
+            <div class="simple-list-row"><span>Top supplier reliability</span><strong>4.8 / 5</strong></div>
+            <div class="simple-list-row"><span>On-time reefer delivery</span><strong>96%</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/gemini-service.js?v=6"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "consumer", active: "insights", searchPlaceholder: "Search insights..." });
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const user = SamruddhiAuth.getStoredUser();
+      const buyerId = user?.uid || null;
+
+      const ordersSnap = await window.AgriSetuDB.db.collection("orders").get();
+      const productsSnap = await window.AgriSetuDB.db.collection("products").get();
+      const bulkSnap = await window.AgriSetuDB.db.collection("bulkProducts").get();
+
+      const myOrders = ordersSnap.docs.map(d => d.data()).filter(o => o.buyerId === buyerId).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      const categoryMap = {};
+      [...productsSnap.docs, ...bulkSnap.docs].forEach(d => { const p = d.data(); if (p.id) categoryMap[p.id] = p.category || "other"; });
+
+      if (myOrders.length === 0) {
+        document.getElementById("analyticsEmptyState").style.display = "block";
+        document.getElementById("analyticsContent").style.display = "none";
+        return;
+      }
+      renderKpis(myOrders);
+      renderBestSavingsTable(myOrders);
+      safeRender(() => renderTrendChart(myOrders));
+      safeRender(() => renderCategoryChart(myOrders, categoryMap));
+      safeRender(() => renderComparisonChart(myOrders));
+    });
+
+    function safeRender(fn) { try { fn(); } catch (e) { console.warn("Chart render skipped:", e.message); } }
+
+    function renderKpis(orders) {
+      const totalSpent = orders.reduce((s, o) => s + (o.totalAmount || 0), 0);
+      const totalSaved = orders.reduce((s, o) => s + (o.savings || 0), 0);
+      const mandiEquivalent = totalSpent + totalSaved;
+      const savingsPct = mandiEquivalent > 0 ? Math.round((totalSaved / mandiEquivalent) * 100) : 0;
+      document.getElementById("kpiTotalSpent").innerText = "₹" + totalSpent.toLocaleString();
+      document.getElementById("kpiTotalSaved").innerText = "₹" + totalSaved.toLocaleString();
+      document.getElementById("kpiSavingsPct").innerText = savingsPct + "%";
+      document.getElementById("kpiMandiEquivalent").innerText = "₹" + mandiEquivalent.toLocaleString();
+    }
+
+    function renderTrendChart(orders) {
+      const ctx = document.getElementById("trendChartCanvas");
+      if (!ctx) return;
+      const labels = orders.map(o => new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }));
+      new Chart(ctx, {
+        type: "line",
+        data: { labels, datasets: [
+          { label: "Order Spend (₹)", data: orders.map(o => o.totalAmount || 0), borderColor: "#2D6A4F", backgroundColor: "rgba(45,106,79,0.12)", fill: true, tension: 0.35 },
+          { label: "Savings (₹)", data: orders.map(o => o.savings || 0), borderColor: "#E9C46A", backgroundColor: "rgba(233,196,106,0.15)", fill: true, tension: 0.35 }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "top" } } }
+      });
+    }
+
+    function renderCategoryChart(orders, categoryMap) {
+      const ctx = document.getElementById("categoryChartCanvas");
+      if (!ctx) return;
+      const categoryTotals = {};
+      const categoryLabels = { vegetables: "Vegetables", fruits: "Fruits", dairy: "A2 Dairy", seafood: "Coastal Catch", poultry: "Country Eggs", grains: "Grains & Oils", other: "Other" };
+      orders.forEach(o => o.items.forEach(item => {
+        const label = categoryLabels[categoryMap[item.productId] || "other"] || "Other";
+        categoryTotals[label] = (categoryTotals[label] || 0) + (item.price * item.quantity);
+      }));
+      new Chart(ctx, {
+        type: "doughnut",
+        data: { labels: Object.keys(categoryTotals), datasets: [{ data: Object.values(categoryTotals), backgroundColor: ["#2D6A4F", "#E9C46A", "#457B9D", "#E76F51", "#74C69D", "#D4A373", "#94A3B8"] }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } } }
+      });
+    }
+
+    function renderComparisonChart(orders) {
+      const ctx = document.getElementById("comparisonChartCanvas");
+      if (!ctx) return;
+      new Chart(ctx, {
+        type: "bar",
+        data: { labels: orders.map(o => o.id), datasets: [
+          { label: "Mandi / Middleman Equivalent (₹)", data: orders.map(o => (o.totalAmount || 0) + (o.savings || 0)), backgroundColor: "#E76F51" },
+          { label: "Samruddhi Setu Direct Price (₹)", data: orders.map(o => o.totalAmount || 0), backgroundColor: "#2D6A4F" }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "top" } } }
+      });
+    }
+
+    function renderBestSavingsTable(orders) {
+      const sorted = [...orders].sort((a, b) => (b.savings || 0) - (a.savings || 0)).slice(0, 6);
+      document.getElementById("bestSavingsTableBody").innerHTML = sorted.map(o => {
+        const total = (o.totalAmount || 0) + (o.savings || 0);
+        const rate = total > 0 ? Math.round(((o.savings || 0) / total) * 100) : 0;
+        return `<tr style="border-bottom:1px solid #F1F5F9;"><td style="padding:8px;"><strong>${o.id}</strong></td><td>${o.farmerName || "—"}</td><td>₹${(o.totalAmount || 0).toLocaleString()}</td><td style="color:#15803D; font-weight:700;">₹${(o.savings || 0).toLocaleString()}</td><td>${rate}%</td></tr>`;
+      }).join("");
+    }
+  </script>
+<script src="js/global-chatbot.js?v=1"></script></body>
+</html>

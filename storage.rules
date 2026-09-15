@@ -1,0 +1,23 @@
+// Samruddhi Setu — Firebase Storage Security Rules
+// ---------------------------------------------------------------------------
+// Deploy with: firebase deploy --only storage
+// (or paste into Firebase Console > Storage > Rules)
+//
+// UPDATE: The app now has real Firebase Authentication behind Login/Register
+// (see js/firebase-config.js's LiveAuthAdapter and js/app.js's
+// SamruddhiAuth.signUpWithFirebase/signInWithFirebase), so uploads can be
+// restricted to signed-in users. Reads stay open since product/profile
+// images (product-images/, avatars/, etc.) are displayed publicly across
+// the marketplace, community, and profile pages.
+// ---------------------------------------------------------------------------
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.resource.size < 10 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*|video/.*');
+    }
+  }
+}

@@ -1,0 +1,23 @@
+/* Firebase-backed community discussions + Gemini support chat modal. */
+(function () {
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  function modal() {
+    if (document.getElementById("communitySupportModal")) return;
+    document.body.insertAdjacentHTML("beforeend", `<div id="communitySupportModal" style="display:none;position:fixed;inset:0;background:rgba(8,25,16,.45);z-index:9999;align-items:center;justify-content:center;padding:18px"><div style="width:min(620px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:24px;box-shadow:0 24px 80px #07180d55"><div style="display:flex;justify-content:space-between;align-items:center"><h3 id="communityModalTitle" style="font-family:'Playfair Display',serif;color:var(--primary-deep);margin:0">Community support</h3><button id="communityModalClose" class="btn-luxury-outline" style="padding:6px 10px"><i class="fa-solid fa-xmark"></i></button></div><div id="communityModalBody" style="margin-top:18px"></div></div></div>`);
+    document.getElementById("communityModalClose").onclick = close;
+  }
+  function open(title, body) { modal(); document.getElementById("communityModalTitle").innerText = title; document.getElementById("communityModalBody").innerHTML = body; const m=document.getElementById("communitySupportModal"); m.style.display="flex"; }
+  function close() { const m=document.getElementById("communitySupportModal"); if(m)m.style.display="none"; }
+  async function startDiscussion() {
+    const user = window.SamruddhiAuth?.getStoredUser() || { uid:"guest", name:"Guest User" };
+    open("Start a discussion", `<form id="discussionForm"><label class="form-group">Title<input id="discussionTitle" class="form-control" required maxlength="120" placeholder="What would you like to discuss?"></label><label class="form-group" style="display:block;margin-top:12px">Message<textarea id="discussionContent" class="form-control" rows="5" required placeholder="Share your question or experience"></textarea></label><button class="btn-luxury-gold" style="width:100%;margin-top:14px">Post to community</button></form>`);
+    document.getElementById("discussionForm").onsubmit = async e => { e.preventDefault(); const payload={title:document.getElementById("discussionTitle").value.trim(),content:document.getElementById("discussionContent").value.trim(),authorId:user.uid,authorName:user.name||"Community member",role:user.role||"consumer",likes:0,replies:0,timestamp:new Date().toLocaleString("en-IN")}; try { await window.AgriSetuDB.db.collection("forums").add(payload); close(); window.showToast?.("Discussion posted successfully"); window.renderForums?.(); } catch(err){ window.showToast?.("Could not post discussion. Check Firebase rules."); console.error(err); } };
+  }
+  function supportChat() {
+    const history = []; open("AgriMitra support", `<div id="supportMessages" style="min-height:180px;max-height:360px;overflow:auto;background:#F8FAF8;border-radius:12px;padding:12px"><div style="color:var(--text-muted);font-size:.9rem">Ask about orders, delivery, storage, payments, or marketplace products.</div></div><form id="supportForm" style="display:flex;gap:8px;margin-top:12px"><input id="supportInput" class="form-control" required placeholder="Type your question..."><button class="btn-luxury-gold" aria-label="Send"><i class="fa-solid fa-paper-plane"></i></button></form>`);
+    const box=document.getElementById("supportMessages"); const add=(who,text)=>{box.insertAdjacentHTML("beforeend",`<div style="margin:9px 0"><strong style="color:${who==='You'?'var(--primary)':'var(--primary-deep)'}">${who}:</strong> ${esc(text).replace(/\n/g,"<br>")}</div>`);box.scrollTop=box.scrollHeight;};
+    document.getElementById("supportForm").onsubmit=async e=>{e.preventDefault();const input=document.getElementById("supportInput");const q=input.value.trim();if(!q)return;input.value="";add("You",q);try{const result=window.geminiAgriService?await window.geminiAgriService.sendQuery(q):{success:false,text:"AI support is loading. Please try again."};add("AgriMitra",result.text||"I could not generate a response.");}catch(err){add("AgriMitra","Support is temporarily unavailable. Please try again shortly.");console.error(err);}};
+  }
+  window.CommunitySupport={startDiscussion,supportChat,close};
+  document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("[data-community-action='discussion']").forEach(b=>b.onclick=startDiscussion);document.querySelectorAll("[data-community-action='support-chat']").forEach(b=>b.onclick=supportChat);});
+})();

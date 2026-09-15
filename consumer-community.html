@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community & Support | Samruddhi Setu</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div><h1>Community & Support</h1><p>Consumer forums, help center and buying guides.</p></div>
+      </div>
+
+      <div class="shell-grid cols-2" style="align-items:start;">
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge"><i class="fa-solid fa-comments"></i></div>
+            <div><h3>Consumer Forums</h3><p>Reviews, recipe sharing, farmer feedback</p></div>
+          </div>
+          <div class="simple-list-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+            <strong style="color:var(--primary-deep);">Best way to store Alphonso mangoes?</strong>
+            <p style="font-size:0.84rem; color:var(--text-muted);">Wrap individually in paper and keep at room temp until ripe, then refrigerate.</p>
+          </div>
+          <div class="simple-list-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+            <strong style="color:var(--primary-deep);">A2 milk paneer recipe — so simple!</strong>
+            <p style="font-size:0.84rem; color:var(--text-muted);">Shared by a fellow buyer — turned out amazing with farm-fresh milk.</p>
+          </div>
+          <div id="consumerForumList" style="margin-top:12px"></div>
+          <button class="btn-luxury-outline" data-community-action="discussion" style="margin-top:4px; width:100%;"><i class="fa-solid fa-plus"></i> Start a Discussion</button>
+        </div>
+
+        <div>
+          <div class="shell-card">
+            <div class="shell-card-head">
+              <div class="icon-badge" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-circle-question"></i></div>
+              <div><h3>Help Center</h3><p>FAQs & chatbot for order/logistics queries</p></div>
+            </div>
+            <div class="simple-list-row"><span>How do I track my delivery?</span></div>
+            <div class="simple-list-row"><span>What is your return / refund policy?</span></div>
+            <div class="simple-list-row"><span>How does Bulk Buyer Mode work?</span></div>
+            <button class="btn-luxury-outline" data-community-action="support-chat" style="margin-top:8px; width:100%;"><i class="fa-solid fa-message"></i> Chat with Support</button>
+          </div>
+
+          <div class="shell-card">
+            <div class="shell-card-head">
+              <div class="icon-badge" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-graduation-cap"></i></div>
+              <div><h3>Training Resources</h3><p>Guides for safe storage & bulk procurement</p></div>
+            </div>
+            <div class="simple-list-row"><span><i class="fa-solid fa-file-lines"></i> &nbsp;Safe Storage of Fresh Produce</span></div>
+            <div class="simple-list-row"><span><i class="fa-solid fa-file-lines"></i> &nbsp;Bulk Procurement Best Practices</span></div>
+            <div class="simple-list-row"><span><i class="fa-solid fa-file-lines"></i> &nbsp;Understanding AI Quality Grades</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/gemini-service.js?v=9"></script>
+  <script src="js/community-support.js?v=1"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>renderAppShell({ role: "consumer", active: "community", searchPlaceholder: "Search forums, guides..." });
+  async function renderConsumerForums(){try{const s=await AgriSetuDB.db.collection("forums").get();const el=document.getElementById("consumerForumList");const posts=s.docs.map(d=>d.data()).filter(p=>p.role!=="farmer").slice(-6).reverse();el.innerHTML=posts.map(p=>`<div class="simple-list-row" style="flex-direction:column;align-items:flex-start;gap:4px"><strong>${p.title||"Community discussion"}</strong><span style="font-size:.8rem;color:var(--text-muted)">${p.content||""} · ${p.authorName||"Member"}</span></div>`).join("")||"<div class=empty-state>No community posts yet.</div>"}catch(e){}}
+  window.renderForums=renderConsumerForums; renderConsumerForums();</script>
+<script src="js/global-chatbot.js?v=1"></script></body>
+</html>

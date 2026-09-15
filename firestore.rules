@@ -1,0 +1,84 @@
+// Samruddhi Setu — Firestore Security Rules
+// ---------------------------------------------------------------------------
+// Deploy with: firebase deploy --only firestore:rules
+// (or paste into Firebase Console > Firestore Database > Rules)
+//
+// UPDATE: Sign-up/login now creates a real Firebase Authentication account
+// (see js/firebase-config.js's LiveAuthAdapter and js/app.js's
+// SamruddhiAuth.signUpWithFirebase/signInWithFirebase). Every "users"
+// document's ID is that person's Firebase Auth uid, so request.auth.uid
+// can now be used to scope access.
+//
+// The rule below still allows broad read (many pages — marketplace,
+// cooperative directories, community feeds — are meant to be publicly
+// browsable) but restricts writes to a user's own "users" document and to
+// signed-in accounts for everything else. Treat this as a starting point,
+// not a final production policy — review per-collection before launch
+// (e.g. admin-only collections should check a custom "admin" claim rather
+// than just "signed in").
+// ---------------------------------------------------------------------------
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each person's own profile: only they (matched by Firebase Auth uid,
+    // which is also the document ID) may create/update/delete it. Reads
+    // stay open since login and other pages look up profiles by email/role.
+    // Shared Gemini configuration. Reads let every browser use the configured key;
+    // writes require a signed-in account so anonymous visitors cannot overwrite it.
+    match /appConfig/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /users/{uid} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Every other collection the app uses: readable by anyone (marketplace,
+    // cooperative directory, community forums, scheme listings are meant to
+    // be publicly browsable), writable only by a signed-in Firebase
+    // Authentication user. Listed explicitly (rather than a single
+    // top-level {document=**} wildcard) so these rules don't also apply to
+    // /users/{uid} above.
+    match /cooperatives/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /products/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /bulkProducts/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /orders/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /logisticsApplications/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /logisticsRequests/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /communityRequests/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /forums/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /schemes/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /societySupplies/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

@@ -1,0 +1,33 @@
+/* AgriMitra global chatbot: one UI on every page, shared Gemini key via Firestore appConfig/gemini. */
+(function () {
+  const CONFIG_PATH = "appConfig/gemini";
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  const markdown = s => esc(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
+  let remoteKey = "";
+  function db() { return window.AgriSetuDB?.db; }
+  function service() { return window.geminiService; }
+  function syncKey() {
+    const ref = db()?.collection("appConfig").doc("gemini");
+    if (!ref?.onSnapshot) return;
+    ref.onSnapshot(s => { const k = s.exists ? String(s.data().apiKey || "").trim() : ""; if (k) { remoteKey=k; service()?.setApiKey(k, { remote: true }); updateStatus("Global AI key connected"); } }, e => console.warn("AgriMitra global key sync unavailable:", e));
+  }
+  async function saveRemoteKey(key) {
+    const clean=String(key||"").trim(); if (!clean) return false;
+    if (!db()?.collection) { service()?.setApiKey(clean); return false; }
+    try { await db().collection("appConfig").doc("gemini").set({ apiKey: clean, updatedAt: new Date().toISOString(), updatedBy: window.SamruddhiAuth?.getStoredUser()?.uid || "admin" }, { merge: true }); remoteKey=clean; service()?.setApiKey(clean,{remote:true}); return true; }
+    catch(e) { console.warn("Global Gemini key save failed:",e); service()?.setApiKey(clean); updateStatus("Saved only on this browser; sign in and check Firebase rules"); return false; }
+  }
+  function updateStatus(t) { const e=document.getElementById("globalAiStatus"); if(e)e.textContent=t; }
+  function inject() {
+    if (document.getElementById("globalAiLauncher")) return;
+    document.body.insertAdjacentHTML("beforeend", `<button id="globalAiLauncher" aria-label="Open AgriMitra" title="AgriMitra AI"><i class="fa-solid fa-robot"></i></button><section id="globalAiPanel" aria-label="AgriMitra chatbot"><header><div><strong><i class="fa-solid fa-leaf"></i> AgriMitra</strong><small id="globalAiStatus">Firebase AI assistant</small></div><button id="globalAiClose" aria-label="Close">×</button></header><div id="globalAiMessages"><div class="global-ai-msg bot">Namaste! Ask about crops, orders, products, delivery, or government schemes.</div></div><div id="globalAiKeyBox"><input id="globalAiKey" type="password" placeholder="Paste Gemini AI Studio key once"><button id="globalAiSaveKey">Save globally</button></div><form id="globalAiForm"><input id="globalAiInput" autocomplete="off" placeholder="Ask AgriMitra…"><button aria-label="Send"><i class="fa-solid fa-paper-plane"></i></button></form></section>`);
+    const launcher=document.getElementById("globalAiLauncher"), panel=document.getElementById("globalAiPanel"), close=document.getElementById("globalAiClose");
+    launcher.onclick=()=>panel.classList.toggle("open"); close.onclick=()=>panel.classList.remove("open");
+    document.getElementById("globalAiSaveKey").onclick=async()=>{const input=document.getElementById("globalAiKey"), key=input.value.trim(); if(!key)return updateStatus("Paste a Gemini AI Studio key first"); updateStatus("Validating key…"); const result=await service()?.testApiKey(key); if(!result?.valid)return updateStatus(result?.message||"The Gemini key was rejected"); const global=await saveRemoteKey(key); input.value=""; updateStatus(global?"Global AI key connected":"Local AI key connected");};
+    document.getElementById("globalAiForm").onsubmit=async e=>{e.preventDefault();const input=document.getElementById("globalAiInput"),q=input.value.trim();if(!q)return;input.value="";addMessage("You",q,"user");const send=document.querySelector("#globalAiForm button");send.disabled=true;try{const result=await service()?.sendQuery(q);addMessage("AgriMitra",result?.text||"I could not generate a response.","bot");if(result?.source==="gemini_live")updateStatus("Live Gemini response");else updateStatus("Offline knowledge response");}catch(err){console.warn(err);addMessage("AgriMitra","The assistant is temporarily unavailable. Please try again.","bot");}finally{send.disabled=false;}};
+  }
+  function addMessage(who,text,kind){const box=document.getElementById("globalAiMessages");if(!box)return;box.insertAdjacentHTML("beforeend",`<div class="global-ai-msg ${kind}"><strong>${who}</strong><br>${kind==='bot'?markdown(text):esc(text)}</div>`);box.scrollTop=box.scrollHeight;}
+  function styles(){if(document.getElementById("globalAiStyles"))return;const st=document.createElement("style");st.id="globalAiStyles";st.textContent=`#globalAiLauncher{position:fixed;right:24px;bottom:24px;z-index:9990;width:54px;height:54px;border:0;border-radius:50%;background:#D4A017;color:#fff;font-size:1.25rem;box-shadow:0 10px 26px #102a1840;cursor:pointer}#globalAiPanel{display:none;position:fixed;right:24px;bottom:90px;z-index:9991;width:min(380px,calc(100vw - 32px));height:min(580px,calc(100vh - 120px));background:#fff;border:1px solid #dfe8e0;border-radius:18px;box-shadow:0 20px 60px #102a1830;overflow:hidden;font-family:inherit}#globalAiPanel.open{display:flex;flex-direction:column}#globalAiPanel header{display:flex;justify-content:space-between;align-items:center;padding:15px 17px;background:#123524;color:#fff}#globalAiPanel header strong{font-size:1rem}#globalAiPanel header small{display:block;color:#c8e4d0;margin-top:3px;font-size:.7rem}#globalAiClose{background:transparent;border:0;color:#fff;font-size:1.6rem;cursor:pointer}#globalAiMessages{flex:1;overflow:auto;padding:14px;background:#f7faf7}.global-ai-msg{padding:9px 11px;border-radius:12px;margin:8px 0;max-width:92%;font-size:.85rem;line-height:1.45}.global-ai-msg.bot{background:#fff;border:1px solid #e1ebe2}.global-ai-msg.user{background:#dff2e3;margin-left:auto}.global-ai-msg strong{font-size:.7rem;color:#286443}#globalAiKeyBox{padding:9px;border-top:1px solid #e7eee8;display:flex;gap:6px}#globalAiKeyBox input,#globalAiForm input{min-width:0;flex:1;border:1px solid #d8e4d9;border-radius:9px;padding:9px;font:inherit;font-size:.8rem}#globalAiKeyBox button,#globalAiForm button{border:0;border-radius:9px;background:#2d6a4f;color:#fff;padding:8px 10px;cursor:pointer;font-weight:700;font-size:.75rem}#globalAiForm{display:flex;gap:7px;padding:10px;border-top:1px solid #e7eee8}#globalAiForm button{width:40px} @media(max-width:500px){#globalAiLauncher{right:16px;bottom:16px}#globalAiPanel{right:16px;bottom:82px}}`;document.head.appendChild(st);}
+  window.AgriMitraGlobal={saveKey:saveRemoteKey,syncKey};
+  document.addEventListener("DOMContentLoaded",()=>{styles();inject();syncKey();});
+})();

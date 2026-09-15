@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | Samruddhi Setu</title>
+  <meta name="description" content="Join Samruddhi Setu as a Farmer, Consumer, or Logistics Partner.">
+
+  <!-- Favicon / Logo -->
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6.5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Leaflet (used for the logistics service-area map-pin picker) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/redesign.css?v=7">
+</head>
+<body>
+
+  <!-- ================= Top Utility Bar ================= -->
+  <div class="top-utility-bar">
+    <div class="top-helpline-info">
+      <i class="fa-solid fa-seedling" style="color:var(--accent-mint);"></i>
+      <span>100% Direct Farmer & Fisher Payouts | 24x7 Support: <strong>1800-180-1551</strong></span>
+    </div>
+    <div class="top-right-tools">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <i class="fa-solid fa-language" style="color:var(--gold-light);"></i>
+        <select class="lang-selector-select" onchange="window.i18n.setLanguage(this.value)">
+          <option value="en">English (Global)</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="ta">தமிழ் (Tamil)</option>
+          <option value="te">తెలుగు (Telugu)</option>
+          <option value="kn">ಕನ್ನಡ (Kannada)</option>
+          <option value="mr">मराठी (Marathi)</option>
+          <option value="bn">বাংলা (Bengali)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Navigation Bar ================= -->
+  <nav class="main-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo-wrap">
+        <img src="assets/logo.jpg" alt="Samruddhi Setu Logo" class="brand-logo-img" />
+        <div class="brand-text-block">
+          <h2 data-i18n="brandName">SAMRUDDHI SETU</h2>
+          <p data-i18n="brandSubtitle">Direct Agricultural & Coastal Platform</p>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <a href="login.html" class="btn-luxury-outline" data-i18n="login">Existing User? Login</a>
+        <a href="onboarding.html" class="btn-luxury-gold"><i class="fa-solid fa-arrow-left"></i> Change Role</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================= DYNAMIC REGISTRATION FORM (Blueprint Page 3 Exact) ================= -->
+  <div class="dashboard-view-container" style="padding-top: 20px;">
+    <div class="registration-form-modal">
+      <div class="form-role-tabs">
+        <button class="role-tab-btn active" data-tab-role="farmer" onclick="switchRegistrationTab('farmer')">
+          <i class="fa-solid fa-tractor"></i> 1. Farmers
+        </button>
+        <button class="role-tab-btn" data-tab-role="consumer" onclick="switchRegistrationTab('consumer')">
+          <i class="fa-solid fa-basket-shopping"></i> 2. Consumers
+        </button>
+        <button class="role-tab-btn" data-tab-role="logistics" onclick="window.location.href='logistics-register.html'">
+          <i class="fa-solid fa-truck"></i> 3. Logistics
+        </button>
+      </div>
+
+      <!-- 1. FARMER REGISTRATION FORM -->
+      <form class="registration-form-element reg-role-section" data-section-role="farmer" data-role-type="farmer" onsubmit="handleRegistration(event, 'farmer')">
+        <h3 class="form-section-title"><i class="fa-solid fa-id-card"></i> Basic & Farm Location Details</h3>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label data-i18n="fullName">Full Name / FPO Name *</label>
+            <input type="text" name="fullName" class="form-control" placeholder="e.g. Your Full Name" required />
+          </div>
+          <div class="form-group">
+            <label data-i18n="mobileNumber">Mobile Number (OTP Verification) *</label>
+            <div style="display:flex; gap:8px;">
+              <input type="tel" name="phone" class="form-control" placeholder="+91 98230 45812" required />
+              <button type="button" class="btn-verify-otp btn-luxury-outline" style="white-space:nowrap; padding:8px 12px; font-size:0.8rem;">Verify OTP</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label data-i18n="email">Email Address *</label>
+            <input type="email" name="email" class="form-control" placeholder="ramesh.patil@samruddhisetu.in" required />
+          </div>
+          <div class="form-group">
+            <label data-i18n="password">Password *</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required />
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label data-i18n="farmLocation">Farm Location (State, District, PIN) *</label>
+            <input type="text" name="location" class="form-control" placeholder="Bengaluru, Karnataka - 560001" required />
+          </div>
+          <div class="form-group">
+            <label data-i18n="bankUpiDetails">Bank / UPI Details (Direct Daily Payouts) *</label>
+            <input type="text" name="bankDetails" class="form-control" placeholder="UPI ID: rameshwar@okhdfcbank" required />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:16px;">
+          <label data-i18n="logisticsNeeds">Logistics Needs</label>
+          <div class="pill-checkbox-group">
+            <label class="pill-check-label checked"><input type="checkbox" name="logisticsNeeds" value="Cold Storage" checked> Cold Storage</label>
+            <label class="pill-check-label checked"><input type="checkbox" name="logisticsNeeds" value="Transport" checked> Transport</label>
+            <label class="pill-check-label"><input type="checkbox" name="logisticsNeeds" value="Daily Pickup"> Daily Pickup</label>
+            <label class="pill-check-label"><input type="checkbox" name="logisticsNeeds" value="Weekly Pickup"> Weekly Pickup</label>
+            <label class="pill-check-label"><input type="checkbox" name="logisticsNeeds" value="On-Demand Pickup"> On-Demand Pickup</label>
+          </div>
+        </div>
+
+        <h3 class="form-section-title"><i class="fa-solid fa-seedling"></i> Dynamic Producer Type Selection</h3>
+        <div class="sub-option-selector">
+          <div class="sub-option-card active" data-target="farmerCropFields" onclick="toggleSubOption(this, 'farmerCropFields')">
+            <h4><i class="fa-solid fa-wheat-awn"></i> Option 1: Crop Grower</h4>
+            <p>Growers of fruits, vegetables, grains, pulses, spices.</p>
+          </div>
+          <div class="sub-option-card" data-target="farmerDairyFields" onclick="toggleSubOption(this, 'farmerDairyFields')">
+            <h4><i class="fa-solid fa-cow"></i> Option 2: Dairy / Poultry / Seafood</h4>
+            <p>Producers of A2 milk, eggs, ghee, marine catch.</p>
+          </div>
+        </div>
+
+        <div id="farmerCropFields" class="dynamic-role-fields">
+          <div class="form-group" style="margin-bottom:14px;">
+            <label data-i18n="cropsGrown">Crops Grown (Multi-select)</label>
+            <div class="pill-checkbox-group">
+              <label class="pill-check-label checked"><input type="checkbox" checked> Tomatoes</label>
+              <label class="pill-check-label checked"><input type="checkbox" checked> Onions</label>
+              <label class="pill-check-label checked"><input type="checkbox" checked> Table Grapes</label>
+              <label class="pill-check-label"><input type="checkbox"> Wheat</label>
+              <label class="pill-check-label"><input type="checkbox"> Rice / Paddy</label>
+              <label class="pill-check-label"><input type="checkbox"> Green Chillies</label>
+              <label class="pill-check-label"><input type="checkbox"> Pulses & Lentils</label>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="farmSize">Farm Size (Acres / Hectares)</label>
+              <input type="text" name="subType" class="form-control" placeholder="12 Acres Crop Farm" />
+            </div>
+            <div class="form-group">
+              <label data-i18n="harvestFrequency">Harvest Frequency</label>
+              <select class="form-control">
+                <option>Continuous / Daily Pickings</option>
+                <option>Weekly Harvest</option>
+                <option>Seasonal (Kharif / Rabi)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="farmerDairyFields" class="dynamic-role-fields" style="display:none;">
+          <div class="form-group" style="margin-bottom:14px;">
+            <label data-i18n="productionType">Production Type</label>
+            <div class="pill-checkbox-group">
+              <label class="pill-check-label checked"><input type="checkbox" name="productionType" value="A2 Raw Cow Milk" checked> A2 Raw Cow Milk</label>
+              <label class="pill-check-label checked"><input type="checkbox" name="productionType" value="Artisanal Vedic Ghee" checked> Artisanal Vedic Ghee</label>
+              <label class="pill-check-label"><input type="checkbox" name="productionType" value="Free-Range Country Eggs"> Free-Range Country Eggs</label>
+              <label class="pill-check-label"><input type="checkbox" name="productionType" value="Coastal Fish / Seafood"> Coastal Fish / Seafood</label>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="herdStockSize">Herd / Stock Size</label>
+              <input type="text" name="herdStockSize" class="form-control" placeholder="e.g. 12 cows, 200 hens, 50 goats" />
+            </div>
+            <div class="form-group">
+              <label data-i18n="dailyMonthlyOutput">Daily / Monthly Output</label>
+              <input type="text" name="dailyMonthlyOutput" class="form-control" placeholder="e.g. 80 litres/day, 40 dozen eggs/week" />
+            </div>
+          </div>
+        </div>
+
+
+        <button type="submit" class="btn-luxury-gold" style="width:100%; margin-top:24px; padding:14px; font-size:1.05rem;" data-i18n="submitRegister">
+          Complete Farmer Registration & Launch Dashboard →
+        </button>
+      </form>
+
+      <!-- 2. CONSUMER REGISTRATION FORM -->
+      <form class="registration-form-element reg-role-section" data-section-role="consumer" data-role-type="consumer" style="display:none;" onsubmit="handleRegistration(event, 'consumer')">
+        <h3 class="form-section-title"><i class="fa-solid fa-user-tag"></i> Consumer Profile & Address</h3>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label data-i18n="fullName">Full Name / Organization Name *</label>
+            <input type="text" name="fullName" class="form-control" placeholder="e.g. Your Full Name" required />
+          </div>
+          <div class="form-group">
+            <label data-i18n="mobileNumber">Mobile Number (OTP Verification) *</label>
+            <div style="display:flex; gap:8px;">
+              <input type="tel" name="phone" class="form-control" placeholder="+91 98201 12345" required />
+              <button type="button" class="btn-verify-otp btn-luxury-outline" style="white-space:nowrap; padding:8px 12px; font-size:0.8rem;">Verify OTP</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label data-i18n="email">Email Address *</label>
+            <input type="email" name="email" class="form-control" placeholder="ananya.d@gmail.com" required />
+          </div>
+          <div class="form-group">
+            <label data-i18n="password">Password *</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required />
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label data-i18n="deliveryAddress">Delivery / Business Address *</label>
+          <input type="text" name="location" class="form-control" placeholder="Flat 402, Green Meadows, Indiranagar, Bengaluru - 560038" required />
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label data-i18n="purchaseFrequency">Purchase Frequency *</label>
+          <select name="purchaseFrequency" class="form-control" required>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="bulk">Bulk / As-needed</option>
+          </select>
+        </div>
+
+        <!-- Consumer Sub-Type Selector -->
+        <h3 class="form-section-title" style="margin-top:16px;"><i class="fa-solid fa-user-tag"></i> Buying Type</h3>
+        <div class="sub-option-selector">
+          <div class="sub-option-card active" data-target="consumerHouseholdFields" onclick="toggleSubOption(this, 'consumerHouseholdFields')">
+            <h4><i class="fa-solid fa-house"></i> Household Consumer</h4>
+            <p>Retail fresh produce: vegetables, milk, fruits &amp; seafood delivered to your door.</p>
+          </div>
+          <div class="sub-option-card" data-target="consumerBulkFields" onclick="toggleSubOption(this, 'consumerBulkFields')">
+            <h4><i class="fa-solid fa-industry"></i> Bulk / Commercial Buyer</h4>
+            <p>Hotels, restaurants, processors — tonne-scale supply, RFQ contracts, reefer freight.</p>
+          </div>
+        </div>
+
+        <!-- Household fields (default) -->
+        <div id="consumerHouseholdFields" class="dynamic-role-fields">
+          <input type="hidden" name="subType" value="household" />
+          <div class="form-group" style="margin-top:14px; margin-bottom:14px;">
+            <label data-i18n="favoriteProduce">Favorite Produce (Multi-select)</label>
+            <div class="pill-checkbox-group">
+              <label class="pill-check-label checked"><input type="checkbox" name="favoriteProduce" value="Vegetables" checked> Vegetables</label>
+              <label class="pill-check-label checked"><input type="checkbox" name="favoriteProduce" value="Fruits" checked> Fruits</label>
+              <label class="pill-check-label"><input type="checkbox" name="favoriteProduce" value="Dairy"> Dairy</label>
+              <label class="pill-check-label"><input type="checkbox" name="favoriteProduce" value="Poultry & Eggs"> Poultry & Eggs</label>
+              <label class="pill-check-label"><input type="checkbox" name="favoriteProduce" value="Seafood"> Seafood</label>
+              <label class="pill-check-label"><input type="checkbox" name="favoriteProduce" value="Grains"> Grains</label>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="householdSize">Household Size (Optional)</label>
+              <select name="householdSize" class="form-control">
+                <option value="">Prefer not to say</option>
+                <option>1–2 people</option>
+                <option>3–4 people</option>
+                <option>5–6 people</option>
+                <option>7+ people</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-i18n="deliveryPreference">Delivery Preference</label>
+              <select name="deliveryPreference" class="form-control">
+                <option>Home Delivery</option>
+                <option>Pickup Point</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:14px;">
+            <label>Preferred Delivery Slot</label>
+            <select class="form-control">
+              <option>Morning (6 AM – 9 AM)</option>
+              <option>Afternoon (12 PM – 3 PM)</option>
+              <option>Evening (5 PM – 8 PM)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Bulk Buyer fields -->
+        <div id="consumerBulkFields" class="dynamic-role-fields" style="display:none;">
+          <input type="hidden" name="subType" value="bulk_buyer" />
+          <div class="form-grid-2" style="margin-top:14px;">
+            <div class="form-group">
+              <label>Organisation / Company Name *</label>
+              <input type="text" name="organizationName" class="form-control" placeholder="e.g. Your Business / Organization Name" />
+            </div>
+            <div class="form-group">
+              <label>GSTIN (for B2B Invoicing) *</label>
+              <input type="text" name="gstNumber" class="form-control" placeholder="e.g. 27AAACH7409R1Z2" />
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="buyerType">Type of Buyer</label>
+              <select name="buyerType" class="form-control">
+                <option>Hotel</option>
+                <option>Retailer</option>
+                <option>Institution</option>
+                <option>Exporter</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-i18n="contractPreference">Contract Preference</label>
+              <select name="contractPreference" class="form-control">
+                <option>Short-term Supply</option>
+                <option>Long-term Supply</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Monthly Volume Requirement</label>
+              <select class="form-control">
+                <option>500 kg – 2 MT / month</option>
+                <option>2 MT – 10 MT / month</option>
+                <option>10 MT – 50 MT / month</option>
+                <option>50 MT+ / month</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Cold-Chain Requirement</label>
+              <select class="form-control">
+                <option>Standard (Ambient)</option>
+                <option>Chilled (2°C – 8°C)</option>
+                <option>Deep Freeze (≤ −18°C)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-luxury-gold" style="width:100%; margin-top:24px; padding:14px; font-size:1.05rem;" data-i18n="submitRegister">
+          Complete Consumer Registration &amp; Launch Marketplace →
+        </button>
+      </form>
+
+      <!-- 3. LOGISTICS REGISTRATION FORM -->
+      <form class="registration-form-element reg-role-section" data-section-role="logistics" data-role-type="logistics" style="display:none;" onsubmit="handleRegistration(event, 'logistics')">
+        <h3 class="form-section-title"><i class="fa-solid fa-truck-ramp-box"></i> Fleet & Driver Profile</h3>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label data-i18n="fullName">Company / Driver Name *</label>
+            <input type="text" name="fullName" class="form-control" placeholder="e.g. Your Full Name" required />
+          </div>
+          <div class="form-group">
+            <label data-i18n="mobileNumber">Mobile Number (OTP Verification) *</label>
+            <div style="display:flex; gap:8px;">
+              <input type="tel" name="phone" class="form-control" placeholder="+91 97110 55432" required />
+              <button type="button" class="btn-verify-otp btn-luxury-outline" style="white-space:nowrap; padding:8px 12px; font-size:0.8rem;">Verify OTP</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label data-i18n="bankUpiDetails">Bank / UPI Details (Trip Payouts) *</label>
+            <input type="text" name="bankDetails" class="form-control" placeholder="UPI: vikram.logistics@icici" required />
+          </div>
+          <div class="form-group">
+            <label data-i18n="email">Email Address *</label>
+            <input type="email" name="email" class="form-control" placeholder="vikram.logistics@samruddhisetu.in" required />
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label data-i18n="password">Password *</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required />
+          </div>
+          <div></div>
+        </div>
+
+        <!-- Service Area: structured State → City → District picker, with a map-pin fallback -->
+        <div class="form-group" style="margin-bottom:14px;">
+          <label data-i18n="serviceArea">Service Area (Route) *</label>
+          <div class="service-area-picker">
+            <div class="form-grid-3" style="margin-bottom:0;">
+              <select id="logisticsStateSelect" class="form-control" onchange="onLogisticsStateChange()">
+                <option value="">State</option>
+              </select>
+              <select id="logisticsCitySelect" class="form-control" onchange="onLogisticsCityChange()" disabled>
+                <option value="">City / Town</option>
+              </select>
+              <select id="logisticsDistrictSelect" class="form-control" onchange="composeLogisticsLocation()" disabled>
+                <option value="">District</option>
+              </select>
+            </div>
+
+            <button type="button" class="btn-luxury-outline service-area-pin-toggle" onclick="toggleServiceAreaMap()">
+              <i class="fa-solid fa-map-pin"></i> <span id="serviceAreaMapToggleLabel">Or drop a pin on the map instead</span>
+            </button>
+
+            <div id="serviceAreaMapPanel" style="display:none;">
+              <div id="serviceAreaMiniMap"></div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;"><i class="fa-solid fa-circle-info"></i> Tap anywhere on the map to drop your service hub pin.</p>
+            </div>
+
+            <input type="hidden" name="location" id="logisticsLocationHidden" />
+            <input type="hidden" name="serviceAreaLat" id="logisticsLocationLat" />
+            <input type="hidden" name="serviceAreaLng" id="logisticsLocationLng" />
+            <div id="logisticsLocationPreview" class="service-area-preview"></div>
+          </div>
+        </div>
+
+        <h3 class="form-section-title" style="margin-top:16px;"><i class="fa-solid fa-truck-fast"></i> Dynamic Fleet Type Selection</h3>
+        <div class="sub-option-selector">
+          <div class="sub-option-card active" data-target="logisticsInstantFields" onclick="toggleSubOption(this, 'logisticsInstantFields')">
+            <h4><i class="fa-solid fa-motorcycle"></i> Option 1: Instant Deliveries (Bike Rider)</h4>
+            <p>Same-day / instant short-hop deliveries by bike or scooter.</p>
+          </div>
+          <div class="sub-option-card" data-target="logisticsLargeFields" onclick="toggleSubOption(this, 'logisticsLargeFields')">
+            <h4><i class="fa-solid fa-truck-ramp-box"></i> Option 2: Large Deliveries (Truck / Van)</h4>
+            <p>Bulk transport, cold-chain & warehousing by van, truck or reefer.</p>
+          </div>
+        </div>
+
+        <!-- Option 1: Instant Deliveries (Bike Rider) -->
+        <div id="logisticsInstantFields" class="dynamic-role-fields">
+          <input type="hidden" name="subType" value="instant_bike" />
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="vehicleType">Vehicle Type</label>
+              <select name="vehicleType" class="form-control">
+                <option>Bike</option>
+                <option>Scooter</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-i18n="deliveryPreference">Delivery Preference</label>
+              <select name="deliveryPreference" class="form-control">
+                <option>Instant Delivery</option>
+                <option>Same-Day Delivery</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="availability">Availability</label>
+              <select name="availability" class="form-control">
+                <option>Full-time</option>
+                <option>Part-time</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-i18n="deliveryRadius">Average Delivery Radius (km)</label>
+              <input type="number" name="deliveryRadius" class="form-control" placeholder="e.g. 8" min="1" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Option 2: Large Deliveries (Truck / Van) -->
+        <div id="logisticsLargeFields" class="dynamic-role-fields" style="display:none;">
+          <input type="hidden" name="subType" value="large_truck" />
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="vehicleType">Vehicle Type</label>
+              <select name="vehicleType" class="form-control">
+                <option>Van</option>
+                <option>Truck</option>
+                <option>Cold Storage Truck</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-i18n="vehicleCapacity">Vehicle Capacity (kg / tons)</label>
+              <input type="text" name="vehicleCapacity" class="form-control" placeholder="e.g. 5 MT / 5000 kg" />
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="serviceType">Service Type</label>
+              <select name="serviceType" class="form-control">
+                <option>Bulk Transport</option>
+                <option>Cold Chain</option>
+                <option>Warehousing</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-i18n="availability">Availability</label>
+              <select name="availability" class="form-control">
+                <option>Full-time</option>
+                <option>Part-time</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:14px;">
+            <label data-i18n="preferredRoutes">Preferred Routes / Regions</label>
+            <input type="text" name="preferredRoutes" class="form-control" placeholder="e.g. Bengaluru ➔ Kolar ➔ Hoskote" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-luxury-gold" style="width:100%; margin-top:24px; padding:14px; font-size:1.05rem;" data-i18n="submitRegister">
+          Complete Logistics Partner Registration & Launch Dispatch Hub →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/i18n.js?v=5"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/gemini-service.js?v=5"></script>
+  <script src="js/app.js?v=8"></script>
+
+  <script>
+    // Handle URL parameters (e.g. ?role=consumer)
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const roleParam = urlParams.get("role") || "farmer";
+      if (roleParam === "logistics") { window.location.replace("logistics-register.html"); return; }
+      switchRegistrationTab(roleParam);
+      initLogisticsAreaPicker();
+
+      // Pill checkboxes toggle — listen on the input's 'change' event so the
+      // native label→input toggle doesn't get double-cancelled by JS.
+      document.querySelectorAll(".pill-check-label").forEach(label => {
+        const chk = label.querySelector("input");
+        if (!chk) return;
+        chk.addEventListener("change", () => {
+          label.classList.toggle("checked", chk.checked);
+        });
+      });
+
+      // OTP Simulation
+      document.querySelectorAll(".btn-verify-otp").forEach(btn => {
+        btn.addEventListener("click", () => {
+          btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...`;
+          setTimeout(() => {
+            btn.innerHTML = `Verified ✓`;
+            btn.classList.add("btn-luxury-gold");
+            btn.disabled = true;
+            showToast("Mobile OTP verified successfully!");
+          }, 800);
+        });
+      });
+    });
+
+    function switchRegistrationTab(role) {
+      document.querySelectorAll(".role-tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-tab-role") === role);
+      });
+      document.querySelectorAll(".reg-role-section").forEach(sec => {
+        sec.style.display = sec.getAttribute("data-section-role") === role ? "block" : "none";
+      });
+    }
+
+    function toggleSubOption(card, targetId) {
+      const parent = card.closest(".sub-option-selector");
+      parent.querySelectorAll(".sub-option-card").forEach(c => c.classList.remove("active"));
+      card.classList.add("active");
+
+      document.querySelectorAll(".dynamic-role-fields").forEach(f => f.style.display = "none");
+      const target = document.getElementById(targetId);
+      if (target) target.style.display = "block";
+    }
+
+    // ===================== Logistics Service Area Picker =====================
+    // Structured State → City → District cascade, plus a map-pin fallback for
+    // partners whose exact service hub doesn't map cleanly to a district name.
+    const LOGISTICS_AREA_DATA = {
+      "Karnataka": {
+        "Bengaluru": ["Bengaluru Urban", "Bengaluru Rural", "Anekal"],
+        "Mangaluru": ["Dakshina Kannada", "Udupi"],
+        "Mysuru": ["Mysuru", "Chamarajanagar"],
+        "Kolar": ["Kolar", "Hoskote"]
+      },
+      "Kerala": {
+        "Kochi": ["Ernakulam"],
+        "Thiruvananthapuram": ["Thiruvananthapuram"],
+        "Kozhikode": ["Kozhikode", "Wayanad"]
+      },
+      "Tamil Nadu": {
+        "Chennai": ["Chennai", "Tiruvallur", "Kanchipuram"],
+        "Coimbatore": ["Coimbatore"],
+        "Madurai": ["Madurai"]
+      },
+      "Goa": {
+        "Panaji": ["North Goa"],
+        "Margao": ["South Goa"]
+      },
+      "Maharashtra": {
+        "Mumbai": ["Mumbai City", "Mumbai Suburban"],
+        "Pune": ["Pune"],
+        "Ratnagiri": ["Ratnagiri", "Sindhudurg"]
+      },
+      "Andhra Pradesh": {
+        "Visakhapatnam": ["Visakhapatnam"],
+        "Vijayawada": ["Krishna", "Guntur"]
+      },
+      "Odisha": {
+        "Bhubaneswar": ["Khordha"],
+        "Puri": ["Puri"]
+      },
+      "West Bengal": {
+        "Kolkata": ["Kolkata", "Howrah"],
+        "Digha": ["Purba Medinipur"]
+      },
+      "Gujarat": {
+        "Ahmedabad": ["Ahmedabad"],
+        "Surat": ["Surat"],
+        "Porbandar": ["Porbandar"]
+      }
+    };
+
+    function initLogisticsAreaPicker() {
+      const stateSelect = document.getElementById("logisticsStateSelect");
+      if (!stateSelect || stateSelect.dataset.initialized) return;
+      stateSelect.dataset.initialized = "true";
+      Object.keys(LOGISTICS_AREA_DATA).forEach(state => {
+        const opt = document.createElement("option");
+        opt.value = state;
+        opt.innerText = state;
+        stateSelect.appendChild(opt);
+      });
+    }
+
+    function onLogisticsStateChange() {
+      const state = document.getElementById("logisticsStateSelect").value;
+      const citySelect = document.getElementById("logisticsCitySelect");
+      const districtSelect = document.getElementById("logisticsDistrictSelect");
+      citySelect.innerHTML = `<option value="">City / Town</option>`;
+      districtSelect.innerHTML = `<option value="">District</option>`;
+      districtSelect.disabled = true;
+
+      if (state && LOGISTICS_AREA_DATA[state]) {
+        Object.keys(LOGISTICS_AREA_DATA[state]).forEach(city => {
+          const opt = document.createElement("option");
+          opt.value = city;
+          opt.innerText = city;
+          citySelect.appendChild(opt);
+        });
+        citySelect.disabled = false;
+      } else {
+        citySelect.disabled = true;
+      }
+      composeLogisticsLocation();
+    }
+
+    function onLogisticsCityChange() {
+      const state = document.getElementById("logisticsStateSelect").value;
+      const city = document.getElementById("logisticsCitySelect").value;
+      const districtSelect = document.getElementById("logisticsDistrictSelect");
+      districtSelect.innerHTML = `<option value="">District</option>`;
+
+      const districts = (state && city && LOGISTICS_AREA_DATA[state] && LOGISTICS_AREA_DATA[state][city]) || [];
+      districts.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.innerText = d;
+        districtSelect.appendChild(opt);
+      });
+      districtSelect.disabled = districts.length === 0;
+      composeLogisticsLocation();
+    }
+
+    function composeLogisticsLocation() {
+      const state = document.getElementById("logisticsStateSelect")?.value || "";
+      const city = document.getElementById("logisticsCitySelect")?.value || "";
+      const district = document.getElementById("logisticsDistrictSelect")?.value || "";
+      const hidden = document.getElementById("logisticsLocationHidden");
+      const preview = document.getElementById("logisticsLocationPreview");
+      if (!hidden) return;
+
+      const parts = [state, city, district].filter(Boolean);
+      if (parts.length) {
+        // Readable composition: "State: City ➔ District"
+        hidden.value = state && city && district ? `${state}: ${city} ➔ ${district}` : parts.join(" ➔ ");
+        // Clear any map pin once a dropdown route is chosen
+        document.getElementById("logisticsLocationLat").value = "";
+        document.getElementById("logisticsLocationLng").value = "";
+        if (preview) preview.innerHTML = `<i class="fa-solid fa-route"></i> Service area: ${hidden.value}`;
+      } else if (!document.getElementById("logisticsLocationLat")?.value) {
+        hidden.value = "";
+        if (preview) preview.innerHTML = "";
+      }
+    }
+
+    let serviceAreaMap = null;
+    let serviceAreaMarker = null;
+
+    function toggleServiceAreaMap() {
+      const panel = document.getElementById("serviceAreaMapPanel");
+      const label = document.getElementById("serviceAreaMapToggleLabel");
+      const isOpen = panel.style.display === "block";
+      panel.style.display = isOpen ? "none" : "block";
+      label.innerText = isOpen ? "Or drop a pin on the map instead" : "Hide map";
+
+      if (!isOpen && !serviceAreaMap) {
+        serviceAreaMap = L.map('serviceAreaMiniMap').setView([15.5, 76.5], 6);
+        const tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles © Esri | Samruddhi Setu', maxZoom: 19
+        }).addTo(serviceAreaMap);
+        tiles.on('tileerror', () => {}); // silently keep base tiles; picker still works without them
+
+        serviceAreaMap.on('click', (e) => {
+          const { lat, lng } = e.latlng;
+          if (serviceAreaMarker) serviceAreaMap.removeLayer(serviceAreaMarker);
+          serviceAreaMarker = L.marker([lat, lng]).addTo(serviceAreaMap);
+
+          document.getElementById("logisticsLocationLat").value = lat.toFixed(5);
+          document.getElementById("logisticsLocationLng").value = lng.toFixed(5);
+          const hidden = document.getElementById("logisticsLocationHidden");
+          hidden.value = `Pinned location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+          document.getElementById("logisticsLocationPreview").innerHTML = `<i class="fa-solid fa-map-pin"></i> ${hidden.value}`;
+
+          // A manual pin overrides the dropdown route selection
+          document.getElementById("logisticsStateSelect").value = "";
+          document.getElementById("logisticsCitySelect").innerHTML = `<option value="">City / Town</option>`;
+          document.getElementById("logisticsCitySelect").disabled = true;
+          document.getElementById("logisticsDistrictSelect").innerHTML = `<option value="">District</option>`;
+          document.getElementById("logisticsDistrictSelect").disabled = true;
+        });
+      }
+      setTimeout(() => serviceAreaMap && serviceAreaMap.invalidateSize(), 150);
+    }
+
+    async function handleRegistration(e, role) {
+      e.preventDefault();
+      const form = e.target;
+      const fullName = form.querySelector("[name='fullName']")?.value || "Verified Partner";
+      const phone = form.querySelector("[name='phone']")?.value || "+91 98765 43210";
+      const email = form.querySelector("[name='email']")?.value || "user@samruddhisetu.in";
+      const rawLocation = form.querySelector("[name='location']")?.value || "";
+      const serviceAreaLat = form.querySelector("[name='serviceAreaLat']")?.value || "";
+      const serviceAreaLng = form.querySelector("[name='serviceAreaLng']")?.value || "";
+      const bankDetails = form.querySelector("[name='bankDetails']")?.value || "UPI: partner@upi";
+      const password = form.querySelector("[name='password']")?.value || "";
+      const purchaseFrequency = form.querySelector("[name='purchaseFrequency']")?.value || "";
+
+      // Logistics partners must pick a route (dropdowns) or drop a map pin —
+      // the free-text field is gone, so validate the composed value here.
+      if (role === "logistics" && !rawLocation) {
+        showToast("❌ Please select your service area (State ➔ City ➔ District) or drop a pin on the map.");
+        return;
+      }
+      const location = rawLocation || "India";
+
+      // Read subType from the visible dynamic-role-fields panel
+      const activeDynPanel = [...form.querySelectorAll(".dynamic-role-fields")].find(el => el.style.display !== "none");
+      const subType = activeDynPanel?.querySelector("[name='subType']")?.value
+                   || form.querySelector("[name='subType']")?.value
+                   || `${role.toUpperCase()} Member`;
+
+      // Bulk buyer extras
+      const gstNumber = form.querySelector("[name='gstNumber']")?.value || "";
+      const organizationName = form.querySelector("[name='organizationName']")?.value || "";
+
+      // Logistics fleet extras (read from the visible sub-option panel only)
+      const vehicleType = activeDynPanel?.querySelector("[name='vehicleType']")?.value || "";
+      const vehicleCapacity = activeDynPanel?.querySelector("[name='vehicleCapacity']")?.value || "";
+      const availability = activeDynPanel?.querySelector("[name='availability']")?.value || "";
+      const deliveryRadius = activeDynPanel?.querySelector("[name='deliveryRadius']")?.value || "";
+      const deliveryPreference = activeDynPanel?.querySelector("[name='deliveryPreference']")?.value || "";
+      const serviceType = activeDynPanel?.querySelector("[name='serviceType']")?.value || "";
+      const preferredRoutes = activeDynPanel?.querySelector("[name='preferredRoutes']")?.value || "";
+
+      // Farmer extras
+      const logisticsNeeds = [...form.querySelectorAll("[name='logisticsNeeds']:checked")].map(el => el.value);
+      const productionType = [...(activeDynPanel?.querySelectorAll("[name='productionType']:checked") || [])].map(el => el.value);
+      const herdStockSize = activeDynPanel?.querySelector("[name='herdStockSize']")?.value || "";
+      const dailyMonthlyOutput = activeDynPanel?.querySelector("[name='dailyMonthlyOutput']")?.value || "";
+
+      // Consumer extras (read from the visible sub-option panel only)
+      const favoriteProduce = [...(activeDynPanel?.querySelectorAll("[name='favoriteProduce']:checked") || [])].map(el => el.value);
+      const householdSize = activeDynPanel?.querySelector("[name='householdSize']")?.value || "";
+      const buyerType = activeDynPanel?.querySelector("[name='buyerType']")?.value || "";
+      const contractPreference = activeDynPanel?.querySelector("[name='contractPreference']")?.value || "";
+
+      const submitBtn = form.querySelector("button[type='submit']");
+      const originalBtnHTML = submitBtn ? submitBtn.innerHTML : "";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Creating your account...`;
+      }
+
+      let firebaseUser = null;
+      try {
+        // Step 1: create the real Firebase Authentication account. This is
+        // the single source of truth for the login credential — Firebase
+        // stores and hashes the password itself, and rejects the call with
+        // "auth/email-already-in-use" if this email is already registered
+        // (so a duplicate sign-up attempt is caught here automatically).
+        firebaseUser = await SamruddhiAuth.signUpWithFirebase(email, password);
+
+        const newUser = {
+          uid: firebaseUser.uid,
+          name: organizationName || fullName,
+          role: role,
+          phone,
+          email,
+          location,
+          serviceAreaLat,
+          serviceAreaLng,
+          bankDetails,
+          subType,
+          gstNumber,
+          vehicleType,
+          vehicleCapacity,
+          availability,
+          deliveryRadius,
+          deliveryPreference,
+          serviceType,
+          preferredRoutes,
+          logisticsNeeds,
+          productionType,
+          herdStockSize,
+          dailyMonthlyOutput,
+          favoriteProduce,
+          householdSize,
+          buyerType,
+          contractPreference,
+          purchaseFrequency,
+          verified: true,
+          avatar: "assets/default-avatar.jpg",
+          createdAt: new Date().toISOString()
+        };
+
+        try {
+          // Step 2: write the profile to Firestore, keyed by the Firebase
+          // Auth uid — this is what permanently links the Auth credential
+          // to this person's role/profile data.
+          await window.AgriSetuDB.db.collection("users").doc(firebaseUser.uid).set(newUser);
+        } catch (writeErr) {
+          // The Auth account was created but the profile write failed —
+          // delete the orphaned Auth account so the person can cleanly
+          // retry sign-up instead of being stuck "half-registered".
+          if (window.AgriSetuAuth) await window.AgriSetuAuth.signOutUser().catch(() => {});
+          if (firebaseUser.delete) await firebaseUser.delete().catch(() => {});
+          throw writeErr;
+        }
+
+        showToast(`Welcome to Samruddhi Setu, ${newUser.name}!`);
+        SamruddhiAuth.login(newUser, true);
+      } catch (err) {
+        console.error("Registration failed:", err);
+        showToast(`❌ ${SamruddhiAuth.describeAuthError(err)}`);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnHTML;
+        }
+      }
+    }
+  </script>
+<script src="js/global-chatbot.js?v=1"></script></body>
+</html>

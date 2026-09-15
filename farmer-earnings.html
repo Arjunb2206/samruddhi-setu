@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earnings & Payments | Samruddhi Setu</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div><h1>Earnings & Payments</h1><p>Track your income, settlements and payout methods.</p></div>
+      </div>
+
+      <div class="shell-grid cols-3">
+        <div class="stat-tile">
+          <div class="stat-icon" style="background:#D8F3DC; color:#2D6A4F;"><i class="fa-solid fa-calendar-day"></i></div>
+          <div class="stat-value" id="statToday">₹0</div>
+          <div class="stat-label">Today's Earnings</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-icon" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-calendar-week"></i></div>
+          <div class="stat-value" id="statWeek">₹0</div>
+          <div class="stat-label">This Week</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-icon" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-calendar"></i></div>
+          <div class="stat-value" id="statMonth">₹0</div>
+          <div class="stat-label">This Month</div>
+        </div>
+      </div>
+
+      <div class="shell-card" style="margin-top:24px;">
+        <div class="shell-card-head">
+          <div><h3>Earnings Tracker</h3><p>Samruddhi Setu direct payouts vs. old mandi benchmark</p></div>
+        </div>
+        <canvas id="farmerEarningsChart" height="90"></canvas>
+      </div>
+
+      <div class="shell-grid cols-2" style="margin-top:24px;">
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge"><i class="fa-solid fa-hourglass-half"></i></div>
+            <div><h3>Settlement Status</h3><p>Pending vs. cleared payments</p></div>
+          </div>
+          <div id="settlementList"></div>
+        </div>
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-wallet"></i></div>
+            <div><h3>Payout Method</h3><p>Where your money is sent</p></div>
+          </div>
+          <div class="simple-list-row"><span><i class="fa-solid fa-mobile-screen"></i> &nbsp;UPI — farmer@upi</span><span class="role-badge-pill">Default</span></div>
+          <div class="simple-list-row"><span><i class="fa-solid fa-building-columns"></i> &nbsp;Bank Transfer — ****4521</span><span></span></div>
+          <button class="btn-luxury-outline" style="margin-top:8px;">+ Add Payout Method</button>
+        </div>
+      </div>
+
+      <div class="shell-card" style="margin-top:24px;">
+        <div class="shell-card-head">
+          <div><h3>Analytics</h3><p>Average price per crop & top buyers</p></div>
+        </div>
+        <div class="shell-grid cols-2" id="analyticsList"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "farmer", active: "earnings", searchPlaceholder: "Search transactions..." });
+
+    document.addEventListener("DOMContentLoaded", loadEarnings);
+
+    async function loadEarnings() {
+      const user = SamruddhiAuth.getStoredUser();
+      const farmerId = user?.uid || null;
+
+      let orders = [];
+      try {
+        const snap = await window.AgriSetuDB.db.collection("orders").get();
+        orders = snap.docs.map(d => d.data()).filter(o => o.farmerId === farmerId);
+      } catch (e) {
+        console.warn("Earnings load failed", e);
+      }
+
+      // A brand-new farmer with no orders yet sees genuine zeros everywhere below,
+      // rather than the old static demo figures.
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const startOfWeek = new Date(startOfToday); startOfWeek.setDate(startOfWeek.getDate() - startOfToday.getDay());
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      const sumSince = (since) => orders
+        .filter(o => o.createdAt && new Date(o.createdAt) >= since)
+        .reduce((s, o) => s + (o.totalAmount || 0), 0);
+
+      const fmt = (n) => "₹" + n.toLocaleString("en-IN");
+      document.getElementById("statToday").innerText = fmt(sumSince(startOfToday));
+      document.getElementById("statWeek").innerText = fmt(sumSince(startOfWeek));
+      document.getElementById("statMonth").innerText = fmt(sumSince(startOfMonth));
+
+      // Settlement status — real recent orders, cleared vs. pending
+      const settlementEl = document.getElementById("settlementList");
+      if (!orders.length) {
+        settlementEl.innerHTML = `<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>No settlements yet. They'll appear once buyers purchase your produce.</p></div>`;
+      } else {
+        const recent = [...orders].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0, 5);
+        settlementEl.innerHTML = recent.map(o => {
+          const cleared = o.paymentStatus === "paid_test_mode";
+          return `<div class="simple-list-row"><span>Order #${o.id} — ₹${(o.totalAmount || 0).toLocaleString("en-IN")}</span><span class="status-pill ${cleared ? "available" : ""}" style="font-size:0.7rem;${cleared ? "" : " background:#FEF3C7; color:#92400E;"}">${cleared ? "Cleared" : "Pending"}</span></div>`;
+        }).join("");
+      }
+
+      // Analytics — average price per crop & top buyer, derived from this farmer's own orders
+      const analyticsEl = document.getElementById("analyticsList");
+      if (!orders.length) {
+        analyticsEl.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-chart-line"></i><p>No sales yet — analytics will build up as orders come in.</p></div>`;
+      } else {
+        const cropTotals = {};
+        orders.forEach(o => (o.items || []).forEach(i => {
+          const key = `${i.title} (${i.unit})`;
+          if (!cropTotals[key]) cropTotals[key] = { sum: 0, count: 0 };
+          cropTotals[key].sum += i.price || 0;
+          cropTotals[key].count += 1;
+        }));
+        const buyerCounts = {};
+        orders.forEach(o => { const name = o.buyerName || "—"; buyerCounts[name] = (buyerCounts[name] || 0) + 1; });
+        const topBuyer = Object.entries(buyerCounts).sort((a, b) => b[1] - a[1])[0];
+        const repeatBuyers = Object.values(buyerCounts).filter(c => c > 1).length;
+        const repeatPct = Object.keys(buyerCounts).length ? Math.round((repeatBuyers / Object.keys(buyerCounts).length) * 100) : 0;
+
+        const cropRows = Object.entries(cropTotals).slice(0, 4).map(([name, v]) =>
+          `<div class="simple-list-row"><span>${name} — avg. price</span><strong>₹${Math.round(v.sum / v.count)}</strong></div>`
+        ).join("");
+        analyticsEl.innerHTML = cropRows +
+          `<div class="simple-list-row"><span>Top buyer</span><strong>${topBuyer ? topBuyer[0] : "—"}</strong></div>` +
+          `<div class="simple-list-row"><span>Repeat buyers</span><strong>${repeatPct}%</strong></div>`;
+      }
+
+      // Earnings chart — cumulative real payouts over the last 30 days (flat at zero for a new farmer)
+      const ctx = document.getElementById("farmerEarningsChart");
+      if (!ctx) return;
+      const days = 30;
+      const labels = [];
+      const cumulative = [];
+      const sorted = [...orders].sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+      let running = 0;
+      for (let i = days - 1; i >= 0; i--) {
+        const day = new Date(now); day.setDate(day.getDate() - i); day.setHours(23, 59, 59, 999);
+        labels.push(i === 0 ? "Today" : `Day ${days - i}`);
+        while (sorted.length && new Date(sorted[0].createdAt || 0) <= day) {
+          running += sorted[0].totalAmount || 0;
+          sorted.shift();
+        }
+        cumulative.push(running);
+      }
+
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            { label: "Samruddhi Setu Direct Payouts (₹)", data: cumulative, borderColor: "#2D6A4F", backgroundColor: "rgba(45,106,79,0.12)", fill: true, tension: 0.4, borderWidth: 3 }
+          ]
+        },
+        options: { responsive: true, plugins: { legend: { position: "top" } } }
+      });
+    }
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

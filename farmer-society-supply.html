@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supply Bulk Produce to Society Hubs | Samruddhi Setu</title>
+  <meta name="description" content="Pool large harvest lots directly with verified cooperative societies, with guaranteed APMC benchmark payout and heavy truck logistics.">
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/shell.css?v=7">
+  <link rel="stylesheet" href="css/redesign.css?v=7">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="bs-wrap">
+
+        <a href="farmer-dashboard.html" class="bs-back" data-i18n="backToDashboard">← Back to Farmer Dashboard</a>
+
+        <div class="bs-head">
+          <div>
+            <span class="bs-eyebrow"><i class="fa-solid fa-building-columns"></i> Cooperative Aggregation Desk (सहकारी संकलन केंद्र)</span>
+            <h1 data-i18n="bulkSupplyTitle">Supply Bulk Produce to Society Hubs</h1>
+            <p>
+              Pool large harvest lots (100&nbsp;kg – 2000&nbsp;kg+) directly with verified cooperative societies near you.
+              Guaranteed APMC benchmark payout + heavy truck logistics.
+            </p>
+          </div>
+          <button class="fc-btn fc-btn-line" onclick="loadHubs(true)">
+            <i class="fa-solid fa-rotate"></i> <span data-i18n="refreshHubs">Refresh Hubs</span>
+          </button>
+        </div>
+
+        <!-- 1. Hub selection -->
+        <div class="bs-sec-title">1. <span data-i18n="selectHub">Select Target Cooperative Society Hub</span></div>
+        <div class="bs-sec-hint" data-i18n="onlyYourSocietyHint">You can only pool produce with the cooperative society you've joined.</div>
+        <div class="bs-hub-grid" id="bsHubGrid">
+          <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading nearby society hubs…</p></div>
+        </div>
+
+        <!-- 2. Produce details -->
+        <div class="lg-card" id="bsProduceCard">
+          <div class="bs-sec-title">2. <span data-i18n="bulkProduceDetails">Bulk Produce Details &amp; Logistics Request</span></div>
+          <div class="bs-sec-hint">Specify the harvest crop, total weight, and request automated heavy truck pickup.</div>
+
+          <div style="font-size:0.83rem; font-weight:700; color:#2B3A31; margin-bottom:10px;" data-i18n="selectRegionalProduce">Select Regional Produce</div>
+          <div class="bs-chip-row" id="bsProduceChips"></div>
+
+          <div class="lg-row c3">
+            <div class="lg-field">
+              <label data-i18n="cropName">Crop Name</label>
+              <input type="text" class="lg-input" id="bsCropName" placeholder="e.g. Tomato" />
+            </div>
+            <div class="lg-field">
+              <label data-i18n="varietyCultivar">Variety / Cultivar</label>
+              <input type="text" class="lg-input" id="bsVariety" placeholder="e.g. Hybrid Vaishnavi" />
+            </div>
+            <div class="lg-field">
+              <label data-i18n="coopRate">Cooperative Rate (₹/kg)</label>
+              <input type="number" class="lg-input" id="bsRate" min="1" step="0.5" oninput="recalcValue()" />
+            </div>
+          </div>
+
+          <div class="lg-field" style="margin-bottom:6px;">
+            <label data-i18n="totalHarvestWeight">Total Harvest Weight to Pool (Kilograms)</label>
+            <div class="bs-weight-row">
+              <input type="number" class="lg-input bs-weight-input" id="bsWeight" value="250" min="1" oninput="onWeightTyped()" />
+              <span class="bs-unit">kg</span>
+              <button class="bs-preset" onclick="setWeight(100, this)">100 kg</button>
+              <button class="bs-preset on" onclick="setWeight(250, this)">250 kg</button>
+              <button class="bs-preset" onclick="setWeight(500, this)">500 kg</button>
+              <button class="bs-preset" onclick="setWeight(1000, this)">1000 kg</button>
+              <button class="bs-preset" onclick="setWeight(2000, this)">2000 kg</button>
+            </div>
+          </div>
+
+          <div class="bs-truck">
+            <input type="checkbox" id="bsTruck" checked />
+            <div>
+              <div class="t"><i class="fa-solid fa-truck-ramp-box"></i> <span data-i18n="requestTruckPickup">Request Heavy Cargo Truck Pickup from Farm Gate</span></div>
+              <div class="s">✓ Heavy payload (&gt;30 kg) will be automatically matched to certified Mini-Truck or Large Truck couriers.</div>
+            </div>
+          </div>
+
+          <div class="bs-dispatch">
+            <div>
+              <div class="bs-value-lbl" data-i18n="estProcurementValue">Estimated Cooperative Procurement Value</div>
+              <div>
+                <span class="bs-value-amt" id="bsTotalValue">₹7,000</span>
+                <span class="bs-value-calc" id="bsValueCalc">(250 kg @ ₹28/kg)</span>
+              </div>
+            </div>
+            <button class="lg-btn lg-btn-primary" onclick="dispatchBulkSupply()">
+              <span data-i18n="dispatchBulkSupply">Dispatch Bulk Supply to Society</span> <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. History -->
+        <div class="bs-sec-title" style="margin-top:34px;">3. <span data-i18n="supplyHistory">Your Cooperative Supply History &amp; Pickups</span></div>
+        <div id="bsHistory" style="margin-top:14px;"></div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Voice assistant -->
+  <button class="bs-voice" id="bsVoiceBtn" onclick="toggleAgriMitraVoice()">
+    <i class="fa-solid fa-robot"></i> <span data-i18n="agriMitraVoice">AgriMitra</span>
+  </button>
+
+  <script src="js/i18n.js?v=7"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "farmer", active: "produce", searchPlaceholder: "Search society hubs, crops..." });
+
+    // Short i18n helper with an English fallback for every dynamic string.
+    // NOTE: must be capital T — js/i18n.js already declares a global function
+    // named t(), and redeclaring it with const in this script block would
+    // throw a page-wide SyntaxError, silently breaking renderAppShell() too.
+    const T = (k, f) => (window.i18n && window.i18n.t ? window.i18n.t(k, f) : f);
+
+    /* Regional produce presets with indicative cooperative benchmark rates */
+    const REGIONAL_PRODUCE = [
+      { name: "Tomato",  rate: 28, variety: "Hybrid Vaishnavi" },
+      { name: "Onion",   rate: 25, variety: "Nashik Red N-53" },
+      { name: "Potato",  rate: 22, variety: "Kufri Jyoti" },
+      { name: "Mango",   rate: 85, variety: "Alphonso" },
+      { name: "Ragi",    rate: 35, variety: "Indaf-9" },
+      { name: "Paddy",   rate: 26, variety: "Sona Masuri" },
+    ];
+
+    let selectedHub = null;
+    let selectedProduce = REGIONAL_PRODUCE[0];
+    let allHubs = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderProduceChips();
+      applyProduce(REGIONAL_PRODUCE[0]);
+      loadHubs();
+      renderHistory();
+    });
+
+    // Re-paint dynamic (JS-rendered) strings when the language changes
+    window.addEventListener("languageChanged", () => {
+      renderHistory();
+      if (allHubs.length) loadHubs();
+    });
+
+    /* ---------------- Society hubs ---------------- */
+
+    async function loadHubs(isRefresh) {
+      const grid = document.getElementById("bsHubGrid");
+      grid.innerHTML = `<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading your society…</p></div>`;
+      try {
+        let user = SamruddhiAuth.getStoredUser() || {};
+
+        // Refresh membership from the datastore — it may have changed on
+        // another device/tab since this page's session cache was written.
+        try {
+          if (user.uid && !String(user.uid).startsWith("guest-")) {
+            const myDoc = await window.AgriSetuDB.db.collection("users").doc(user.uid).get();
+            if (myDoc.exists) { user = myDoc.data(); SamruddhiAuth.setStoredUser(user); }
+          }
+        } catch (e) { /* fall back to the cached session user */ }
+
+        // A farmer can only pool bulk produce through the ONE cooperative
+        // society they've actually joined — never a directory of every
+        // society on the platform.
+        if (!user.societyId) {
+          allHubs = [];
+          selectedHub = null;
+          grid.innerHTML = `
+            <div class="empty-state" style="grid-column:1/-1; padding:40px 20px;">
+              <i class="fa-solid fa-people-roof" style="font-size:2rem; color:#C9D8D0; display:block; margin-bottom:12px;"></i>
+              <p style="margin-bottom:14px;">${T("joinCoopSociety","Join a cooperative society")} ${T("pooling50","to pool harvests over 50 kg")}.</p>
+              <a href="farmer-community.html" class="fc-btn fc-btn-solid" style="display:inline-flex;"><i class="fa-solid fa-user-plus"></i> ${T("findCommunities","Find Nearby Communities")}</a>
+            </div>`;
+          setFormEnabled(false);
+          if (isRefresh) showToast("You haven't joined a cooperative society yet.");
+          return;
+        }
+
+        const [coopSnap, usersSnap] = await Promise.all([
+          window.AgriSetuDB.db.collection("cooperatives").doc(user.societyId).get(),
+          window.AgriSetuDB.db.collection("users").get()
+        ]);
+
+        if (!coopSnap.exists) {
+          grid.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Your cooperative society record could not be found. Please rejoin from the Community page.</p></div>`;
+          setFormEnabled(false);
+          return;
+        }
+
+        const coop = { id: coopSnap.id, ...coopSnap.data() };
+        allHubs = [coop];
+        const farmers = usersSnap.docs.map(d => d.data()).filter(u => u.role === "farmer");
+        const members = farmers.filter(f => f.societyId === coop.id).length;
+        const code = (coop.shortName || coop.name).toUpperCase().replace(/[^A-Z]/g, "").slice(0, 6)
+                     + "-" + (coop.district || "").toUpperCase().slice(0, 3);
+
+        grid.innerHTML = `
+          <div class="bs-hub on" data-hub="${coop.id}" onclick="selectHub('${coop.id}')">
+            <div class="bs-hub-dot"></div>
+            <span class="bs-hub-code">${code}</span>
+            <h4>${coop.shortName || coop.name}</h4>
+            <div class="loc"><i class="fa-solid fa-location-dot"></i>${coop.district}, ${coop.state}${coop.pinCode ? ` (PIN ${coop.pinCode})` : ""}</div>
+            <div class="bs-hub-foot">
+              <span>Members: ${members}</span>
+              <span class="active-tag">${T("yourCoopSociety","Your Society")}</span>
+            </div>
+          </div>`;
+
+        selectedHub = coop;
+        selectHub(coop.id);
+        setFormEnabled(true);
+        if (isRefresh) showToast("Society hub refreshed.");
+      } catch (e) {
+        grid.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Could not load your society hub.</p></div>`;
+      }
+    }
+
+    /** Greys out and disables the produce/dispatch form when there's no joined society to supply. */
+    function setFormEnabled(enabled) {
+      const card = document.getElementById("bsProduceCard");
+      if (!card) return;
+      card.style.opacity = enabled ? "1" : "0.5";
+      card.style.pointerEvents = enabled ? "auto" : "none";
+    }
+
+    function selectHub(id) {
+      selectedHub = allHubs.find(c => c.id === id) || null;
+      document.querySelectorAll(".bs-hub").forEach(el => el.classList.toggle("on", el.dataset.hub === id));
+    }
+
+    /* ---------------- Produce ---------------- */
+
+    function renderProduceChips() {
+      document.getElementById("bsProduceChips").innerHTML = REGIONAL_PRODUCE.map((p, i) => `
+        <button class="bs-chip ${i === 0 ? "on" : ""}" data-produce="${p.name}" onclick="pickProduce('${p.name}')">
+          ${p.name} (₹${p.rate}/kg)
+        </button>`).join("");
+    }
+
+    function pickProduce(name) {
+      const p = REGIONAL_PRODUCE.find(x => x.name === name);
+      if (!p) return;
+      document.querySelectorAll(".bs-chip").forEach(c => c.classList.toggle("on", c.dataset.produce === name));
+      applyProduce(p);
+    }
+
+    function applyProduce(p) {
+      selectedProduce = p;
+      document.getElementById("bsCropName").value = p.name;
+      document.getElementById("bsVariety").value = p.variety;
+      document.getElementById("bsRate").value = p.rate;
+      recalcValue();
+    }
+
+    /* ---------------- Weight + value ---------------- */
+
+    function setWeight(kg, btn) {
+      document.getElementById("bsWeight").value = kg;
+      document.querySelectorAll(".bs-preset").forEach(b => b.classList.remove("on"));
+      if (btn) btn.classList.add("on");
+      recalcValue();
+    }
+
+    function onWeightTyped() {
+      const kg = parseFloat(document.getElementById("bsWeight").value) || 0;
+      document.querySelectorAll(".bs-preset").forEach(b => b.classList.toggle("on", parseFloat(b.innerText) === kg));
+      recalcValue();
+    }
+
+    function recalcValue() {
+      const kg = parseFloat(document.getElementById("bsWeight").value) || 0;
+      const rate = parseFloat(document.getElementById("bsRate").value) || 0;
+      const total = Math.round(kg * rate);
+      document.getElementById("bsTotalValue").innerText = "₹" + total.toLocaleString("en-IN");
+      document.getElementById("bsValueCalc").innerText = `(${kg} kg @ ₹${rate}/kg)`;
+    }
+
+    /* ---------------- Dispatch ---------------- */
+
+    async function dispatchBulkSupply() {
+      const user = SamruddhiAuth.getStoredUser();
+      if (!user || !user.uid) { showToast("⚠️ Please log in as a farmer to pool produce."); return; }
+      if (!user.societyId) {
+        showToast("⚠️ Join a cooperative community before pooling bulk produce.");
+        setTimeout(() => window.location.href = "farmer-community.html", 1400);
+        return;
+      }
+      if (!selectedHub) { showToast("⚠️ Select a target cooperative society hub."); return; }
+
+      const crop = document.getElementById("bsCropName").value.trim();
+      const variety = document.getElementById("bsVariety").value.trim();
+      const rate = parseFloat(document.getElementById("bsRate").value) || 0;
+      const kg = parseFloat(document.getElementById("bsWeight").value) || 0;
+      const truck = document.getElementById("bsTruck").checked;
+
+      if (!crop) { showToast("⚠️ Enter the crop name."); return; }
+      if (kg < 50) { showToast("⚠️ Society pooling requires at least 50 kg. Use My Produce for smaller retail lots."); return; }
+      if (rate <= 0) { showToast("⚠️ Enter a valid cooperative rate."); return; }
+
+      const total = Math.round(kg * rate);
+      const supplyId = `BULK-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      const record = {
+        id: supplyId,
+        farmerId: user.uid,
+        farmerName: user.name,
+        farmerLocation: user.location || "",
+        societyId: selectedHub.id,
+        societyName: selectedHub.shortName || selectedHub.name,
+        cropName: crop,
+        variety,
+        ratePerKg: rate,
+        weightKg: kg,
+        totalValue: total,
+        truckRequested: truck,
+        vehicleClass: kg > 500 ? "Large Truck" : "Mini Truck",
+        status: "awaiting_inspection",
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        await window.AgriSetuDB.db.collection("societySupplies").add(record);
+
+        // Also surface the lot in the bulk marketplace so buyers can find it
+        await window.AgriSetuDB.db.collection("products").add({
+          farmerId: user.uid, farmerName: user.name, farmerLocation: user.location || "",
+          title: `${crop}${variety ? " (" + variety + ")" : ""}`,
+          category: "vegetables",
+          price: rate, mandiPrice: Math.round(rate * 1.4), retailPrice: Math.round(rate * 1.6),
+          unit: "kg", stockQuantity: kg, weightKg: kg,
+          harvestDate: new Date().toISOString(),
+          imageURL: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600",
+          aiGrade: "Grade A", aiFreshnessScore: 96, shelfLifeDays: 7, isOrganic: false,
+          sellingChannel: "cooperative",
+          societyId: selectedHub.id, societyName: selectedHub.shortName || selectedHub.name,
+          saleStatus: "available", supplyId
+        });
+
+        if (truck) {
+          await window.AgriSetuDB.db.collection("logisticsRequests").add({
+            id: `PICK-${Math.floor(1000 + Math.random() * 9000)}`,
+            supplyId, farmerId: user.uid, farmerName: user.name,
+            pickupLocation: user.location || "Farm Gate",
+            dropLocation: `${selectedHub.shortName || selectedHub.name}, ${selectedHub.district}`,
+            payloadKg: kg,
+            vehicleClass: record.vehicleClass,
+            status: "pending_assignment",
+            createdAt: new Date().toISOString()
+          });
+        }
+
+        showToast(`✅ ${kg} kg of ${crop} dispatched to ${record.societyName} — ₹${total.toLocaleString("en-IN")} procurement value.`);
+        renderHistory();
+      } catch (e) {
+        console.error(e);
+        showToast("❌ Could not dispatch the bulk supply. Please try again.");
+      }
+    }
+
+    /* ---------------- History ---------------- */
+
+    async function renderHistory() {
+      const host = document.getElementById("bsHistory");
+      const user = SamruddhiAuth.getStoredUser();
+      try {
+        const snap = await window.AgriSetuDB.db.collection("societySupplies").get();
+        const mine = snap.docs.map(d => d.data()).filter(r => r.farmerId === user?.uid)
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        if (!mine.length) {
+          host.innerHTML = `
+            <div class="lg-card" style="text-align:center; padding:44px 20px;">
+              <i class="fa-solid fa-box-open" style="font-size:2rem; color:#C9D8D0; margin-bottom:12px;"></i>
+              <div style="font-weight:800; color:#10201A; margin-bottom:4px;">${T("noBulkSupplies","No bulk society supplies yet")}</div>
+              <div style="font-size:0.85rem; color:#6B7C72;">When you pool crops to a cooperative society, records will appear here.</div>
+            </div>`;
+          return;
+        }
+
+        host.innerHTML = mine.map(r => `
+          <div class="bs-hist-row">
+            <div class="bs-hist-ico"><i class="fa-solid fa-wheat-awn"></i></div>
+            <div class="bs-hist-body">
+              <div class="t">${r.cropName} — ${r.weightKg} kg <span style="font-weight:600; color:#6B7C72; font-size:0.82rem;">(${r.id})</span></div>
+              <div class="s">
+                <i class="fa-solid fa-building-columns"></i> ${r.societyName}
+                &nbsp;•&nbsp; ${new Date(r.createdAt).toLocaleDateString("en-GB")}
+                ${r.truckRequested ? `&nbsp;•&nbsp; <i class="fa-solid fa-truck"></i> ${r.vehicleClass} pickup requested` : ""}
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="bs-hist-amt">₹${(r.totalValue || 0).toLocaleString("en-IN")}</div>
+              <span class="status-pill" style="font-size:0.7rem; margin-top:4px; display:inline-block;">${(r.status || "").replace(/_/g, " ")}</span>
+            </div>
+          </div>`).join("");
+      } catch (e) {
+        host.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Could not load supply history.</p></div>`;
+      }
+    }
+
+    /* ---------------- AgriMitra voice assistant ---------------- */
+
+    let recog = null;
+
+    function toggleAgriMitraVoice() {
+      const btn = document.getElementById("bsVoiceBtn");
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) { showToast("Voice input isn't supported on this browser."); return; }
+
+      if (recog) { recog.stop(); recog = null; btn.classList.remove("listening"); return; }
+
+      recog = new SR();
+      recog.lang = (window.i18n && window.i18n.getLanguage() === "hi") ? "hi-IN" : "en-IN";
+      recog.interimResults = false;
+      btn.classList.add("listening");
+      btn.innerHTML = `<i class="fa-solid fa-microphone-lines"></i> ${T("listening", "Listening…")}`;
+
+      recog.onresult = (e) => {
+        const text = e.results[0][0].transcript.toLowerCase();
+        handleVoiceCommand(text);
+      };
+      recog.onerror = () => showToast("Couldn't catch that — please try again.");
+      recog.onend = () => {
+        recog = null;
+        btn.classList.remove("listening");
+        btn.innerHTML = `<i class="fa-solid fa-robot"></i> ${T("agriMitraVoice", "AgriMitra")}`;
+      };
+      recog.start();
+    }
+
+    function handleVoiceCommand(text) {
+      // Crop name
+      const crop = REGIONAL_PRODUCE.find(p => text.includes(p.name.toLowerCase()));
+      if (crop) pickProduce(crop.name);
+
+      // Weight, e.g. "500 kilo" / "500 kg"
+      const wMatch = text.match(/(\d{2,5})\s*(kg|kilo|kilogram)/);
+      if (wMatch) setWeight(parseFloat(wMatch[1]), null);
+
+      if (crop || wMatch) {
+        showToast(`🎤 Set ${crop ? crop.name : "weight"}${wMatch ? ` · ${wMatch[1]} kg` : ""}`);
+      } else {
+        showToast(`🎤 Heard: "${text}" — try "500 kg tomato".`);
+      }
+    }
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

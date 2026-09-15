@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Produce | Samruddhi Setu</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.29.0/dist/ort.min.js"></script>
+  <script>
+    if (window.ort) { ort.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.29.0/dist/"; }
+  </script>
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+  <link rel="stylesheet" href="css/redesign.css?v=7">
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div>
+          <h1>My Produce</h1>
+          <p>Add new crops or livestock produce, get AI pricing tips, and track what's sold.</p>
+        </div>
+        <div class="tab-pill-group" style="margin:0;">
+          <button class="tab-pill active" id="tabCropBtn" onclick="switchProduceTab('crop')"><i class="fa-solid fa-wheat-awn"></i> Crop Grower</button>
+          <button class="tab-pill" id="tabDairyBtn" onclick="switchProduceTab('dairy')"><i class="fa-solid fa-egg"></i> Animal / Dairy</button>
+        </div>
+      </div>
+
+      <!-- ===== Supply to Society Hub (mirrors the dashboard strip) ===== -->
+      <div id="produceSocietyBox"></div>
+
+      <div class="shell-grid cols-2" style="align-items:start;">
+        <!-- Add produce form -->
+        <div class="shell-card">
+          <div class="shell-card-head">
+            <div class="icon-badge"><i class="fa-solid fa-plus"></i></div>
+            <div><h3>Add Produce</h3><p>Image, type, quantity, price & harvest date</p></div>
+          </div>
+
+          <form id="farmerUploadForm" onsubmit="handleProduceUpload(event)">
+            <div class="form-group" style="margin-bottom:14px;">
+              <label style="font-size:0.82rem; font-weight:700;">Produce Image</label>
+              <input type="url" id="prodImageUrl" class="form-control" placeholder="Paste image URL (or leave blank for default)" />
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+              <div>
+                <label style="font-size:0.82rem; font-weight:700;">Produce Title *</label>
+                <input type="text" id="prodTitle" class="form-control" placeholder="e.g. Alphonso Mangoes" required />
+              </div>
+              <div>
+                <label style="font-size:0.82rem; font-weight:700;">Category *</label>
+                <select id="prodCategory" class="form-control" required>
+                  <option value="vegetables">Vegetables</option>
+                  <option value="fruits">Fruits</option>
+                  <option value="grains">Grains</option>
+                  <option value="dairy">Dairy</option>
+                  <option value="poultry">Poultry / Eggs</option>
+                  <option value="seafood">Seafood</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px;">
+              <div>
+                <label style="font-size:0.82rem; font-weight:700;">Price (₹) *</label>
+                <input type="number" id="prodPrice" class="form-control" required />
+              </div>
+              <div>
+                <label style="font-size:0.82rem; font-weight:700;">Quantity *</label>
+                <input type="number" id="prodQuantity" class="form-control" required />
+              </div>
+              <div>
+                <label style="font-size:0.82rem; font-weight:700;">Unit</label>
+                <select id="prodUnit" class="form-control">
+                  <option value="kg">kg</option>
+                  <option value="dozen">dozen</option>
+                  <option value="litre">litre</option>
+                  <option value="quintal">quintal</option>
+                  <option value="tonne">tonne</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-bottom:16px;">
+              <label style="font-size:0.82rem; font-weight:700;">Harvest Date</label>
+              <input type="date" id="prodHarvestDate" class="form-control" />
+            </div>
+
+            <div id="volumeRuleBadge" style="display:none;"></div>
+            <p id="volumeRuleHelpText" style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;"></p>
+            <div id="channelOptionsWrap" style="display:none; margin-bottom:16px;">
+              <div id="coopMembershipWrap"></div>
+            </div>
+
+            <input type="hidden" id="prodAiGrade" value="Grade A+" />
+            <div style="display:flex; gap:10px;">
+              <button type="button" class="btn-luxury-outline" id="openProduceScannerBtn" style="flex:1;"><i class="fa-solid fa-camera"></i> AI Quality Scan</button>
+              <button type="submit" class="btn-luxury-gold" style="flex:1;"><i class="fa-solid fa-check"></i> Publish Listing</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <!-- AI suggestions -->
+          <div class="shell-card">
+            <div class="shell-card-head">
+              <div class="icon-badge" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+              <div><h3>AI Suggestions</h3><p>Demand forecast & pricing tips</p></div>
+            </div>
+            <div class="simple-list-row"><span>📈 Tomato demand is <strong>+18%</strong> this week in your district</span></div>
+            <div class="simple-list-row"><span>💰 Suggested price for A2 Milk: <strong>₹68–72/litre</strong></span></div>
+            <div class="simple-list-row"><span>🥭 List mangoes before <strong>Fri</strong> to catch festival demand</span></div>
+          </div>
+
+          <!-- Stock tracker -->
+          <div class="shell-card">
+            <div class="shell-card-head">
+              <div class="icon-badge" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-boxes-stacked"></i></div>
+              <div><h3>Stock Tracker</h3><p>Current vs. sold produce</p></div>
+            </div>
+            <div id="farmerStockList"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- AI Scanner Modal (reused) -->
+  <div class="modal-overlay" id="onnxScannerModal">
+    <div class="modal-box" style="max-width:560px;">
+      <button class="modal-close-btn" id="closeScannerModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="margin-bottom:14px;">AI Produce Quality Scanner</h3>
+      <input type="file" id="scannerFileInput" accept="image/*" style="margin-bottom:12px;" />
+      <img id="scannerPreviewImg" style="max-width:100%; border-radius:12px; display:none; margin-bottom:12px;" />
+      <div id="scanLaserLine" style="display:none;"></div>
+      <div id="scannerReportCard"></div>
+    </div>
+  </div>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/onnx-ai-scanner.js?v=6"></script>
+  <script src="js/product-images.js?v=1"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=7"></script>
+  <script>
+    renderAppShell({ role: "farmer", active: "produce", searchPlaceholder: "Search your listings..." });
+
+    function switchProduceTab(tab) {
+      document.getElementById("tabCropBtn").classList.toggle("active", tab === "crop");
+      document.getElementById("tabDairyBtn").classList.toggle("active", tab === "dairy");
+      const catSelect = document.getElementById("prodCategory");
+      catSelect.value = tab === "dairy" ? "dairy" : "vegetables";
+    }
+
+    // Renders the cooperative-selling option inside the >50kg wrap, based on the
+    // farmer's ACTUAL community membership (joined via the Community & Support page).
+    function renderCoopMembershipOption() {
+      const wrap = document.getElementById("coopMembershipWrap");
+      if (!wrap) return;
+      const user = SamruddhiAuth.getStoredUser() || {};
+
+      if (user.societyId && user.societyName) {
+        wrap.innerHTML = `
+          <label style="display:flex; gap:8px; align-items:center; font-size:0.85rem; margin-bottom:6px;">
+            <input type="radio" name="sellingRouteRadio" value="cooperative" checked> Sell via <strong>${user.societyName}</strong> (your community)
+          </label>
+          <label style="display:flex; gap:8px; align-items:center; font-size:0.85rem;">
+            <input type="radio" name="sellingRouteRadio" value="direct"> Sell Directly (no society)
+          </label>
+          <input type="hidden" id="selectedCoopId" value="${user.societyId}" />
+          <input type="hidden" id="selectedCoopName" value="${user.societyName}" />`;
+      } else {
+        wrap.innerHTML = `
+          <label style="display:flex; gap:8px; align-items:center; font-size:0.85rem;">
+            <input type="radio" name="sellingRouteRadio" value="direct" checked> Sell Directly (no society)
+          </label>
+          <p style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;">
+            You haven't joined a cooperative community yet — bulk pooling, cold storage & bulk-buyer contracts need membership.
+            <a href="farmer-community.html" style="color:var(--primary); font-weight:700;">Join a nearby community →</a>
+          </p>`;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const qtyInput = document.getElementById("prodQuantity");
+      const unitSelect = document.getElementById("prodUnit");
+      function checkQuantityRule() {
+        const qty = parseFloat(qtyInput?.value) || 0;
+        const unit = unitSelect?.value || "kg";
+        const isLarge = qty > 50 || unit === "quintal" || unit === "tonne";
+        const channelOptions = document.getElementById("channelOptionsWrap");
+        const badge = document.getElementById("volumeRuleBadge");
+        const help = document.getElementById("volumeRuleHelpText");
+        if (!channelOptions || !badge || !help) return;
+        badge.style.display = "inline-block";
+        badge.style.padding = "4px 12px";
+        badge.style.borderRadius = "999px";
+        badge.style.fontSize = "0.75rem";
+        badge.style.fontWeight = "700";
+        badge.style.marginBottom = "8px";
+        if (isLarge) {
+          channelOptions.style.display = "block";
+          badge.innerText = "> 50 kg: Dual Route Unlocked";
+          badge.style.background = "#FEF3C7"; badge.style.color = "#92400E";
+          help.innerHTML = `Harvest volume &gt; 50 kg (${qty} ${unit}): choose Cooperative Society or sell directly.`;
+          renderCoopMembershipOption();
+        } else {
+          channelOptions.style.display = "none";
+          badge.innerText = "≤ 50 kg: Direct Retail";
+          badge.style.background = "#DCFCE7"; badge.style.color = "#15803D";
+          help.innerText = "Standard quantity — listed directly for consumers.";
+        }
+      }
+      qtyInput?.addEventListener("input", checkQuantityRule);
+      unitSelect?.addEventListener("change", checkQuantityRule);
+      renderStock();
+      renderSocietyBox();
+    });
+
+    /**
+     * Society supply entry point. Mirrors the pinned strip on the farmer
+     * dashboard so bulk pooling is reachable directly from My Produce.
+     */
+    async function renderSocietyBox() {
+      const host = document.getElementById("produceSocietyBox");
+      if (!host) return;
+      let user = SamruddhiAuth.getStoredUser();
+      if (!user) { host.innerHTML = ""; return; }
+
+      try {
+        if (user.uid && !String(user.uid).startsWith("guest-")) {
+          const doc = await window.AgriSetuDB.db.collection("users").doc(user.uid).get();
+          if (doc.exists) { user = doc.data(); SamruddhiAuth.setStoredUser(user); }
+        }
+      } catch (e) {}
+
+      const T = (k, f) => (window.i18n && window.i18n.t ? window.i18n.t(k, f) : f);
+
+      if (!user.societyId) {
+        host.innerHTML = `
+          <div class="fc-strip none" style="margin-bottom:24px;">
+            <div class="fc-strip-top">
+              <div class="fc-strip-left">
+                <div class="fc-strip-ico"><i class="fa-solid fa-warehouse"></i></div>
+                <div>
+                  <div class="fc-strip-eyebrow">${T("supplyToSociety", "Supply to Society Hub")}</div>
+                  <div class="fc-strip-name">${T("joinCoopSociety", "Join a cooperative society")}</div>
+                  <div class="fc-strip-meta">
+                    <span><i class="fa-solid fa-weight-hanging"></i> ${T("pooling50", "Required to pool harvests over 50 kg")}</span>
+                    <span><i class="fa-solid fa-snowflake"></i> ${T("unlocksColdStorage", "Unlocks cold storage & bulk buyers")}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="fc-strip-actions">
+                <a href="farmer-community.html" class="fc-btn fc-btn-solid"><i class="fa-solid fa-user-plus"></i> ${T("findCommunities", "Find Nearby Communities")}</a>
+              </div>
+            </div>
+          </div>`;
+        return;
+      }
+
+      let coop = null;
+      try {
+        const snap = await window.AgriSetuDB.db.collection("cooperatives").doc(user.societyId).get();
+        if (snap.exists) coop = snap.data();
+      } catch (e) {}
+      const name = coop?.name || user.societyName || T("yourCoopSociety", "Your Cooperative Society");
+
+      host.innerHTML = `
+        <div class="fc-strip" style="margin-bottom:24px;">
+          <div class="fc-strip-top">
+            <div class="fc-strip-left">
+              <div class="fc-strip-ico"><i class="fa-solid fa-warehouse"></i></div>
+              <div>
+                <div class="fc-strip-eyebrow"><i class="fa-solid fa-circle-check"></i> ${T("supplyToSociety", "Supply to Society Hub")}</div>
+                <div class="fc-strip-name">${name}</div>
+                <div class="fc-strip-meta">
+                  ${coop?.district ? `<span><i class="fa-solid fa-location-dot"></i> ${coop.district}, ${coop.state}</span>` : ""}
+                  <span><i class="fa-solid fa-weight-hanging"></i> ${T("poolingAbove", "Pooling above")} ${coop?.minWeightKgThreshold || 50} kg</span>
+                  <span><i class="fa-solid fa-truck-ramp-box"></i> ${T("heavyTruckPickup", "Heavy truck pickup available")}</span>
+                </div>
+              </div>
+            </div>
+            <div class="fc-strip-actions">
+              <a href="farmer-society-supply.html" class="fc-btn fc-btn-solid"><i class="fa-solid fa-truck-ramp-box"></i> ${T("uploadBulkProduce", "Upload Bulk Produce")}</a>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    async function renderStock() {
+      const snap = await window.AgriSetuDB.db.collection("products").get();
+      const products = snap.docs.map(d => d.data());
+      const list = document.getElementById("farmerStockList");
+      if (!products.length) {
+        list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-box-open"></i><p>No produce listed yet.</p></div>`;
+        return;
+      }
+      list.innerHTML = products.map(p => {
+        const isSold = p.saleStatus === "sold";
+        return `
+        <div class="simple-list-row">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <img src="${p.imageURL}" style="width:44px; height:44px; border-radius:10px; object-fit:cover;" alt="${p.title}" />
+            <div>
+              <div style="font-weight:700; color:var(--primary-deep);">${p.title}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">₹${p.price}/${p.unit} • ${p.aiGrade || "Grade A"}</div>
+            </div>
+          </div>
+          <span class="status-pill ${isSold ? "sold" : "available"}" style="font-size:0.7rem; padding:4px 10px;">${isSold ? "Sold" : p.stockQuantity + " " + p.unit + " left"}</span>
+        </div>`;
+      }).join("");
+    }
+
+    async function handleProduceUpload(e) {
+      e.preventDefault();
+      const user = SamruddhiAuth.getStoredUser() || { uid: `guest-${Date.now()}`, name: "Guest Farmer", location: "" };
+      const title = document.getElementById("prodTitle").value;
+      const category = document.getElementById("prodCategory").value;
+      const price = parseFloat(document.getElementById("prodPrice").value);
+      const quantity = parseFloat(document.getElementById("prodQuantity").value);
+      const unit = document.getElementById("prodUnit").value;
+      const aiGrade = document.getElementById("prodAiGrade").value || "Grade A+";
+      const imageUrl = document.getElementById("prodImageUrl").value || SamruddhiProductImages.productImage({ title, category });
+
+      const isLarge = quantity > 50 || unit === "quintal" || unit === "tonne";
+      let sellingChannel = "direct", societyId = null, societyName = null;
+      if (isLarge) {
+        const selectedRoute = document.querySelector('input[name="sellingRouteRadio"]:checked')?.value || "direct";
+        sellingChannel = selectedRoute;
+        if (selectedRoute === "cooperative") {
+          societyId = document.getElementById("selectedCoopId")?.value || null;
+          societyName = document.getElementById("selectedCoopName")?.value || null;
+          if (!societyId) {
+            showToast("⚠️ Join a cooperative community first to sell via society.");
+            return;
+          }
+        }
+      }
+
+      const newProduct = {
+        farmerId: user.uid, farmerName: user.name, farmerLocation: user.location,
+        title, category, price, mandiPrice: Math.round(price * 1.4), retailPrice: Math.round(price * 1.6),
+        unit, stockQuantity: quantity, weightKg: quantity, harvestDate: new Date().toISOString(),
+        imageURL: imageUrl, aiGrade, aiFreshnessScore: 98, shelfLifeDays: 8, isOrganic: true,
+        sellingChannel, societyId, societyName, saleStatus: "available"
+      };
+
+      await window.AgriSetuDB.db.collection("products").add(newProduct);
+      showToast(sellingChannel === "cooperative" ? `Pooled with ${societyName}!` : `Direct listing published!`);
+      document.getElementById("farmerUploadForm").reset();
+      document.getElementById("channelOptionsWrap").style.display = "none";
+      renderStock();
+    }
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

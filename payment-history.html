@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment History | Samruddhi Setu Admin</title>
+  <meta name="description" content="Admin ledger of all Samruddhi Setu payments — Razorpay (test mode) online payments and Cash on Delivery orders.">
+
+  <!-- Favicon / Logo -->
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6.5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="css/style.css?v=6">
+</head>
+<body>
+
+  <!-- ================= ADMIN SECURITY GATE (shared with admin.html) ================= -->
+  <div class="modal-overlay open" id="adminSecurityGateModal" style="background: rgba(8, 28, 21, 0.96); backdrop-filter: blur(14px); z-index: 9999;">
+    <div class="modal-box" style="max-width: 440px; text-align: center; border: 2px solid var(--border-gold); box-shadow: 0 20px 50px rgba(0,0,0,0.6); padding: 36px 28px;">
+      <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(212, 163, 115, 0.2); border: 2px solid var(--gold-primary); color: var(--gold-light); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 16px auto;">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h2 style="font-family: 'Cinzel', serif; color: var(--primary-deep); font-size: 1.5rem; margin-bottom: 6px;">
+        Admin Security Gate
+      </h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+        Payment History is part of the Cooperative Societies Apex Governance Hub. Enter the administrator passkey to proceed.
+      </p>
+
+      <form id="adminGateForm" onsubmit="verifyAdminGatePassword(event)">
+        <div class="form-group" style="margin-bottom: 16px; text-align: left;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: var(--primary-deep);">Administrator Password</label>
+          <input type="password" id="gateAdminPassword" class="form-control" placeholder="••••••••" required autofocus style="padding: 12px; font-size: 1.1rem; text-align: center; letter-spacing: 0.2em;" />
+        </div>
+
+        <button type="submit" class="btn-luxury-gold" style="width: 100%; padding: 12px; font-size: 0.95rem; margin-bottom: 10px;">
+          <i class="fa-solid fa-unlock"></i> Unlock Admin Portal
+        </button>
+        <a href="admin.html" class="btn-luxury-outline" style="width: 100%; display: block; padding: 10px; font-size: 0.84rem; text-align: center;">
+          <i class="fa-solid fa-arrow-left"></i> Back to Societies Hub
+        </a>
+      </form>
+    </div>
+  </div>
+
+  <!-- Top Utility Bar -->
+  <div class="top-utility-bar">
+    <div class="top-helpline-info">
+      <i class="fa-solid fa-receipt" style="color:var(--gold-light);"></i>
+      <span>Apex Governance — Payment Ledger | Finance Helpdesk: <strong>1800-233-0245</strong></span>
+    </div>
+    <div class="top-right-tools">
+      <a href="admin.html" class="btn-luxury-outline" style="padding: 4px 12px; font-size: 0.78rem; border-color: var(--accent-mint); color: #FFF;">
+        <i class="fa-solid fa-building-columns" style="color:var(--accent-mint);"></i> Societies Hub
+      </a>
+      <select class="lang-selector-select" onchange="window.i18n.setLanguage(this.value)">
+        <option value="en">English (Global)</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+        <option value="ta">தமிழ் (Tamil)</option>
+        <option value="te">తెలుగు (Telugu)</option>
+        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+        <option value="mr">मराठी (Marathi)</option>
+        <option value="bn">বাংলা (Bengali)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Navigation Bar (same as admin.html, with Payment History added) -->
+  <nav class="main-navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo-wrap">
+        <img src="assets/logo.jpg" alt="Samruddhi Setu Logo" class="brand-logo-img" />
+        <div class="brand-text-block">
+          <h2>SAMRUDDHI SETU</h2>
+          <p>Cooperative Governance & Direct Market Portal</p>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="admin.html" class="nav-item"><i class="fa-solid fa-building-columns"></i> Societies Hub</a></li>
+        <li><a href="payment-history.html" class="nav-item active"><i class="fa-solid fa-clock-rotate-left"></i> Payment History</a></li>
+        <li><a href="seed.html" class="nav-item"><i class="fa-solid fa-database"></i> Seed DB</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button onclick="lockAdminPortal()" class="btn-luxury-outline" style="padding: 6px 12px; font-size: 0.78rem; color: #EF4444; border-color: #F87171;">
+          <i class="fa-solid fa-lock"></i> Lock Portal
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ================= MAIN PAYMENT HISTORY CONTENT ================= -->
+  <div class="dashboard-view-container">
+
+    <!-- Hero / KPI Banner -->
+    <div class="admin-hero-header">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+        <div style="max-width: 650px;">
+          <span style="background: rgba(212, 163, 115, 0.25); color: var(--gold-light); padding: 4px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; border: 1px solid var(--border-gold); text-transform: uppercase;">
+            <i class="fa-solid fa-shield-halved"></i> Apex Governance Registry
+          </span>
+          <h1 style="font-size: 2.2rem; margin-top: 10px; font-family: 'Cinzel', serif;">
+            Payment History & Reconciliation Ledger
+          </h1>
+          <p style="margin-top: 8px; color: rgba(255,255,255,0.8); max-width: 560px;">
+            Every direct-farm and coastal order placed on Samruddhi Setu — Razorpay
+            (test mode) online payments and Cash on Delivery — in one reconciled view.
+          </p>
+        </div>
+        <button class="btn-luxury-gold" onclick="exportPaymentsCsv()" style="height:fit-content;">
+          <i class="fa-solid fa-file-arrow-down"></i> Export CSV
+        </button>
+      </div>
+
+      <div class="admin-metrics-grid">
+        <div class="admin-metric-card">
+          <div class="admin-metric-val" id="phTotalRevenue">₹0</div>
+          <div class="admin-metric-lbl">Total Revenue Collected</div>
+        </div>
+        <div class="admin-metric-card">
+          <div class="admin-metric-val" id="phOnlineRevenue">₹0</div>
+          <div class="admin-metric-lbl"><i class="fa-solid fa-credit-card"></i> Razorpay (Test Mode) Payments</div>
+        </div>
+        <div class="admin-metric-card">
+          <div class="admin-metric-val" id="phCodRevenue">₹0</div>
+          <div class="admin-metric-lbl"><i class="fa-solid fa-hand-holding-dollar"></i> Cash on Delivery</div>
+        </div>
+        <div class="admin-metric-card">
+          <div class="admin-metric-val" id="phOrderCount">0</div>
+          <div class="admin-metric-lbl">Total Transactions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ledger Panel -->
+    <div class="dash-panel-card">
+      <div class="panel-header-row">
+        <h3><i class="fa-solid fa-receipt"></i> Transaction Ledger</h3>
+      </div>
+
+      <div class="ph-toolbar">
+        <input type="text" class="ph-search-input" id="phSearchInput" placeholder="Search Order ID, buyer or farmer…" oninput="renderPaymentTable()" />
+
+        <div class="ph-filters">
+          <button class="ph-filter-chip active" data-method="all" onclick="setMethodFilter('all', this)">All Methods</button>
+          <button class="ph-filter-chip" data-method="ONLINE" onclick="setMethodFilter('ONLINE', this)"><i class="fa-solid fa-credit-card"></i> Razorpay</button>
+          <button class="ph-filter-chip" data-method="COD" onclick="setMethodFilter('COD', this)"><i class="fa-solid fa-hand-holding-dollar"></i> COD</button>
+        </div>
+      </div>
+
+      <div class="ph-table-wrap">
+        <table class="ph-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Date</th>
+              <th>Buyer</th>
+              <th>Farmer / Producer</th>
+              <th>Method</th>
+              <th>Payment Ref.</th>
+              <th>Status</th>
+              <th style="text-align:right;">Amount</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="phTableBody"></tbody>
+        </table>
+        <div class="ph-empty-state" id="phEmptyState" style="display:none;">
+          <i class="fa-solid fa-receipt" style="font-size:2rem; opacity:0.4;"></i>
+          <p style="margin-top:10px;">No payments match your filters yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoice / Receipt Modal (shared component) -->
+  <div class="modal-overlay" id="invoiceReceiptModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" onclick="document.getElementById('invoiceReceiptModal').classList.remove('open')"><i class="fa-solid fa-xmark"></i></button>
+      <div id="invoiceContentContainer"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/i18n.js?v=5"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+
+  <script>
+    const ADMIN_PASSKEY = "admin123";
+    let allPaymentOrders = [];
+    let activeMethodFilter = "all";
+    window._orderMap = {};
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      checkAdminAuth();
+      await loadPaymentHistory();
+    });
+
+    function checkAdminAuth() {
+      const isAuth = sessionStorage.getItem("samruddhi_admin_auth") === "true";
+      const storedUser = SamruddhiAuth.getStoredUser();
+      const gate = document.getElementById("adminSecurityGateModal");
+
+      if (isAuth && storedUser && storedUser.role === "admin") {
+        if (gate) gate.classList.remove("open");
+      } else {
+        if (gate) {
+          gate.classList.add("open");
+          const input = document.getElementById("gateAdminPassword");
+          if (input) input.focus();
+        }
+      }
+    }
+
+    window.verifyAdminGatePassword = function(e) {
+      e.preventDefault();
+      const input = document.getElementById("gateAdminPassword").value;
+      if (input === ADMIN_PASSKEY) {
+        sessionStorage.setItem("samruddhi_admin_auth", "true");
+        const adminUser = {
+          uid: `admin-${Date.now()}`,
+          name: "Cooperative Admin",
+          email: "registrar@samruddhisetu.in",
+          role: "admin",
+          verified: true,
+          avatar: "assets/default-avatar.jpg"
+        };
+        SamruddhiAuth.setStoredUser(adminUser);
+        document.getElementById("adminSecurityGateModal").classList.remove("open");
+        showToast("✅ Admin Authentication Verified! Welcome to the Payment Ledger.");
+      } else {
+        showToast("❌ Incorrect Admin Password!");
+        document.getElementById("gateAdminPassword").value = "";
+        document.getElementById("gateAdminPassword").focus();
+      }
+    };
+
+    window.lockAdminPortal = function() {
+      sessionStorage.removeItem("samruddhi_admin_auth");
+      showToast("🔒 Admin Portal Locked. Password required to re-enter.");
+      checkAdminAuth();
+    };
+
+    async function loadPaymentHistory() {
+      try {
+        const snap = await window.AgriSetuDB.db.collection("orders").get();
+        allPaymentOrders = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+        allPaymentOrders.forEach(o => { window._orderMap[o.id] = o; });
+
+        renderMetrics();
+        renderPaymentTable();
+      } catch (err) {
+        console.error("Failed to load payment history:", err);
+        showToast("Could not load payment history from the database.");
+      }
+    }
+
+    function renderMetrics() {
+      const online = allPaymentOrders.filter(o => o.paymentMethod === "ONLINE");
+      const cod = allPaymentOrders.filter(o => o.paymentMethod !== "ONLINE");
+
+      const totalRevenue = allPaymentOrders.reduce((s, o) => s + (o.totalAmount || 0), 0);
+      const onlineRevenue = online.reduce((s, o) => s + (o.totalAmount || 0), 0);
+      const codRevenue = cod.reduce((s, o) => s + (o.totalAmount || 0), 0);
+
+      document.getElementById("phTotalRevenue").innerText = "₹" + totalRevenue.toLocaleString();
+      document.getElementById("phOnlineRevenue").innerText = "₹" + onlineRevenue.toLocaleString() + ` (${online.length})`;
+      document.getElementById("phCodRevenue").innerText = "₹" + codRevenue.toLocaleString() + ` (${cod.length})`;
+      document.getElementById("phOrderCount").innerText = allPaymentOrders.length;
+    }
+
+    window.setMethodFilter = function(method, btnEl) {
+      activeMethodFilter = method;
+      document.querySelectorAll(".ph-filter-chip").forEach(el => el.classList.remove("active"));
+      btnEl.classList.add("active");
+      renderPaymentTable();
+    };
+
+    function renderPaymentTable() {
+      const search = (document.getElementById("phSearchInput").value || "").toLowerCase().trim();
+      const tbody = document.getElementById("phTableBody");
+      const emptyState = document.getElementById("phEmptyState");
+
+      let rows = allPaymentOrders.filter(o => {
+        if (activeMethodFilter !== "all") {
+          const method = o.paymentMethod === "ONLINE" ? "ONLINE" : "COD";
+          if (method !== activeMethodFilter) return false;
+        }
+        if (!search) return true;
+        const haystack = `${o.id} ${o.buyerName || ""} ${o.farmerName || ""}`.toLowerCase();
+        return haystack.includes(search);
+      });
+
+      if (rows.length === 0) {
+        tbody.innerHTML = "";
+        emptyState.style.display = "block";
+        return;
+      }
+      emptyState.style.display = "none";
+
+      tbody.innerHTML = rows.map(o => {
+        const isOnline = o.paymentMethod === "ONLINE";
+        const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+        const isPaid = isOnline || o.paymentStatus === "paid_test_mode";
+
+        return `
+          <tr>
+            <td class="ph-order-id">${o.id}</td>
+            <td>${dateStr}</td>
+            <td>${o.buyerName || "Guest Buyer"}</td>
+            <td>${o.farmerName || "Direct Farmer"}</td>
+            <td>
+              <span class="ph-method-pill ${isOnline ? "online" : "cod"}">
+                <i class="fa-solid ${isOnline ? "fa-credit-card" : "fa-hand-holding-dollar"}"></i>
+                ${isOnline ? "Razorpay (Test)" : "Cash on Delivery"}
+              </span>
+            </td>
+            <td style="font-size:0.78rem; color:var(--text-muted);">${o.paymentId ? o.paymentId : "—"}</td>
+            <td>
+              <span class="ph-status-pill ${isPaid ? "paid" : "pending"}">
+                <i class="fa-solid ${isPaid ? "fa-circle-check" : "fa-clock"}"></i>
+                ${isPaid ? "Paid" : "Due on delivery"}
+              </span>
+            </td>
+            <td style="text-align:right; font-weight:800; color:var(--primary-deep);">₹${(o.totalAmount || 0).toLocaleString()}</td>
+            <td>
+              <button class="btn-luxury-outline" style="padding:5px 12px; font-size:0.74rem;" onclick="viewInvoiceForOrder('${o.id}')">
+                <i class="fa-solid fa-file-invoice"></i> Receipt
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    window.viewInvoiceForOrder = function(id) {
+      const ord = window._orderMap[id];
+      if (ord) showInvoiceModal(ord);
+    };
+
+    window.exportPaymentsCsv = function() {
+      if (allPaymentOrders.length === 0) {
+        showToast("No payment records to export yet.");
+        return;
+      }
+      const header = ["Order ID", "Date", "Buyer", "Farmer", "Payment Method", "Payment Reference", "Status", "Amount (INR)"];
+      const rows = allPaymentOrders.map(o => [
+        o.id,
+        o.createdAt || "",
+        o.buyerName || "Guest Buyer",
+        o.farmerName || "Direct Farmer",
+        o.paymentMethod === "ONLINE" ? "Razorpay (Test Mode)" : "Cash on Delivery",
+        o.paymentId || "",
+        (o.paymentMethod === "ONLINE" || o.paymentStatus === "paid_test_mode") ? "Paid" : "Due on delivery",
+        o.totalAmount || 0
+      ]);
+
+      const csv = [header, ...rows]
+        .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `samruddhi-setu-payment-history-${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Payment history exported as CSV.");
+    };
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>

@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logistics Partner Onboarding | Samruddhi Setu</title>
+  <meta name="description" content="Join the Samruddhi Setu delivery network. Complete registration to transport fresh produce directly from farms and societies to consumers.">
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/redesign.css?v=7">
+</head>
+<body class="lg-body">
+
+  <!-- ===================== Step rail ===================== -->
+  <div class="lg-stepper">
+    <div class="lg-stepper-inner" id="lgStepper"></div>
+  </div>
+
+  <!-- ===================== STEP 1 — Personal & Logistics Registration ===================== -->
+  <section class="lg-wrap lg-screen" id="lgStep1">
+    <div class="lg-head">
+      <span class="lg-eyebrow"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="logisticsOnboarding">Logistics Partner Onboarding</span></span>
+      <h1 data-i18n="personalLogisticsReg">Personal &amp; Logistics Registration</h1>
+      <p>Join Samruddhi Setu's delivery network. Complete registration to transport fresh produce directly from farms and societies to consumers.</p>
+    </div>
+
+    <!-- 1. Worker type -->
+    <div class="lg-card">
+      <h3>1. <span data-i18n="selectWorkerType">Select Worker Type</span></h3>
+      <p class="hint">Choose your operational category. Vehicle requirements and documents will adapt to this choice.</p>
+
+      <div class="lg-type-grid">
+        <div class="lg-type on" id="typeAgent" onclick="selectWorkerType('delivery_agent')">
+          <i class="fa-solid fa-circle-check lg-type-check"></i>
+          <div class="lg-type-ico"><i class="fa-solid fa-motorcycle"></i></div>
+          <h4 data-i18n="deliveryAgent">Delivery Agent</h4>
+          <div class="lg-type-sub">Bike / Scooter / Small Vehicle</div>
+          <p>Deliver quick batch orders (below 50&nbsp;kg) from local societies or directly from nearby farms to consumer doorsteps.</p>
+        </div>
+
+        <div class="lg-type" id="typeTransport" onclick="selectWorkerType('large_transport')">
+          <i class="fa-solid fa-circle-check lg-type-check"></i>
+          <div class="lg-type-ico"><i class="fa-solid fa-truck"></i></div>
+          <h4 data-i18n="largeTransport">Large Transport</h4>
+          <div class="lg-type-sub">Truck / Bulk Agricultural Transport</div>
+          <p>Transport bulk agricultural produce (50&nbsp;kg to several tons) between cooperative societies, central warehouses, and distributors.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Personal information -->
+    <div class="lg-card">
+      <h3>2. <span data-i18n="personalInformation">Personal Information</span></h3>
+      <p class="hint">Provide your official details as they appear on your government-issued identity cards.</p>
+
+      <div class="lg-row c1">
+        <div class="lg-field">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="fFullName" placeholder="e.g. Rahul Sharma" required />
+        </div>
+      </div>
+
+      <div class="lg-row c2">
+        <div class="lg-field">
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" class="lg-input" id="fEmail" placeholder="name@example.com" required />
+        </div>
+        <div class="lg-field">
+          <label>Mobile Number <span class="req">*</span></label>
+          <input type="tel" class="lg-input" id="fPhone" placeholder="10-digit phone number" maxlength="10" required />
+        </div>
+      </div>
+
+      <div class="lg-row c2">
+        <div class="lg-field">
+          <label>Date of Birth <span class="req">*</span></label>
+          <input type="date" class="lg-input" id="fDob" required />
+        </div>
+        <div class="lg-field">
+          <label>Gender</label>
+          <select class="lg-input" id="fGender">
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+            <option>Prefer not to say</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="lg-row c1">
+        <div class="lg-field">
+          <label>Street Address <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="fStreet" placeholder="House number, Street, Landmark" required />
+        </div>
+      </div>
+
+      <div class="lg-row c2">
+        <div class="lg-field">
+          <label>City / Town <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="fCity" placeholder="City" required />
+        </div>
+        <div class="lg-field">
+          <label>District <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="fDistrict" placeholder="District" required />
+        </div>
+      </div>
+
+      <div class="lg-row c2">
+        <div class="lg-field">
+          <label>State <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="fState" placeholder="State" required />
+        </div>
+        <div class="lg-field">
+          <label>PIN Code <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="fPin" placeholder="6-digit PIN code" maxlength="6" required />
+        </div>
+      </div>
+
+      <div class="lg-row c2" style="margin-bottom:0;">
+        <div class="lg-field">
+          <label>Password (min 8 chars) <span class="req">*</span></label>
+          <input type="password" class="lg-input" id="fPassword" placeholder="••••••••" required />
+        </div>
+        <div class="lg-field">
+          <label>Confirm Password <span class="req">*</span></label>
+          <input type="password" class="lg-input" id="fPassword2" placeholder="••••••••" required />
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Emergency contact -->
+    <div class="lg-card">
+      <h3>3. <span data-i18n="emergencyContact">Emergency Contact</span></h3>
+      <p class="hint">For your safety during active transit and logistics assignments.</p>
+
+      <div class="lg-row c3" style="margin-bottom:0;">
+        <div class="lg-field">
+          <label>Contact Name <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="fEmName" placeholder="Contact person" required />
+        </div>
+        <div class="lg-field">
+          <label>Emergency Phone <span class="req">*</span></label>
+          <input type="tel" class="lg-input" id="fEmPhone" placeholder="10-digit mobile" maxlength="10" required />
+        </div>
+        <div class="lg-field">
+          <label>Relationship <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="fEmRel" placeholder="e.g. Parent, Spouse, Sibling" required />
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Agreements -->
+    <div class="lg-card">
+      <h3>4. <span data-i18n="agreementsConsent">Agreements &amp; Verification Consent</span></h3>
+      <div style="margin-top:16px;">
+        <div class="lg-consent">
+          <input type="checkbox" id="fAgreeTerms" />
+          <label for="fAgreeTerms">I agree to Samruddhi Setu's Logistics Partner Terms &amp; Conditions, safety regulations, and operational code of conduct.</label>
+        </div>
+        <div class="lg-consent">
+          <input type="checkbox" id="fAgreeVerify" />
+          <label for="fAgreeVerify">I give explicit consent for Samruddhi Setu administrators to review and verify my driving licence and vehicle documents for background verification.</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg-foot">
+      <div class="lg-foot-note">Already registered? <a href="login.html">Sign in to your account</a></div>
+      <button class="lg-btn lg-btn-primary" onclick="submitStep1()">Continue to Step 2: Upload Documents <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+  <!-- ===================== STEP 2 — Identity & Document Verification ===================== -->
+  <section class="lg-wrap lg-screen" id="lgStep2" style="display:none;">
+    <div class="lg-head">
+      <span class="lg-eyebrow"><i class="fa-solid fa-shield-halved"></i> Step 2: Verification Required</span>
+      <h1 data-i18n="identityDocVerification">Identity &amp; Document Verification</h1>
+      <p>Your documents are required before you can start accepting deliveries on Samruddhi Setu.</p>
+      <div class="lg-profile-note" id="lgProfileNote">Current Partner Profile: Delivery Agent (Bike / Small Vehicles)</div>
+    </div>
+
+    <div class="lg-doc-grid" id="lgDocGrid"></div>
+
+    <div class="lg-foot">
+      <button class="lg-btn lg-btn-ghost" onclick="gotoStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <button class="lg-btn lg-btn-primary" onclick="submitStep2()">Continue to Step 3: Verification <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+  <!-- ===================== STEP 3 — Verifying your documents ===================== -->
+  <section class="lg-wrap lg-screen" id="lgStep3" style="display:none;">
+    <div class="lg-head">
+      <h1 data-i18n="verifyingDocuments">Verifying your documents</h1>
+      <p>Automated quality checks have completed. Your documents have been securely routed to our operations review team.</p>
+    </div>
+
+    <div class="lg-notice amber">
+      <i class="fa-solid fa-circle-info"></i>
+      <div>
+        <h4>Automated Verification Connectivity Notice</h4>
+        <p>
+          Direct automated government API gateways (Surepass/Digilocker) are not currently connected in this environment.
+          In accordance with platform integrity rules, no automated verification will be faked.
+        </p>
+        <p style="margin-top:8px;">
+          Status: <span class="lg-status-chip">PENDING_REVIEW</span> — Your documents have been safely received and queued for administrative review.
+        </p>
+      </div>
+    </div>
+
+    <div id="lgVerifyList"></div>
+
+    <div class="lg-foot">
+      <button class="lg-btn lg-btn-ghost" onclick="gotoStep(2)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <button class="lg-btn lg-btn-primary" onclick="gotoStep(4)">Continue to Step 4: Verification Status <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+  <!-- ===================== STEP 4 — Verification Status ===================== -->
+  <section class="lg-wrap lg-screen" id="lgStep4" style="display:none;">
+    <div class="lg-head">
+      <span class="lg-eyebrow"><i class="fa-solid fa-shield-halved"></i> Step 4: Verification Status</span>
+      <h1 data-i18n="verificationStatus">Verification Status</h1>
+      <p>Track the approval status of each submitted credential and address required actions.</p>
+    </div>
+
+    <div class="lg-notice amber">
+      <i class="fa-solid fa-clock"></i>
+      <div>
+        <h4>Documents Under Review</h4>
+        <p>Your documents have been submitted to our operations verification team. You cannot accept delivery dispatches until verification is approved. Meanwhile, you can proceed to register your vehicle details.</p>
+      </div>
+    </div>
+
+    <div id="lgStatusList"></div>
+
+    <div class="lg-card" style="display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; margin-top:24px;">
+      <div>
+        <h3>Proceed to Vehicle Registration</h3>
+        <p class="hint" style="margin-bottom:0;">Enter vehicle specs to complete your logistics profile.</p>
+      </div>
+      <button class="lg-btn lg-btn-primary" onclick="gotoStep(5)">Continue to Step 5: Vehicle Details <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+  <!-- ===================== STEP 5 — Vehicle Information ===================== -->
+  <section class="lg-wrap lg-screen" id="lgStep5" style="display:none;">
+    <div class="lg-head">
+      <span class="lg-eyebrow"><i class="fa-solid fa-shield-halved"></i> Step 5: Fleet Specifications</span>
+      <h1 data-i18n="vehicleInformation">Vehicle Information</h1>
+      <p>Register the vehicle you will operate for Samruddhi Setu assignments.</p>
+      <div style="margin-top:10px;">
+        <span class="lg-eyebrow" id="lgVehicleConfigTag" style="background:#E7F6EF; text-transform:none; letter-spacing:0;">
+          <i class="fa-solid fa-motorcycle"></i> Configured for: Delivery Agent
+        </span>
+      </div>
+    </div>
+
+    <div class="lg-card">
+      <h3>Vehicle Specifications</h3>
+      <p class="hint">Ensure plate number matches your uploaded Vehicle RC document.</p>
+
+      <div class="lg-row c1">
+        <div class="lg-field">
+          <label>Vehicle Registration Plate Number <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="vPlate" placeholder="E.G.  MH 12 AB 1234  /  DL 01 TR 5678" style="font-family:'Courier New',monospace; letter-spacing:0.08em;" />
+        </div>
+      </div>
+
+      <div class="lg-row c2">
+        <div class="lg-field">
+          <label>Vehicle Make / Manufacturer <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="vMake" placeholder="e.g. Honda, TVS, Hero" />
+        </div>
+        <div class="lg-field">
+          <label>Vehicle Model <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="vModel" placeholder="e.g. Activa 6G / Splendor" />
+        </div>
+      </div>
+
+      <div class="lg-row c2">
+        <div class="lg-field">
+          <label>Vehicle Colour <span class="req">*</span></label>
+          <input type="text" class="lg-input" id="vColour" placeholder="e.g. White, Black, Red" />
+        </div>
+        <div class="lg-field">
+          <label>Registration Year <span class="req">*</span></label>
+          <input type="number" class="lg-input" id="vYear" value="2026" min="1990" max="2030" />
+        </div>
+      </div>
+
+      <div class="lg-row c1" style="margin-bottom:0;">
+        <div class="lg-field">
+          <label>Cargo Carrying Capacity (in Kilograms) <span class="req">*</span></label>
+          <div style="position:relative;">
+            <input type="number" class="lg-input" id="vCapacity" value="35" min="1" style="padding-right:52px;" />
+            <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:0.85rem; color:#7A8981; font-weight:700;">kg</span>
+          </div>
+          <div class="lg-help" id="vCapacityHint">Typical two-wheeler delivery capacity: 25 kg – 60 kg.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lg-card" style="display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap;">
+      <p class="hint" style="margin-bottom:0; max-width:420px;">Vehicle details will be matched against your uploaded RC document during administrative approval.</p>
+      <button class="lg-btn lg-btn-primary" onclick="submitStep5()">Save &amp; Complete Step 5 <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+  <!-- ===================== STEP 6 — Account Approval Status ===================== -->
+  <section class="lg-wrap lg-screen" id="lgStep6" style="display:none;">
+    <div class="lg-head">
+      <span class="lg-eyebrow"><i class="fa-solid fa-shield-halved"></i> Final Step: Administrative Review</span>
+      <h1 data-i18n="accountApprovalStatus">Account Approval Status</h1>
+      <p>All onboarding steps completed. Final platform activation is enforced by backend administrators.</p>
+    </div>
+
+    <div class="lg-approval-card" id="lgApprovalCard">
+      <div class="lg-approval-top" id="lgApprovalTop">
+        <div class="ico"><i class="fa-solid fa-clock"></i></div>
+        <div>
+          <h3 id="lgApprovalTitle">Application In Review Queue</h3>
+          <p id="lgApprovalSub">Our operations verification team is validating your documents and vehicle specifications.</p>
+        </div>
+      </div>
+
+      <div class="lg-approval-body">
+        <div class="lg-next-box" id="lgNextBox">
+          <h4>What happens next?</h4>
+          <ul>
+            <li>An authorized administrator inspects your driving licence and vehicle RC.</li>
+            <li>Once approved, your dashboard will automatically unlock.</li>
+            <li>You cannot claim or accept delivery orders until approved.</li>
+          </ul>
+        </div>
+
+        <div class="lg-approval-actions">
+          <button class="lg-btn lg-btn-ghost" onclick="checkApprovalStatus()"><i class="fa-solid fa-rotate"></i> <span data-i18n="checkStatusNow">Check Status Now</span></button>
+          <a href="#" class="lg-foot-note" onclick="gotoStep(4); return false;" style="font-weight:800; color:#0E7A55;"><span data-i18n="viewDocChecklist">View Document Checklist</span> <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Camera capture modal ===================== -->
+  <div class="lg-cam-modal" id="lgCamModal">
+    <div class="lg-cam-box">
+      <h3 id="lgCamTitle" data-i18n="takePhoto">Take Photo</h3>
+      <video id="lgCamVideo" autoplay playsinline></video>
+      <canvas id="lgCamCanvas" style="display:none;"></canvas>
+      <div class="lg-cam-actions">
+        <button class="lg-btn lg-btn-ghost" style="padding:11px 20px; font-size:0.9rem;" onclick="closeCamera()">Cancel</button>
+        <button class="lg-btn lg-btn-primary" style="padding:11px 20px; font-size:0.9rem;" onclick="capturePhoto()"><i class="fa-solid fa-camera"></i> Capture</button>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="lgHiddenFileInput" accept="image/*,application/pdf" style="display:none;" />
+
+  <!-- Scripts -->
+  <script src="js/i18n.js?v=7"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script><script src="js/logistics-realtime.js?v=1"></script>
+  <script>
+    /* ===================================================================
+       Logistics onboarding wizard — 6 steps.
+       State is persisted in localStorage so a partner can resume, and is
+       written to Firestore as a `logisticsApplications` document plus a
+       `users` record with approvalStatus = "pending_review".
+       =================================================================== */
+
+    // Short i18n helper with an English fallback for every dynamic string
+    const T = (k, f) => (window.i18n && window.i18n.t ? window.i18n.t(k, f) : f);
+
+    const LG_STEPS = [
+      { key: 1, labelKey: "stepPersonalInfo",  label: "Personal Info", icon: "fa-user" },
+      { key: 2, labelKey: "stepDocuments",     label: "Documents",     icon: "fa-file-lines" },
+      { key: 3, labelKey: "stepVerification",  label: "Verification",  icon: "fa-shield-halved" },
+      { key: 4, labelKey: "stepStatus",        label: "Status",        icon: "fa-circle-check" },
+      { key: 5, labelKey: "stepVehicle",       label: "Vehicle",       icon: "fa-truck" },
+      { key: 6, labelKey: "stepApproval",      label: "Approval",      icon: "fa-award" },
+    ];
+
+    // Documents required, keyed by worker type.
+    const LG_DOCS = {
+      delivery_agent: [
+        { id: "profilePhoto", icon: "fa-user", title: "Profile Photo", desc: "Clear front-facing portrait of yourself.",
+          rules: ["Front-facing photo in good lighting", "Face must be fully visible and centered", "No sunglasses, masks, or heavy obstruction", "Plain neutral background preferred"] },
+        { id: "dlFront", icon: "fa-file-lines", title: "Driving Licence (Front Side)", desc: "Front face of your active permanent driving licence.",
+          rules: ["Ensure licence number, name, and DOB are sharp", "All 4 corners of the card must be visible", "Avoid glare, shadows, and reflection"] },
+        { id: "dlBack", icon: "fa-file-lines", title: "Driving Licence (Back Side)", desc: "Back face showing vehicle endorsement categories and validity dates.",
+          rules: ["Ensure vehicle category stamp and issue authority are readable", "No cropped edges or blurry text"] },
+        { id: "rc", icon: "fa-file-lines", title: "Vehicle Registration Certificate (RC)", desc: "Valid RC card or digital RC for your delivery vehicle.",
+          rules: ["Vehicle registration number must be crisp", "Owner name and chassis/engine details visible"] },
+        { id: "insurance", icon: "fa-file-lines", title: "Vehicle Insurance Certificate", desc: "Current active insurance policy document for your vehicle.",
+          rules: ["Policy number and validity period clearly visible", "Vehicle number on policy must match RC"] },
+        { id: "puc", icon: "fa-file-lines", title: "Pollution Under Control (PUC)", desc: "Valid government-issued emissions test certificate.",
+          rules: ["Test date and expiry date must be legible", "Emissions reading and vehicle number readable"] },
+      ],
+      large_transport: [
+        { id: "profilePhoto", icon: "fa-user", title: "Profile Photo", desc: "Clear front-facing portrait of yourself.",
+          rules: ["Front-facing photo in good lighting", "Face must be fully visible and centered", "No sunglasses, masks, or heavy obstruction", "Plain neutral background preferred"] },
+        { id: "dlFront", icon: "fa-file-lines", title: "Commercial Driving Licence (Front)", desc: "Front face of your active commercial/transport driving licence.",
+          rules: ["Ensure licence number, name, and DOB are sharp", "Transport endorsement must be visible", "Avoid glare, shadows, and reflection"] },
+        { id: "dlBack", icon: "fa-file-lines", title: "Commercial Driving Licence (Back)", desc: "Back face showing HGV/HTV endorsement categories and validity dates.",
+          rules: ["Ensure vehicle category stamp and issue authority are readable", "No cropped edges or blurry text"] },
+        { id: "rc", icon: "fa-file-lines", title: "Vehicle Registration Certificate (RC)", desc: "Valid RC card or digital RC for your transport vehicle.",
+          rules: ["Vehicle registration number must be crisp", "Owner name and chassis/engine details visible"] },
+        { id: "insurance", icon: "fa-file-lines", title: "Goods Carriage Insurance", desc: "Current active commercial goods-carriage insurance policy.",
+          rules: ["Policy number and validity period clearly visible", "Vehicle number on policy must match RC"] },
+        { id: "puc", icon: "fa-file-lines", title: "Pollution Under Control (PUC)", desc: "Valid government-issued emissions test certificate.",
+          rules: ["Test date and expiry date must be legible", "Emissions reading and vehicle number readable"] },
+        { id: "permit", icon: "fa-file-contract", title: "National / State Goods Permit", desc: "Transport permit authorising commercial goods movement.",
+          rules: ["Permit number and validity window must be legible", "Authorised route or region clearly shown"] },
+        { id: "fitness", icon: "fa-clipboard-check", title: "Fitness Certificate", desc: "RTO-issued certificate of vehicle fitness for commercial use.",
+          rules: ["Certificate number and expiry date readable", "Issuing RTO stamp visible"] },
+      ]
+    };
+
+    const LG_KEY = "samruddhi_logistics_application";
+
+    let lgState = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(LG_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return { step: 1, workerType: "delivery_agent", personal: {}, docs: {}, vehicle: {}, approvalStatus: null, applicationId: null };
+    }
+
+    function saveState() {
+      try { localStorage.setItem(LG_KEY, JSON.stringify(lgState)); } catch (e) {}
+    }
+
+    /* ---------------- Step navigation ---------------- */
+
+    function renderStepper() {
+      const el = document.getElementById("lgStepper");
+      el.innerHTML = LG_STEPS.map((s, i) => {
+        const done = s.key < lgState.step;
+        const current = s.key === lgState.step;
+        const cls = done ? "done" : current ? "current" : "";
+        const icon = done ? "fa-check" : s.icon;
+        return `
+          ${i > 0 ? `<div class="lg-step-line ${s.key <= lgState.step ? "done" : ""}"></div>` : ""}
+          <div class="lg-step ${cls}">
+            <div class="lg-step-dot"><i class="fa-solid ${icon}"></i></div>
+            <div class="lg-step-label">${T(s.labelKey, s.label)}</div>
+          </div>`;
+      }).join("");
+    }
+
+    function gotoStep(n) {
+      lgState.step = n;
+      saveState();
+      LG_STEPS.forEach(s => {
+        const sec = document.getElementById("lgStep" + s.key);
+        if (sec) sec.style.display = s.key === n ? "block" : "none";
+      });
+      renderStepper();
+      if (n === 2) renderDocs();
+      if (n === 3) renderVerifyList();
+      if (n === 4) renderStatusList();
+      if (n === 5) syncVehicleConfig();
+      if (n === 6) renderApproval();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* ---------------- Step 1: worker type + personal ---------------- */
+
+    function selectWorkerType(type) {
+      lgState.workerType = type;
+      document.getElementById("typeAgent").classList.toggle("on", type === "delivery_agent");
+      document.getElementById("typeTransport").classList.toggle("on", type === "large_transport");
+      saveState();
+    }
+
+    function submitStep1() {
+      const p = {
+        fullName: val("fFullName"), email: val("fEmail"), phone: val("fPhone"),
+        dob: val("fDob"), gender: val("fGender"), street: val("fStreet"),
+        city: val("fCity"), district: val("fDistrict"), state: val("fState"), pin: val("fPin"),
+        emergencyName: val("fEmName"), emergencyPhone: val("fEmPhone"), emergencyRelation: val("fEmRel"),
+      };
+      const pw = val("fPassword"), pw2 = val("fPassword2");
+
+      const missing = Object.entries({
+        "Full Name": p.fullName, "Email Address": p.email, "Mobile Number": p.phone,
+        "Date of Birth": p.dob, "Street Address": p.street, "City / Town": p.city,
+        "District": p.district, "State": p.state, "PIN Code": p.pin,
+        "Emergency Contact Name": p.emergencyName, "Emergency Phone": p.emergencyPhone,
+        "Relationship": p.emergencyRelation
+      }).filter(([, v]) => !v).map(([k]) => k);
+
+      if (missing.length) { showToast(`⚠️ Please fill in: ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? "…" : ""}`); return; }
+      if (!/^\d{10}$/.test(p.phone)) { showToast("⚠️ Mobile number must be exactly 10 digits."); return; }
+      if (!/^\d{6}$/.test(p.pin)) { showToast("⚠️ PIN code must be exactly 6 digits."); return; }
+      if (pw.length < 8) { showToast("⚠️ Password must be at least 8 characters."); return; }
+      if (pw !== pw2) { showToast("⚠️ Passwords do not match."); return; }
+      if (!document.getElementById("fAgreeTerms").checked) { showToast("⚠️ Please accept the Logistics Partner Terms & Conditions."); return; }
+      if (!document.getElementById("fAgreeVerify").checked) { showToast("⚠️ Verification consent is required to continue."); return; }
+
+      lgState.personal = p;
+      lgState.rawPassword = pw;
+      saveState();
+      gotoStep(2);
+    }
+
+    function val(id) { return (document.getElementById(id)?.value || "").trim(); }
+
+    function restoreStep1() {
+      const p = lgState.personal || {};
+      const map = { fFullName: "fullName", fEmail: "email", fPhone: "phone", fDob: "dob", fGender: "gender",
+        fStreet: "street", fCity: "city", fDistrict: "district", fState: "state", fPin: "pin",
+        fEmName: "emergencyName", fEmPhone: "emergencyPhone", fEmRel: "emergencyRelation" };
+      Object.entries(map).forEach(([elId, key]) => {
+        const el = document.getElementById(elId);
+        if (el && p[key]) el.value = p[key];
+      });
+      selectWorkerType(lgState.workerType || "delivery_agent");
+    }
+
+    /* ---------------- Step 2: document upload ---------------- */
+
+    function currentDocs() { return LG_DOCS[lgState.workerType] || LG_DOCS.delivery_agent; }
+
+    function renderDocs() {
+      document.getElementById("lgProfileNote").innerText =
+        lgState.workerType === "large_transport"
+          ? "Current Partner Profile: Large Transport (Truck / Bulk Agricultural)"
+          : "Current Partner Profile: Delivery Agent (Bike / Small Vehicles)";
+
+      document.getElementById("lgDocGrid").innerHTML = currentDocs().map(d => {
+        const f = lgState.docs[d.id];
+        return `
+        <div class="lg-doc ${f ? "filled" : ""}" id="doc-${d.id}">
+          <div class="lg-doc-head">
+            <div class="lg-doc-ico"><i class="fa-solid ${d.icon}"></i></div>
+            <div style="flex:1;">
+              <h4>${d.title}</h4>
+              <p>${d.desc}</p>
+            </div>
+            <span class="lg-req-pill ${f ? "ok" : ""}">${f ? T("uploadedLbl","Uploaded") : T("requiredLbl","Required")}</span>
+          </div>
+
+          <ul class="lg-doc-rules">
+            ${d.rules.map(r => `<li>${r}</li>`).join("")}
+          </ul>
+
+          ${f ? `
+            <div class="lg-doc-preview">
+              ${f.dataUrl && f.dataUrl.startsWith("data:image") ? `<img src="${f.dataUrl}" alt="${d.title}" />` : `<div class="lg-doc-ico"><i class="fa-solid fa-file-pdf"></i></div>`}
+              <div>
+                <div class="fn">${f.name}</div>
+                <div class="fs">${f.size} · Format &amp; integrity check passed</div>
+              </div>
+              <button onclick="clearDoc('${d.id}')" title="Remove"><i class="fa-solid fa-trash"></i></button>
+            </div>` : `
+            <div class="lg-doc-actions">
+              <button class="lg-doc-btn" onclick="openCamera('${d.id}', '${d.title.replace(/'/g, "")}')"><i class="fa-solid fa-camera"></i> ${T("takePhoto","Take Photo")}</button>
+              <button class="lg-doc-btn" onclick="pickFile('${d.id}')"><i class="fa-solid fa-upload"></i> ${T("uploadFile","Upload File")}</button>
+            </div>`}
+        </div>`;
+      }).join("");
+    }
+
+    function clearDoc(id) { delete lgState.docs[id]; saveState(); renderDocs(); }
+
+    function pickFile(docId) {
+      const input = document.getElementById("lgHiddenFileInput");
+      input.value = "";
+      input.onchange = () => {
+        const file = input.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) { showToast("⚠️ File is larger than 5 MB. Please upload a smaller scan."); return; }
+        const reader = new FileReader();
+        reader.onload = () => {
+          lgState.docs[docId] = {
+            name: file.name,
+            size: formatSize(file.size),
+            type: file.type,
+            dataUrl: reader.result,
+            uploadedAt: new Date().toISOString(),
+            status: "pending_review"
+          };
+          saveState();
+          renderDocs();
+          showToast(`✅ ${file.name} attached.`);
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1048576) return (bytes / 1024).toFixed(0) + " KB";
+      return (bytes / 1048576).toFixed(1) + " MB";
+    }
+
+    /* ---- Camera capture ---- */
+    let camStream = null, camDocId = null;
+
+    async function openCamera(docId, title) {
+      camDocId = docId;
+      document.getElementById("lgCamTitle").innerText = title;
+      document.getElementById("lgCamModal").classList.add("open");
+      try {
+        camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        document.getElementById("lgCamVideo").srcObject = camStream;
+      } catch (e) {
+        showToast("⚠️ Camera unavailable. Please use Upload File instead.");
+        closeCamera();
+      }
+    }
+
+    function closeCamera() {
+      document.getElementById("lgCamModal").classList.remove("open");
+      if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+    }
+
+    function capturePhoto() {
+      const video = document.getElementById("lgCamVideo");
+      const canvas = document.getElementById("lgCamCanvas");
+      if (!video.videoWidth) { showToast("⚠️ Camera is still warming up — try again in a second."); return; }
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+      lgState.docs[camDocId] = {
+        name: `${camDocId}-capture.jpg`,
+        size: formatSize(Math.round(dataUrl.length * 0.75)),
+        type: "image/jpeg",
+        dataUrl,
+        uploadedAt: new Date().toISOString(),
+        status: "pending_review"
+      };
+      saveState();
+      closeCamera();
+      renderDocs();
+      showToast("✅ Photo captured.");
+    }
+
+    function submitStep2() {
+      const missing = currentDocs().filter(d => !lgState.docs[d.id]);
+      if (missing.length) {
+        showToast(`⚠️ ${missing.length} document${missing.length > 1 ? "s" : ""} still required: ${missing[0].title}${missing.length > 1 ? "…" : ""}`);
+        return;
+      }
+      saveState();
+      gotoStep(3);
+    }
+
+    /* ---------------- Step 3 & 4: verification lists ---------------- */
+
+    function renderVerifyList() {
+      document.getElementById("lgVerifyList").innerHTML = currentDocs().map(d => `
+        <div class="lg-status-row">
+          <div class="lg-status-ico"><i class="fa-solid fa-file-circle-check"></i></div>
+          <div class="lg-status-body">
+            <div class="t">${d.title}</div>
+            <div class="s"><span class="ok"><i class="fa-solid fa-circle-check"></i> Uploaded</span> &nbsp;•&nbsp; Format &amp; integrity check passed</div>
+          </div>
+          <span class="lg-badge pending"><i class="fa-solid fa-clock"></i> Pending Review</span>
+        </div>`).join("");
+    }
+
+    function renderStatusList() {
+      document.getElementById("lgStatusList").innerHTML = currentDocs().map(d => {
+        const f = lgState.docs[d.id] || {};
+        const date = f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString("en-GB") : "—";
+        const st = f.status || "pending_review";
+        const badge = st === "approved"
+          ? `<span class="lg-badge approved"><i class="fa-solid fa-circle-check"></i> ${T("approvedLbl","Approved")}</span>`
+          : st === "rejected"
+          ? `<span class="lg-badge rejected"><i class="fa-solid fa-circle-xmark"></i> ${T("rejectedLbl","Rejected")}</span>`
+          : `<span class="lg-badge pending"><i class="fa-solid fa-clock"></i> ${T("pendingReview","Pending Review")}</span>`;
+        return `
+        <div class="lg-status-row pending">
+          <div class="lg-status-ico"><i class="fa-solid fa-file-lines"></i></div>
+          <div class="lg-status-body">
+            <div class="t">${d.title}</div>
+            <div class="s">Uploaded on: ${date}</div>
+          </div>
+          ${badge}
+        </div>`;
+      }).join("");
+    }
+
+    /* ---------------- Step 5: vehicle ---------------- */
+
+    function syncVehicleConfig() {
+      const isTruck = lgState.workerType === "large_transport";
+      document.getElementById("lgVehicleConfigTag").innerHTML = isTruck
+        ? `<i class="fa-solid fa-truck"></i> Configured for: Large Transport`
+        : `<i class="fa-solid fa-motorcycle"></i> Configured for: Delivery Agent`;
+      document.getElementById("vCapacityHint").innerText = isTruck
+        ? "Typical truck payload capacity: 750 kg – 25,000 kg."
+        : "Typical two-wheeler delivery capacity: 25 kg – 60 kg.";
+
+      const cap = document.getElementById("vCapacity");
+      if (!lgState.vehicle.capacityKg) cap.value = isTruck ? 3000 : 35;
+
+      const makeEl = document.getElementById("vMake");
+      const modelEl = document.getElementById("vModel");
+      makeEl.placeholder = isTruck ? "e.g. Tata, Ashok Leyland, Mahindra" : "e.g. Honda, TVS, Hero";
+      modelEl.placeholder = isTruck ? "e.g. 407 Gold / Dost Strong" : "e.g. Activa 6G / Splendor";
+
+      const v = lgState.vehicle || {};
+      if (v.plate) document.getElementById("vPlate").value = v.plate;
+      if (v.make) makeEl.value = v.make;
+      if (v.model) modelEl.value = v.model;
+      if (v.colour) document.getElementById("vColour").value = v.colour;
+      if (v.year) document.getElementById("vYear").value = v.year;
+      if (v.capacityKg) cap.value = v.capacityKg;
+    }
+
+    async function submitStep5() {
+      const v = {
+        plate: val("vPlate").toUpperCase(),
+        make: val("vMake"),
+        model: val("vModel"),
+        colour: val("vColour"),
+        year: val("vYear"),
+        capacityKg: parseFloat(val("vCapacity")) || 0
+      };
+
+      if (!v.plate || !v.make || !v.model || !v.colour || !v.year || !v.capacityKg) {
+        showToast("⚠️ Please complete every vehicle specification field.");
+        return;
+      }
+      // Indian plate formats: MH12AB1234, DL01TR5678, and older 3-letter series
+      const plateOk = /^[A-Z]{2}\s?\d{1,2}\s?[A-Z]{1,3}\s?\d{1,4}$/.test(v.plate.replace(/\s+/g, " ").trim());
+      if (!plateOk) { showToast("⚠️ Plate number format looks invalid. Example: MH 12 AB 1234"); return; }
+
+      lgState.vehicle = v;
+      lgState.approvalStatus = "pending_review";
+      saveState();
+
+      await persistApplication();
+      gotoStep(6);
+    }
+
+    /* ---------------- Persistence ---------------- */
+
+    async function persistApplication() {
+      try {
+        const p = lgState.personal;
+        const applicationId = lgState.applicationId || `LGAPP-${Date.now()}`;
+        lgState.applicationId = applicationId;
+
+        // Documents are stored as metadata only — base64 blobs stay local to the
+        // browser so we never push large payloads into the demo datastore.
+        const docMeta = {};
+        Object.entries(lgState.docs).forEach(([k, f]) => {
+          docMeta[k] = { name: f.name, size: f.size, type: f.type, uploadedAt: f.uploadedAt, status: f.status || "pending_review" };
+        });
+
+        const application = {
+          id: applicationId,
+          workerType: lgState.workerType,
+          name: p.fullName, email: p.email, phone: p.phone,
+          dob: p.dob, gender: p.gender,
+          address: `${p.street}, ${p.city}, ${p.district}, ${p.state} - ${p.pin}`,
+          city: p.city, district: p.district, state: p.state, pinCode: p.pin,
+          emergencyContact: { name: p.emergencyName, phone: p.emergencyPhone, relation: p.emergencyRelation },
+          vehicle: lgState.vehicle,
+          documents: docMeta,
+          approvalStatus: "pending_review",
+          submittedAt: new Date().toISOString()
+        };
+
+        await window.AgriSetuDB.db.collection("logisticsApplications").doc(applicationId).set(application);
+
+        // Create (or recover) the real Firebase Authentication account for
+        // this partner, then create their locked (unapproved) profile in
+        // Firestore keyed by that Auth uid.
+        const existingProfile = await SamruddhiAuth.findRegisteredUser(p.email, "logistics");
+        if (!existingProfile) {
+          let firebaseUser;
+          try {
+            firebaseUser = await SamruddhiAuth.signUpWithFirebase(p.email, lgState.rawPassword || "");
+          } catch (authErr) {
+            if (authErr && authErr.code === "auth/email-already-in-use") {
+              // Most likely a resumed application after a previous partial
+              // submit — sign in with the same password instead of failing.
+              firebaseUser = await SamruddhiAuth.signInWithFirebase(p.email, lgState.rawPassword || "");
+            } else {
+              throw authErr;
+            }
+          }
+
+          const newUser = {
+            uid: firebaseUser.uid,
+            name: p.fullName,
+            role: "logistics",
+            phone: p.phone,
+            email: p.email,
+            location: `${p.city}, ${p.state}`,
+            subType: lgState.workerType === "large_transport" ? "large_truck" : "instant_bike",
+            workerType: lgState.workerType,
+            vehicleType: lgState.vehicle.make + " " + lgState.vehicle.model,
+            vehiclePlate: lgState.vehicle.plate,
+            vehicleCapacity: `${lgState.vehicle.capacityKg} kg`,
+            applicationId,
+            approvalStatus: "pending_review",
+            verified: false,
+            avatar: lgState.docs.profilePhoto?.dataUrl || "assets/default-avatar.jpg",
+            createdAt: new Date().toISOString()
+          };
+          await window.AgriSetuDB.db.collection("users").doc(firebaseUser.uid).set(newUser);
+          SamruddhiAuth.setStoredUser(newUser);
+        }
+
+        delete lgState.rawPassword;
+        saveState();
+        showToast("✅ Application submitted for administrative review.");
+      } catch (e) {
+        console.error("Application submit failed", e);
+        showToast(`❌ ${window.SamruddhiAuth ? SamruddhiAuth.describeAuthError(e) : "Could not submit application. Please try again."}`);
+      }
+    }
+
+    /* ---------------- Step 6: approval ---------------- */
+
+    function renderApproval() {
+      const approved = lgState.approvalStatus === "approved";
+      const rejected = lgState.approvalStatus === "rejected";
+      const top = document.getElementById("lgApprovalTop");
+      const card = document.getElementById("lgApprovalCard");
+
+      if (approved) {
+        card.style.borderColor = "#BBF7D0";
+        top.className = "lg-approval-top ok";
+        top.querySelector(".ico").innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+        document.getElementById("lgApprovalTitle").innerText = "Account Approved & Activated";
+        document.getElementById("lgApprovalSub").innerText = "Your documents and vehicle have been verified. Your dispatch dashboard is now unlocked.";
+        document.getElementById("lgNextBox").innerHTML = `
+          <h4>You're all set</h4>
+          <ul>
+            <li>Your logistics dashboard is unlocked and accepting dispatches.</li>
+            <li>Nearby farm and society pickups will appear in your order queue.</li>
+            <li>Keep your insurance and PUC current to avoid suspension.</li>
+          </ul>
+          <a href="logistics-dashboard.html" class="lg-btn lg-btn-primary" style="margin-top:16px;">Open Dispatch Dashboard <i class="fa-solid fa-arrow-right"></i></a>`;
+      } else if (rejected) {
+        card.style.borderColor = "#FECACA";
+        top.className = "lg-approval-top";
+        top.style.background = "#FEF2F2";
+        top.querySelector(".ico").style.background = "#DC2626";
+        top.querySelector(".ico").innerHTML = `<i class="fa-solid fa-circle-xmark"></i>`;
+        document.getElementById("lgApprovalTitle").innerText = "Application Needs Attention";
+        document.getElementById("lgApprovalSub").innerText = "One or more documents could not be verified. Please review and resubmit.";
+      }
+    }
+
+    async function checkApprovalStatus() {
+      if (!lgState.applicationId) { showToast("No application on file yet."); return; }
+      try {
+        const doc = await window.AgriSetuDB.db.collection("logisticsApplications").doc(lgState.applicationId).get();
+        if (!doc.exists) { showToast("Application record not found."); return; }
+        const data = doc.data();
+        lgState.approvalStatus = data.approvalStatus || "pending_review";
+        if (data.documents) {
+          Object.entries(data.documents).forEach(([k, meta]) => {
+            if (lgState.docs[k]) lgState.docs[k].status = meta.status || "pending_review";
+          });
+        }
+        saveState();
+        renderApproval();
+        renderStatusList();
+        showToast(lgState.approvalStatus === "approved"
+          ? "✅ Approved! Your dashboard is unlocked."
+          : lgState.approvalStatus === "rejected"
+          ? "❌ Some documents were rejected — please review."
+          : "⏳ Still in the review queue. We'll notify you once an admin completes verification.");
+      } catch (e) {
+        showToast("Could not refresh status right now.");
+      }
+    }
+
+    /* ---------------- Boot ---------------- */
+    document.addEventListener("DOMContentLoaded", () => {
+      restoreStep1();
+      gotoStep(lgState.step || 1);
+    });
+
+    // Re-paint dynamic (JS-rendered) strings when the language changes
+    window.addEventListener("languageChanged", () => {
+      renderStepper();
+      if (lgState.step === 2) renderDocs();
+      if (lgState.step === 3) renderVerifyList();
+      if (lgState.step === 4) renderStatusList();
+      if (lgState.step === 6) renderApproval();
+    });
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>
