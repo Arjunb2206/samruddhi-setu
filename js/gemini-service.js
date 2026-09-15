@@ -49,9 +49,9 @@ Tone & Language:
     // relies entirely on the in-app "🔑 AI Studio Key" field, which stores
     // the key only in the local browser's storage.
     return (
-      localStorage.getItem("agrisetu_gemini_api_key") ||
-      localStorage.getItem("gemini_api_key") ||
-      localStorage.getItem("samruddhisetu_gemini_api_key") ||
+      localStorage.getItem("AQ.Ab8RN6LwDXXKkDrla33sP_NsAG93jAYfAZnYNK7DvpiQLpxMMg") ||
+      localStorage.getItem("AQ.Ab8RN6LwDXXKkDrla33sP_NsAG93jAYfAZnYNK7DvpiQLpxMMg") ||
+      localStorage.getItem("AQ.Ab8RN6LwDXXKkDrla33sP_NsAG93jAYfAZnYNK7DvpiQLpxMMg") ||
       ""
     ).trim();
   }
