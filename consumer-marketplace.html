@@ -266,6 +266,13 @@
   <script src="js/app.js?v=8"></script>
   <script src="js/shell.js?v=7"></script>
   <script>
+    window.addEventListener("load", function () {
+  const normalBtn = document.getElementById("modeNormalBtn");
+  if (normalBtn) {
+    normalBtn.click();
+   }
+  });
+    
     renderAppShell({ role: "consumer", active: "marketplace", searchPlaceholder: "Search produce..." });
 
     // Short i18n helper with an English fallback for every dynamic string
