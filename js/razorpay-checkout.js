@@ -23,7 +23,7 @@ const SamruddhiPayments = {
   // Your own Razorpay TEST key (generated from your dashboard's Test Mode
   // API Keys page). This replaces Razorpay's public documentation sample
   // key, which has no payment methods configured and always fails.
-  RAZORPAY_TEST_KEY: "rzp_test_TbEaQva9et0kFl",
+  RAZORPAY_TEST_KEY: "rzp_test_Tc79MQzyprWbXY",
 
   _scriptLoaded: false,
   _pendingResolve: null,
