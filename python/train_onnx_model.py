@@ -72,10 +72,23 @@ GRADE_APLUS, GRADE_A, GRADE_B, INVALID = 0, 1, 2, 3
 
 
 def produce_grade_heuristic(avg_r, avg_g, blemish_ratio):
-    """Same decision rule the old pure-JS fallback used (AGMARK/APEDA-style
-    thresholds), used here only to generate training labels for genuine
-    produce samples."""
-    if blemish_ratio < 0.04 and (avg_r > 90 or avg_g > 90):
+    """Decision rule used to generate training labels for genuine produce
+    samples.
+
+    Bug fix: the previous version additionally required (avg_r > 90 or
+    avg_g > 90) before awarding Grade A+, on top of a low blemish_ratio.
+    blemish_ratio already encodes real defects (see extractFeatures /
+    make_produce_samples: dark spots and reddish discoloration). The extra
+    absolute-brightness gate instead measured how light/dark the produce's
+    *base color* is, which structurally disqualified naturally dark or
+    deep-colored items -- Kadaknath (black) chicken eggs, black grapes,
+    purple brinjal, dark leafy greens -- from ever reaching A+ regardless of
+    how blemish-free they actually were. That's a product-identity bug, not
+    a quality signal, so it's removed; blemish_ratio alone decides the
+    grade for produce that has already passed the saturation/skin-tone
+    "is this actually produce" gate in make_produce_samples/heuristicGrade.
+    """
+    if blemish_ratio < 0.04:
         return GRADE_APLUS
     elif 0.04 <= blemish_ratio < 0.12:
         return GRADE_A
@@ -270,6 +283,36 @@ def export_onnx(w1, b1, w2, b2, out_path):
     onnx.save(model, out_path)
 
 
+def make_shifted_stress_test(n=3000):
+    """Out-of-distribution check, NOT used for training. Redraws the same
+    three populations with a different RNG stream and mildly perturbed
+    distribution parameters (simulating different camera exposure / white
+    balance / a less generous invalid-input population) so we can see
+    whether the network generalizes past the exact synthetic parameters it
+    was fit on, rather than just re-testing on more samples from the
+    identical generator (which is what the original in-distribution val
+    split above does, and which is why that number alone overstates
+    real-world reliability -- see the module docstring)."""
+    stress_rng = np.random.default_rng(1337)
+    global RNG
+    saved_rng = RNG
+    RNG = stress_rng
+    try:
+        avg_r = RNG.uniform(15, 250, n)
+        avg_g = RNG.uniform(15, 250, n)
+        avg_b = RNG.uniform(15, 250, n)
+        blemish_ratio = RNG.beta(1.1, 5.0, n) * 0.55  # slightly heavier tail
+        brightness = 0.299 * avg_r + 0.587 * avg_g + 0.114 * avg_b
+        saturation = np.clip(RNG.beta(3.2, 2.4, n) * 0.9 + 0.08, 0, 1)  # dimmer avg saturation
+        skin_ratio = RNG.beta(1.1, 8.0, n) * 0.45
+        labels = np.array([produce_grade_heuristic(r, g, br) for r, g, br in zip(avg_r, avg_g, blemish_ratio)])
+        x = np.stack([avg_r / 255.0, avg_g / 255.0, avg_b / 255.0, blemish_ratio,
+                       brightness / 255.0, skin_ratio, saturation], axis=1).astype(np.float32)
+        return x, labels.astype(np.int64)
+    finally:
+        RNG = saved_rng
+
+
 def main():
     print("Generating synthetic training data (produce grades + human/other invalid-input samples)...")
     x, y = make_dataset()
@@ -283,7 +326,23 @@ def main():
     val_probs = softmax(np.maximum(x_val @ w1 + b1, 0) @ w2 + b2)
     val_preds = np.argmax(val_probs, axis=1)
     val_acc = (val_preds == y_val).mean()
-    print(f"Validation accuracy (4-class incl. Invalid Input): {val_acc:.4f}")
+    print(f"Validation accuracy (4-class incl. Invalid Input, in-distribution): {val_acc:.4f}")
+
+    x_stress, y_stress = make_shifted_stress_test()
+    stress_preds = np.argmax(softmax(np.maximum(x_stress @ w1 + b1, 0) @ w2 + b2), axis=1)
+    stress_acc = (stress_preds == y_stress).mean()
+    gap = val_acc - stress_acc
+    print(f"Out-of-distribution stress-test accuracy (different RNG stream + shifted params): {stress_acc:.4f}")
+    if gap > 0.05:
+        print(f"WARNING: val/stress accuracy gap is {gap:.4f} (>0.05) -- the model may be "
+              f"overfit to the exact synthetic generator rather than the underlying rule. "
+              f"Consider lowering `hidden`, raising `l2`, or adding more label/feature noise "
+              f"in make_dataset() before shipping.")
+    else:
+        print(f"val/stress accuracy gap is {gap:.4f} -- acceptable, model tracks the underlying "
+              f"rule rather than memorizing this exact synthetic parameterization. Real produce "
+              f"photos are still a different distribution again; this only checks robustness to "
+              f"synthetic-generator shift, see the module docstring for the full caveat.")
 
     invalid_mask = y_val == INVALID
     if invalid_mask.any():
@@ -299,6 +358,7 @@ def main():
     meta = {
         "feature_names": FEATURE_NAMES,
         "class_names": CLASS_NAMES,
+        "ood_stress_test_accuracy": round(float(stress_acc), 4),
         "invalid_class_index": INVALID,
         "input_name": "features",
         "output_name": "quality_logits",
