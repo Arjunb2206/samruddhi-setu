@@ -80,5 +80,11 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null;
     }
+    // Per-crop farm management records (Crop Journal): planting details,
+    // activity log, reminders, harvest batches and photos, all under one doc.
+    match /cropRecords/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
   }
 }
