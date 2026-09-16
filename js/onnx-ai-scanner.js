@@ -244,7 +244,14 @@ class OnnxAgriScanner {
     }
 
     let classIdx;
-    if (blemishRatio < 0.04 && (avgR > 90 || avgG > 90)) {
+    // Bug fix: this used to also require (avgR > 90 || avgG > 90) for A+,
+    // which measures base produce color, not freshness -- it structurally
+    // blocked naturally dark items (Kadaknath eggs, black grapes, purple
+    // brinjal, dark greens) from ever scoring A+ even when blemish-free.
+    // blemishRatio already captures real defects (see extractFeatures
+    // above), so it alone decides the grade here, matching
+    // python/train_onnx_model.py's produce_grade_heuristic.
+    if (blemishRatio < 0.04) {
       classIdx = 0;
     } else if (blemishRatio >= 0.04 && blemishRatio < 0.12) {
       classIdx = 1;
