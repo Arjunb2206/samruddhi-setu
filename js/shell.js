@@ -7,6 +7,7 @@ const SHELL_NAV = {
   farmer: [
     { href: "farmer-dashboard.html", icon: "fa-table-columns", label: "Dashboard", i18n: "navDashboard", key: "dashboard" },
     { href: "farmer-produce.html", icon: "fa-seedling", label: "My Produce", i18n: "navMyProduce", key: "produce" },
+    { href: "farmer-crop-journal.html", icon: "fa-book-open", label: "Crop Journal", key: "cropjournal" },
     { href: "farmer-orders.html", icon: "fa-truck-fast", label: "Orders & Logistics", i18n: "navOrdersLogistics", key: "orders" },
     { href: "farmer-earnings.html", icon: "fa-sack-dollar", label: "Earnings & Payments", i18n: "navEarningsPayments", key: "earnings" },
     { href: "farmer-insights.html", icon: "fa-lightbulb", label: "Insights & Advisory", i18n: "navInsightsAdvisory", key: "insights" },
