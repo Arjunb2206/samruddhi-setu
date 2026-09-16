@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crop Journal | Samruddhi Setu</title>
+  <meta name="description" content="One crop, one page — complete farming and financial history from planting to selling.">
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/shell.css?v=6">
+  <link rel="stylesheet" href="css/redesign.css?v=7">
+  <style>
+    .cj-locked{ text-align:center; padding:36px 20px; color:var(--text-muted,#6C757D); }
+    .cj-locked i{ font-size:1.8rem; color:#C9D8D0; margin-bottom:10px; }
+    .cj-field label{ font-size:0.82rem; font-weight:700; color:var(--primary-deep,#1B4332); display:block; margin-bottom:5px; }
+    .cj-field{ margin-bottom:14px; }
+    .cj-mini-stats{ display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:16px; }
+    .cj-mini-stat{ background:#FBFDFC; border:1px solid var(--shell-card-border); border-radius:14px; padding:16px 18px; }
+    .cj-mini-stat .v{ font-family:'Playfair Display', Georgia, serif; font-size:1.35rem; color:var(--primary-deep,#1B4332); }
+    .cj-mini-stat .l{ font-size:0.76rem; color:var(--text-muted,#6C757D); font-weight:700; margin-top:3px; }
+    .cj-row-del{ background:transparent; color:#DC2626; font-size:0.9rem; padding:4px 8px; }
+    .cj-photo-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:14px; }
+    .cj-photo-card{ position:relative; border-radius:14px; overflow:hidden; border:1px solid var(--shell-card-border); background:#FBFDFC; }
+    .cj-photo-card img{ width:100%; height:120px; object-fit:cover; display:block; }
+    .cj-photo-card .cj-photo-tag{ position:absolute; top:8px; left:8px; font-size:0.66rem; font-weight:800; padding:3px 9px; border-radius:999px; background:rgba(27,67,50,0.85); color:#fff; }
+    .cj-photo-card .cj-photo-del{ position:absolute; top:6px; right:6px; width:24px; height:24px; border-radius:50%; background:rgba(0,0,0,0.55); color:#fff; border:none; font-size:0.72rem; }
+    .cj-photo-card .cj-photo-caption{ padding:8px 10px; font-size:0.76rem; color:var(--text-muted); }
+    .cj-crop-select-bar{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .cj-crop-select-bar select{ min-width:220px; }
+  </style>
+</head>
+<body>
+
+  <div id="appShellRoot"></div>
+
+  <main class="app-main">
+    <div class="page-wrap">
+      <div class="page-head">
+        <div>
+          <h1>🌾 Farmer Management System</h1>
+          <p>One crop, one page — the complete farming and financial journey from planting to selling.</p>
+        </div>
+      </div>
+
+      <!-- ===== Crop selector + Farmer / Location / Season ===== -->
+      <div class="shell-card">
+        <div class="shell-card-head">
+          <div class="icon-badge"><i class="fa-solid fa-user"></i></div>
+          <div><h3>Farmer &amp; Crop Record</h3><p>Pick a crop record to view, or start a new one</p></div>
+        </div>
+        <div class="cj-crop-select-bar" style="margin-bottom:18px;">
+          <select id="cjCropSelect" class="form-control" style="max-width:280px;" onchange="onCropSelectChange()"></select>
+          <button type="button" class="btn-luxury-outline" onclick="startNewCropRecord()"><i class="fa-solid fa-plus"></i> New Crop Record</button>
+          <span id="cjSaveStatus" style="font-size:0.8rem; color:var(--text-muted); margin-left:auto;"></span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;">
+          <div class="cj-field">
+            <label>Farmer</label>
+            <input type="text" id="cjFarmerName" class="form-control" placeholder="Enter Name" />
+          </div>
+          <div class="cj-field">
+            <label>Farm Location</label>
+            <input type="text" id="cjFarmLocation" class="form-control" placeholder="Enter Location" />
+          </div>
+          <div class="cj-field">
+            <label>Season</label>
+            <select id="cjSeason" class="form-control">
+              <option>Kharif</option>
+              <option>Rabi</option>
+              <option>Zaid</option>
+              <option>Year-round</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 1. Crop Details ===== -->
+      <div class="shell-card">
+        <div class="shell-card-head">
+          <div class="icon-badge"><i class="fa-solid fa-seedling"></i></div>
+          <div><h3>🌱 1. Crop Details</h3><p>Core information about this crop</p></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;">
+          <div class="cj-field"><label>Crop Name</label><input type="text" id="cjCropName" class="form-control" placeholder="e.g. Tomato" /></div>
+          <div class="cj-field"><label>Land Area</label>
+            <div style="display:flex; gap:8px;">
+              <input type="number" step="0.1" id="cjLandArea" class="form-control" placeholder="2" />
+              <select id="cjLandAreaUnit" class="form-control" style="max-width:110px;">
+                <option>Acres</option><option>Hectares</option><option>Guntha</option>
+              </select>
+            </div>
+          </div>
+          <div class="cj-field"><label>Planting Date</label><input type="date" id="cjPlantingDate" class="form-control" /></div>
+          <div class="cj-field"><label>Seed / Variety</label><input type="text" id="cjSeedVariety" class="form-control" placeholder="e.g. Hybrid" /></div>
+          <div class="cj-field"><label>Expected Harvest</label><input type="date" id="cjExpectedHarvest" class="form-control" /></div>
+          <div class="cj-field"><label>Irrigation Method</label>
+            <select id="cjIrrigationMethod" class="form-control">
+              <option>Drip</option><option>Sprinkler</option><option>Flood</option><option>Rain-fed</option><option>Other</option>
+            </select>
+          </div>
+          <div class="cj-field"><label>Expected Yield (kg)</label><input type="number" id="cjExpectedYield" class="form-control" placeholder="e.g. 2200" /></div>
+        </div>
+        <button type="button" class="btn-luxury-gold" onclick="saveCropDetails()"><i class="fa-solid fa-floppy-disk"></i> Save Crop Details</button>
+      </div>
+
+      <!-- ===== 2. Farm Activities ===== -->
+      <div class="shell-card">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#FEF3C7; color:#92400E;"><i class="fa-solid fa-list-check"></i></div>
+          <div><h3>📅 2. Farm Activities</h3><p>Every activity performed on the farm, with cost</p></div>
+          <button type="button" class="btn-luxury-outline" id="cjAddActivityBtn" onclick="openActivityModal()"><i class="fa-solid fa-plus"></i> Add Activity</button>
+        </div>
+        <div id="cjActivitiesWrap"></div>
+      </div>
+
+      <!-- ===== 4. Upcoming Activities & Reminders ===== -->
+      <div class="shell-card">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#FCE7F3; color:#9D174D;"><i class="fa-solid fa-bell"></i></div>
+          <div><h3>🔔 4. Upcoming Activities &amp; Reminders</h3><p>Don't miss a fertilizer, irrigation or harvest window</p></div>
+          <button type="button" class="btn-luxury-outline" id="cjAddReminderBtn" onclick="openReminderModal()"><i class="fa-solid fa-plus"></i> Add Reminder</button>
+        </div>
+        <div id="cjRemindersWrap"></div>
+      </div>
+
+      <!-- ===== 5. Harvest Details ===== -->
+      <div class="shell-card">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#DBEAFE; color:#1E40AF;"><i class="fa-solid fa-wheat-awn"></i></div>
+          <div><h3>🌾 5. Harvest Details</h3><p>Quantity, price and revenue per harvest batch</p></div>
+          <button type="button" class="btn-luxury-outline" id="cjAddHarvestBtn" onclick="openHarvestModal()"><i class="fa-solid fa-plus"></i> Add Harvest</button>
+        </div>
+        <div id="cjHarvestWrap"></div>
+        <div class="simple-list-row" style="margin-top:14px; background:var(--accent-pale,#D8F3DC);">
+          <span style="font-weight:800; color:var(--primary-deep);">Total Revenue (this crop)</span>
+          <span id="cjTotalRevenue" style="font-weight:800; color:var(--primary-deep); font-size:1.1rem;">₹0</span>
+        </div>
+      </div>
+
+      <!-- ===== Crop snapshot (auto-computed) ===== -->
+      <div class="shell-card">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#DCFCE7; color:#15803D;"><i class="fa-solid fa-chart-simple"></i></div>
+          <div><h3>Crop Snapshot</h3><p>Auto-computed from the activities and harvest logged above</p></div>
+        </div>
+        <div class="cj-mini-stats">
+          <div class="cj-mini-stat"><div class="v" id="cjStatAge">—</div><div class="l">🌱 Crop Age (days)</div></div>
+          <div class="cj-mini-stat"><div class="v" id="cjStatIrrigation">0</div><div class="l">💧 Irrigation Records</div></div>
+          <div class="cj-mini-stat"><div class="v" id="cjStatFertilizer">0</div><div class="l">🧪 Fertilizer Applications</div></div>
+          <div class="cj-mini-stat"><div class="v" id="cjStatPest">0</div><div class="l">🐛 Pest Treatments</div></div>
+          <div class="cj-mini-stat"><div class="v" id="cjStatCostAcre">₹0</div><div class="l">💰 Cost per Acre</div></div>
+          <div class="cj-mini-stat"><div class="v" id="cjStatYield">—</div><div class="l">🌾 Expected Yield</div></div>
+        </div>
+      </div>
+
+      <!-- ===== 8. Crop Photos ===== -->
+      <div class="shell-card">
+        <div class="shell-card-head">
+          <div class="icon-badge" style="background:#E0E7FF; color:#3730A3;"><i class="fa-solid fa-camera"></i></div>
+          <div><h3>📷 8. Crop Photos</h3><p>Planting, growth, pest/disease, fertilizer application &amp; harvest</p></div>
+          <button type="button" class="btn-luxury-outline" id="cjAddPhotoBtn" onclick="openPhotoModal()"><i class="fa-solid fa-upload"></i> Upload Photo</button>
+        </div>
+        <div id="cjPhotosWrap"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===== Add Activity Modal ===== -->
+  <div class="modal-overlay" id="cjActivityModal">
+    <div class="modal-box" style="max-width:480px;">
+      <button class="modal-close-btn" onclick="closeModal('cjActivityModal')"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="margin-bottom:16px;">Add Farm Activity</h3>
+      <form id="cjActivityForm" onsubmit="submitActivity(event)">
+        <div class="cj-field"><label>Date *</label><input type="date" id="actDate" class="form-control" required /></div>
+        <div class="cj-field"><label>Activity Type *</label>
+          <select id="actType" class="form-control" required>
+            <option value="Planting">🌱 Planting</option>
+            <option value="Fertilizer">🧪 Fertilizer</option>
+            <option value="Pesticide">🐛 Pesticide</option>
+            <option value="Irrigation">💧 Irrigation</option>
+            <option value="Weeding">🌿 Weeding</option>
+            <option value="Labour">👷 Labour</option>
+            <option value="Machinery">🚜 Machinery</option>
+            <option value="Other">📌 Other</option>
+          </select>
+        </div>
+        <div class="cj-field"><label>Details *</label><input type="text" id="actDetails" class="form-control" placeholder="e.g. Urea – 50 kg" required /></div>
+        <div class="cj-field"><label>Cost (₹)</label><input type="number" id="actCost" class="form-control" placeholder="0" /></div>
+        <button type="submit" class="btn-luxury-gold" style="width:100%;"><i class="fa-solid fa-check"></i> Add Activity</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Add Reminder Modal ===== -->
+  <div class="modal-overlay" id="cjReminderModal">
+    <div class="modal-box" style="max-width:480px;">
+      <button class="modal-close-btn" onclick="closeModal('cjReminderModal')"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="margin-bottom:16px;">Add Reminder</h3>
+      <form id="cjReminderForm" onsubmit="submitReminder(event)">
+        <div class="cj-field"><label>Activity *</label><input type="text" id="remActivity" class="form-control" placeholder="e.g. Fertilizer application" required /></div>
+        <div class="cj-field"><label>Date *</label><input type="date" id="remDate" class="form-control" required /></div>
+        <button type="submit" class="btn-luxury-gold" style="width:100%;"><i class="fa-solid fa-check"></i> Add Reminder</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Add Harvest Modal ===== -->
+  <div class="modal-overlay" id="cjHarvestModal">
+    <div class="modal-box" style="max-width:480px;">
+      <button class="modal-close-btn" onclick="closeModal('cjHarvestModal')"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="margin-bottom:16px;">Add Harvest Batch</h3>
+      <form id="cjHarvestForm" onsubmit="submitHarvest(event)">
+        <div class="cj-field"><label>Harvest Date *</label><input type="date" id="harvDate" class="form-control" required /></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="cj-field"><label>Quantity Harvested (kg) *</label><input type="number" id="harvQty" class="form-control" required /></div>
+          <div class="cj-field"><label>Selling Price (₹/kg) *</label><input type="number" id="harvPrice" class="form-control" required /></div>
+        </div>
+        <button type="submit" class="btn-luxury-gold" style="width:100%;"><i class="fa-solid fa-check"></i> Add Harvest</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Upload Photo Modal ===== -->
+  <div class="modal-overlay" id="cjPhotoModal">
+    <div class="modal-box" style="max-width:480px;">
+      <button class="modal-close-btn" onclick="closeModal('cjPhotoModal')"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="margin-bottom:16px;">Upload Crop Photo</h3>
+      <form id="cjPhotoForm" onsubmit="submitPhoto(event)">
+        <div class="cj-field"><label>Stage *</label>
+          <select id="photoStage" class="form-control" required>
+            <option>Planting</option>
+            <option>Crop growth</option>
+            <option>Pest/disease</option>
+            <option>Fertilizer application</option>
+            <option>Harvest</option>
+          </select>
+        </div>
+        <div class="cj-field"><label>Photo *</label><input type="file" id="photoFile" accept="image/*" class="form-control" required /></div>
+        <img id="photoPreview" style="max-width:100%; border-radius:12px; display:none; margin-bottom:12px;" />
+        <div class="cj-field"><label>Caption</label><input type="text" id="photoCaption" class="form-control" placeholder="Optional note" /></div>
+        <button type="submit" class="btn-luxury-gold" style="width:100%;"><i class="fa-solid fa-upload"></i> Upload Photo</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/i18n.js?v=6"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="js/firebase-config.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
+  <script src="js/shell.js?v=8"></script>
+  <script>
+    renderAppShell({ role: "farmer", active: "cropjournal", searchPlaceholder: "Search crop records..." });
+
+    const ACT_ICONS = { Planting:"🌱", Fertilizer:"🧪", Pesticide:"🐛", Irrigation:"💧", Weeding:"🌿", Labour:"👷", Machinery:"🚜", Other:"📌" };
+
+    let cjFarmer = null;
+    let cjCrops = [];       // all crop records for this farmer
+    let cjCurrent = null;   // the crop record currently being viewed/edited (local working copy)
+
+    document.addEventListener("DOMContentLoaded", () => {
+      cjFarmer = SamruddhiAuth.getStoredUser();
+      if (cjFarmer) {
+        document.getElementById("cjFarmerName").value = cjFarmer.name || "";
+        document.getElementById("cjFarmLocation").value = cjFarmer.location || "";
+      }
+      loadCropRecords();
+
+      document.getElementById("photoFile").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const maxW = 640;
+            const scale = Math.min(1, maxW / img.width);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.72);
+            document.getElementById("photoFile").dataset.dataurl = dataUrl;
+            const prev = document.getElementById("photoPreview");
+            prev.src = dataUrl; prev.style.display = "block";
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    function blankCrop() {
+      return {
+        farmerId: cjFarmer?.uid || null,
+        farmerName: cjFarmer?.name || "",
+        farmLocation: cjFarmer?.location || "",
+        season: "Kharif",
+        cropName: "", landArea: null, landAreaUnit: "Acres",
+        plantingDate: "", seedVariety: "", expectedHarvestDate: "",
+        irrigationMethod: "Drip", expectedYieldKg: null,
+        activities: [], reminders: [], harvests: [], photos: [],
+        createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+      };
+    }
+
+    async function loadCropRecords() {
+      try {
+        const snap = await window.AgriSetuDB.db.collection("cropRecords").get();
+        cjCrops = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(c => c.farmerId === (cjFarmer?.uid || null))
+          .sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+      } catch (e) {
+        console.warn("Crop record load failed", e);
+        cjCrops = [];
+      }
+      renderCropSelect();
+      if (cjCrops.length) {
+        loadCropIntoForm(cjCrops[0]);
+      } else {
+        startNewCropRecord();
+      }
+    }
+
+    function renderCropSelect() {
+      const sel = document.getElementById("cjCropSelect");
+      const options = cjCrops.map(c => `<option value="${c.id}">${c.cropName || "Untitled crop"} — ${c.season || ""}</option>`).join("");
+      sel.innerHTML = options + `<option value="__new__">+ New Crop Record</option>`;
+    }
+
+    function onCropSelectChange() {
+      const sel = document.getElementById("cjCropSelect");
+      if (sel.value === "__new__") { startNewCropRecord(); return; }
+      const crop = cjCrops.find(c => c.id === sel.value);
+      if (crop) loadCropIntoForm(crop);
+    }
+
+    function startNewCropRecord() {
+      cjCurrent = blankCrop();
+      document.getElementById("cjCropSelect").value = "__new__";
+      fillFormFromCurrent();
+      setSaveStatus("New, unsaved crop record — fill in Crop Details and Save.");
+      toggleSectionLocks();
+    }
+
+    function loadCropIntoForm(crop) {
+      cjCurrent = JSON.parse(JSON.stringify(crop));
+      const sel = document.getElementById("cjCropSelect");
+      if (sel.querySelector(`option[value="${crop.id}"]`)) sel.value = crop.id;
+      fillFormFromCurrent();
+      setSaveStatus("");
+      toggleSectionLocks();
+    }
+
+    function fillFormFromCurrent() {
+      const c = cjCurrent;
+      document.getElementById("cjFarmerName").value = c.farmerName || "";
+      document.getElementById("cjFarmLocation").value = c.farmLocation || "";
+      document.getElementById("cjSeason").value = c.season || "Kharif";
+      document.getElementById("cjCropName").value = c.cropName || "";
+      document.getElementById("cjLandArea").value = c.landArea || "";
+      document.getElementById("cjLandAreaUnit").value = c.landAreaUnit || "Acres";
+      document.getElementById("cjPlantingDate").value = c.plantingDate || "";
+      document.getElementById("cjSeedVariety").value = c.seedVariety || "";
+      document.getElementById("cjExpectedHarvest").value = c.expectedHarvestDate || "";
+      document.getElementById("cjIrrigationMethod").value = c.irrigationMethod || "Drip";
+      document.getElementById("cjExpectedYield").value = c.expectedYieldKg || "";
+      renderActivities();
+      renderReminders();
+      renderHarvests();
+      renderPhotos();
+      renderSnapshot();
+    }
+
+    function toggleSectionLocks() {
+      const locked = !cjCurrent.id;
+      ["cjAddActivityBtn", "cjAddReminderBtn", "cjAddHarvestBtn", "cjAddPhotoBtn"].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = false; // buttons stay usable; saveCurrentCrop() will create the doc on first use
+      });
+    }
+
+    function setSaveStatus(msg) {
+      document.getElementById("cjSaveStatus").innerText = msg || "";
+    }
+
+    async function saveCropDetails() {
+      cjCurrent.farmerName = document.getElementById("cjFarmerName").value;
+      cjCurrent.farmLocation = document.getElementById("cjFarmLocation").value;
+      cjCurrent.season = document.getElementById("cjSeason").value;
+      cjCurrent.cropName = document.getElementById("cjCropName").value;
+      cjCurrent.landArea = parseFloat(document.getElementById("cjLandArea").value) || null;
+      cjCurrent.landAreaUnit = document.getElementById("cjLandAreaUnit").value;
+      cjCurrent.plantingDate = document.getElementById("cjPlantingDate").value;
+      cjCurrent.seedVariety = document.getElementById("cjSeedVariety").value;
+      cjCurrent.expectedHarvestDate = document.getElementById("cjExpectedHarvest").value;
+      cjCurrent.irrigationMethod = document.getElementById("cjIrrigationMethod").value;
+      cjCurrent.expectedYieldKg = parseFloat(document.getElementById("cjExpectedYield").value) || null;
+
+      if (!cjCurrent.cropName) { showToast("⚠️ Please enter a crop name first."); return; }
+      await saveCurrentCrop();
+      showToast("✅ Crop details saved!");
+      renderSnapshot();
+    }
+
+    async function saveCurrentCrop() {
+      cjCurrent.updatedAt = new Date().toISOString();
+      const { id, ...data } = cjCurrent;
+      try {
+        if (id) {
+          await window.AgriSetuDB.db.collection("cropRecords").doc(id).set(data, { merge: true });
+        } else {
+          const ref = await window.AgriSetuDB.db.collection("cropRecords").add(data);
+          cjCurrent.id = ref.id;
+        }
+        // Refresh the local list + dropdown so the record shows up immediately.
+        const idx = cjCrops.findIndex(c => c.id === cjCurrent.id);
+        const snapshot = { id: cjCurrent.id, ...data };
+        if (idx >= 0) cjCrops[idx] = snapshot; else cjCrops.unshift(snapshot);
+        renderCropSelect();
+        document.getElementById("cjCropSelect").value = cjCurrent.id;
+        toggleSectionLocks();
+        setSaveStatus("Saved just now.");
+      } catch (e) {
+        console.warn("Save crop record failed", e);
+        showToast("⚠️ Could not save. Please try again.");
+      }
+    }
+
+    // ---------------- Activities ----------------
+    function openActivityModal() {
+      document.getElementById("cjActivityForm").reset();
+      document.getElementById("actDate").value = new Date().toISOString().slice(0, 10);
+      document.getElementById("cjActivityModal").classList.add("open");
+    }
+    async function submitActivity(e) {
+      e.preventDefault();
+      const entry = {
+        id: "act_" + Date.now(),
+        date: document.getElementById("actDate").value,
+        type: document.getElementById("actType").value,
+        details: document.getElementById("actDetails").value,
+        cost: parseFloat(document.getElementById("actCost").value) || 0
+      };
+      cjCurrent.activities = cjCurrent.activities || [];
+      cjCurrent.activities.push(entry);
+      await saveCurrentCrop();
+      renderActivities(); renderSnapshot();
+      closeModal("cjActivityModal");
+      showToast("✅ Activity added.");
+    }
+    async function deleteActivity(id) {
+      cjCurrent.activities = (cjCurrent.activities || []).filter(a => a.id !== id);
+      await saveCurrentCrop();
+      renderActivities(); renderSnapshot();
+    }
+    function renderActivities() {
+      const wrap = document.getElementById("cjActivitiesWrap");
+      const list = [...(cjCurrent.activities || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (!list.length) {
+        wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-list-check"></i><p>No activities logged yet for this crop.</p></div>`;
+        return;
+      }
+      wrap.innerHTML = `
+        <div class="ph-table-wrap">
+          <table class="ph-table">
+            <thead><tr><th>Date</th><th>Activity</th><th>Details</th><th>Cost</th><th></th></tr></thead>
+            <tbody>
+              ${list.map(a => `
+                <tr>
+                  <td>${formatDate(a.date)}</td>
+                  <td>${ACT_ICONS[a.type] || "📌"} ${a.type}</td>
+                  <td>${a.details || ""}</td>
+                  <td>₹${(a.cost || 0).toLocaleString("en-IN")}</td>
+                  <td><button type="button" class="cj-row-del" onclick="deleteActivity('${a.id}')"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    // ---------------- Reminders ----------------
+    function openReminderModal() {
+      document.getElementById("cjReminderForm").reset();
+      document.getElementById("cjReminderModal").classList.add("open");
+    }
+    async function submitReminder(e) {
+      e.preventDefault();
+      const entry = {
+        id: "rem_" + Date.now(),
+        activity: document.getElementById("remActivity").value,
+        date: document.getElementById("remDate").value,
+        status: "pending"
+      };
+      cjCurrent.reminders = cjCurrent.reminders || [];
+      cjCurrent.reminders.push(entry);
+      await saveCurrentCrop();
+      renderReminders();
+      closeModal("cjReminderModal");
+      showToast("✅ Reminder added.");
+    }
+    async function toggleReminderDone(id) {
+      const r = (cjCurrent.reminders || []).find(r => r.id === id);
+      if (r) r.status = r.status === "done" ? "pending" : "done";
+      await saveCurrentCrop();
+      renderReminders();
+    }
+    async function deleteReminder(id) {
+      cjCurrent.reminders = (cjCurrent.reminders || []).filter(r => r.id !== id);
+      await saveCurrentCrop();
+      renderReminders();
+    }
+    function reminderStatusLabel(r) {
+      if (r.status === "done") return { text: "✅ Done", cls: "available" };
+      const today = new Date(); today.setHours(0,0,0,0);
+      const d = new Date(r.date);
+      const diffDays = Math.ceil((d - today) / 86400000);
+      if (diffDays <= 0) return { text: "🔔 Due", cls: "" , custom:"background:#FEE2E2; color:#DC2626;" };
+      if (diffDays <= 3) return { text: "🔔 Due Soon", cls: "", custom:"background:#FEF3C7; color:#92400E;" };
+      return { text: "Upcoming", cls: "" , custom:"background:#F1F5F9; color:#475569;" };
+    }
+    function renderReminders() {
+      const wrap = document.getElementById("cjRemindersWrap");
+      const list = [...(cjCurrent.reminders || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (!list.length) {
+        wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-bell"></i><p>No reminders set. Add one so you never miss a farm task.</p></div>`;
+        return;
+      }
+      wrap.innerHTML = list.map(r => {
+        const s = reminderStatusLabel(r);
+        return `
+        <div class="simple-list-row">
+          <div>
+            <strong style="color:var(--primary-deep);">${r.activity}</strong>
+            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">${formatDate(r.date)}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="status-pill ${s.cls}" style="font-size:0.7rem; ${s.custom || ""}">${s.text}</span>
+            <button type="button" class="cj-row-del" style="color:var(--primary);" onclick="toggleReminderDone('${r.id}')" title="Mark done"><i class="fa-solid fa-check"></i></button>
+            <button type="button" class="cj-row-del" onclick="deleteReminder('${r.id}')"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    // ---------------- Harvest ----------------
+    function openHarvestModal() {
+      document.getElementById("cjHarvestForm").reset();
+      document.getElementById("harvDate").value = new Date().toISOString().slice(0, 10);
+      document.getElementById("cjHarvestModal").classList.add("open");
+    }
+    async function submitHarvest(e) {
+      e.preventDefault();
+      const qty = parseFloat(document.getElementById("harvQty").value) || 0;
+      const price = parseFloat(document.getElementById("harvPrice").value) || 0;
+      const entry = {
+        id: "harv_" + Date.now(),
+        date: document.getElementById("harvDate").value,
+        quantity: qty, unit: "kg", pricePerUnit: price, revenue: qty * price
+      };
+      cjCurrent.harvests = cjCurrent.harvests || [];
+      cjCurrent.harvests.push(entry);
+      await saveCurrentCrop();
+      renderHarvests(); renderSnapshot();
+      closeModal("cjHarvestModal");
+      showToast("✅ Harvest batch added.");
+    }
+    async function deleteHarvest(id) {
+      cjCurrent.harvests = (cjCurrent.harvests || []).filter(h => h.id !== id);
+      await saveCurrentCrop();
+      renderHarvests(); renderSnapshot();
+    }
+    function renderHarvests() {
+      const wrap = document.getElementById("cjHarvestWrap");
+      const list = [...(cjCurrent.harvests || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+      let total = 0;
+      if (!list.length) {
+        wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-wheat-awn"></i><p>No harvest recorded yet.</p></div>`;
+      } else {
+        wrap.innerHTML = `
+          <div class="ph-table-wrap">
+            <table class="ph-table">
+              <thead><tr><th>Harvest Date</th><th>Quantity</th><th>Selling Price</th><th>Revenue</th><th></th></tr></thead>
+              <tbody>
+                ${list.map(h => {
+                  total += (h.revenue || 0);
+                  return `
+                  <tr>
+                    <td>${formatDate(h.date)}</td>
+                    <td>${(h.quantity || 0).toLocaleString("en-IN")} ${h.unit || "kg"}</td>
+                    <td>₹${h.pricePerUnit || 0}/${h.unit || "kg"}</td>
+                    <td>₹${(h.revenue || 0).toLocaleString("en-IN")}</td>
+                    <td><button type="button" class="cj-row-del" onclick="deleteHarvest('${h.id}')"><i class="fa-solid fa-trash"></i></button></td>
+                  </tr>`;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>`;
+      }
+      document.getElementById("cjTotalRevenue").innerText = "₹" + total.toLocaleString("en-IN");
+    }
+
+    // ---------------- Photos ----------------
+    function openPhotoModal() {
+      document.getElementById("cjPhotoForm").reset();
+      document.getElementById("photoPreview").style.display = "none";
+      delete document.getElementById("photoFile").dataset.dataurl;
+      document.getElementById("cjPhotoModal").classList.add("open");
+    }
+    async function submitPhoto(e) {
+      e.preventDefault();
+      const dataUrl = document.getElementById("photoFile").dataset.dataurl;
+      if (!dataUrl) { showToast("⚠️ Please choose a photo first."); return; }
+      const entry = {
+        id: "photo_" + Date.now(),
+        dataUrl,
+        stage: document.getElementById("photoStage").value,
+        caption: document.getElementById("photoCaption").value || "",
+        uploadedAt: new Date().toISOString()
+      };
+      cjCurrent.photos = cjCurrent.photos || [];
+      cjCurrent.photos.push(entry);
+      await saveCurrentCrop();
+      renderPhotos();
+      closeModal("cjPhotoModal");
+      showToast("✅ Photo uploaded.");
+    }
+    async function deletePhoto(id) {
+      cjCurrent.photos = (cjCurrent.photos || []).filter(p => p.id !== id);
+      await saveCurrentCrop();
+      renderPhotos();
+    }
+    function renderPhotos() {
+      const wrap = document.getElementById("cjPhotosWrap");
+      const list = [...(cjCurrent.photos || [])].sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+      if (!list.length) {
+        wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-camera"></i><p>No photos yet — capture the crop's journey from planting to harvest.</p></div>`;
+        return;
+      }
+      wrap.innerHTML = `<div class="cj-photo-grid">${list.map(p => `
+        <div class="cj-photo-card">
+          <span class="cj-photo-tag">${p.stage}</span>
+          <button type="button" class="cj-photo-del" onclick="deletePhoto('${p.id}')"><i class="fa-solid fa-xmark"></i></button>
+          <img src="${p.dataUrl}" alt="${p.stage}" />
+          ${p.caption ? `<div class="cj-photo-caption">${p.caption}</div>` : ""}
+        </div>`).join("")}</div>`;
+    }
+
+    // ---------------- Snapshot ----------------
+    function renderSnapshot() {
+      const c = cjCurrent;
+      const activities = c.activities || [];
+      const harvests = c.harvests || [];
+
+      // Crop age
+      if (c.plantingDate) {
+        const days = Math.max(0, Math.floor((new Date() - new Date(c.plantingDate)) / 86400000));
+        document.getElementById("cjStatAge").innerText = days;
+      } else {
+        document.getElementById("cjStatAge").innerText = "—";
+      }
+
+      document.getElementById("cjStatIrrigation").innerText = activities.filter(a => a.type === "Irrigation").length;
+      document.getElementById("cjStatFertilizer").innerText = activities.filter(a => a.type === "Fertilizer").length;
+      document.getElementById("cjStatPest").innerText = activities.filter(a => a.type === "Pesticide").length;
+
+      const totalCost = activities.reduce((s, a) => s + (a.cost || 0), 0);
+      const costPerAcre = c.landArea ? Math.round(totalCost / c.landArea) : totalCost;
+      document.getElementById("cjStatCostAcre").innerText = "₹" + costPerAcre.toLocaleString("en-IN");
+
+      const harvestedQty = harvests.reduce((s, h) => s + (h.quantity || 0), 0);
+      const yieldText = c.expectedYieldKg
+        ? `${c.expectedYieldKg.toLocaleString("en-IN")} kg`
+        : (harvestedQty ? `${harvestedQty.toLocaleString("en-IN")} kg (harvested)` : "—");
+      document.getElementById("cjStatYield").innerText = yieldText;
+    }
+
+    // ---------------- Utils ----------------
+    function formatDate(d) {
+      if (!d) return "—";
+      const dt = new Date(d);
+      if (isNaN(dt)) return d;
+      return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+  </script>
+<script src="js/gemini-service.js?v=10"></script><script src="js/global-chatbot.js?v=1"></script></body>
+</html>
